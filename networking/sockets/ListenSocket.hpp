@@ -1,27 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   ListenSocket.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/21 10:06:20 by rabustam          #+#    #+#             */
-/*   Updated: 2023/07/27 12:51:23 by rabustam         ###   ########.fr       */
+/*   Created: 2023/07/27 10:54:49 by rabustam          #+#    #+#             */
+/*   Updated: 2023/07/27 11:03:37 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ws_library.hpp"
+#ifndef LISTENSOCKET_HPP
+# define LISTENSOCKET_HPP
 
-// PORTAS ABAIXO DE 1024 PRECISA DE PERMISSÃO ROOT/SUDO
-// sudo ./webserv
-int	main(void)
+# include "BindSocket.hpp"
+
+namespace WS
 {
-	//SOCKET CONNECTION TEST
-	// std::cout << "Starting Listen Socket..." << std::endl;
-	// WS::ListenSocket ls = WS::ListenSocket(AF_INET, SOCK_STREAM, 0, 80, INADDR_ANY, 10);
-	// std::cout << "Success!!!" << std::endl;
+	class ListenSocket: public BindSocket
+	{
+		private:
+		int backlog;
+		int listening;
 
-	//SERVER
-	WS::TestServer ts;
-	return (0);	
+		public:
+		ListenSocket(int domain, int service, int protocol, int port, u_long interface, int bklg);
+		~ListenSocket();
+		
+		void start_listen();
+	};
 }
+
+#endif

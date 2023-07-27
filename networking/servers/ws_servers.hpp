@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   ws_servers.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/21 10:06:23 by rabustam          #+#    #+#             */
-/*   Updated: 2023/07/21 10:11:32 by rabustam         ###   ########.fr       */
+/*   Created: 2023/07/27 12:05:06 by rabustam          #+#    #+#             */
+/*   Updated: 2023/07/27 12:49:06 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-# define SERVER_HPP
+#ifndef WS_SERVERS_HPP
+# define WS_SERVERS_HPP
 
-# include <iostream>
+# include "SimpleServer.hpp"
+# include "TestServer.hpp"
 
-#endif /* server_hpp */
+#endif
