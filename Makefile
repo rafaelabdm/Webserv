@@ -14,7 +14,8 @@ CXX = c++
 DEL = rm -rf
 MKDIR = mkdir -p
 
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3
+DEBUG = true
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -DDEBUG=$(DEBUG)
 DEPFLAGS = -MMD -MF
 VALFLAGS = -q --show-leak-kinds=all --track-origins=yes
 

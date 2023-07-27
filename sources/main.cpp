@@ -3,6 +3,8 @@
 #include <iostream>
 #include <man_webserv.hpp>
 
+#include <ConfigFile.hpp>
+
 static bool valid_argc(const int argc)
 {
   std::string message = "";
@@ -37,6 +39,19 @@ static bool help_option(const std::string& option)
   return (false);
 }
 
+static void print_debug(const bool print)
+{
+  if (print)
+  {
+    std::cout << YELLOW;
+    std::cout << "DEBUG = " << (DEBUG?"true":"false") << std::endl;
+    std::cout << "errno = " << errno << std::endl;
+    std::cout << RESET_COLOR;
+  }
+
+  return;
+}
+
 int main( int argc, char* argv[])
 {
   errno = 0;
@@ -46,7 +61,9 @@ int main( int argc, char* argv[])
   if (help_option(argv[1]))
     return (0);
 
-  std::cout << "errno = " << errno << std::endl;
+  ConfigFile config(argv[1]);
+  std::cout << config << std::endl;
 
+  print_debug(true);
   return (0);
 }
