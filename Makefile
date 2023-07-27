@@ -32,9 +32,10 @@ fclean: clean
 re: fclean all
 
 test: $(NAME)
-	./$(NAME) -h
-	./$(NAME) --help
 	./$(NAME) $(CONF_FILE)
+
+help: $(NAME)
+	./$(NAME) --help
 
 valgrind: $(NAME)
 	valgrind $(VALFLAGS) ./$(NAME) $(CONF_FILE)
@@ -47,4 +48,4 @@ $(BLD_DIR):
 
 -include $(DEP)
 
-.PHONY: all clean fclean re test valgrind
+.PHONY: all clean fclean re test help valgrind
