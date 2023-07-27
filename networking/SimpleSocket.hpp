@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 10:10:02 by rabustam          #+#    #+#             */
-/*   Updated: 2023/07/21 11:04:16 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/07/27 10:28:18 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ namespace WS
 {
 	class SimpleSocket
 	{
-		private:
+		protected:
 		struct sockaddr_in	address;
 		int					sock;
 		int					connection;
