@@ -1,9 +1,12 @@
+#include <c_external_functions.h>
 #include <colors.hpp>
 #include <iostream>
 
 int main(void)
 {
-	std::cout << MAGENTA << "Hello World" << RESET_COLOR << std::endl;
+  errno = 0;
 
-	return (0);
+  std::cout << "errno = " << errno << std::endl;
+
+  return (0);
 }
