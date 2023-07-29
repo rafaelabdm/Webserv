@@ -1,5 +1,5 @@
 NAME		 = webserv
-CONF_FILE	 = serv.conf
+CONF_FILE	 = webserv.conf
 
 SRC_DIR = sources
 BLD_DIR = build
@@ -14,7 +14,7 @@ CXX = c++
 DEL = rm -rf
 MKDIR = mkdir -p
 
-DEBUG = true
+DEBUG = false
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -DDEBUG=$(DEBUG)
 DEPFLAGS = -MMD -MF
 VALFLAGS = -q --show-leak-kinds=all --track-origins=yes
