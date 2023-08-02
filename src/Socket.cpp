@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/02 12:18:29 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/02 13:34:23 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,17 +97,48 @@ void	WS::Socket::bind()
 	std::cout << GREEN << "Bind successfull!" << RESET_COLOR << std::endl;
 }
 
-// void	WS::Socket::connectIt()
-// {
-// 	int status;
+void	WS::Socket::listen()
+{
+	int status;
 
-// 	status = connect(sock, servinfo->ai_addr, servinfo->ai_addrlen);
-// 	if (status < 0)
-// 	{
-// 		std::cerr << RED << "connect error: " << RESET_COLOR << strerror(errno) << std::endl;
-// 		freeaddrinfo(servinfo);
-// 		exit(1);
-// 	}
-// 	std::cout << GREEN << "Connect successfull!" << RESET_COLOR << std::endl;
-// }
+	status = ::listen(sock, 10);
+	if (status < 0)
+	{
+		std::cerr << RED << "listen error: " << RESET_COLOR << strerror(errno) << std::endl;
+		freeaddrinfo(servinfo);
+		exit(1);
+	}
+	std::cout << GREEN << "Listen successfull!" << RESET_COLOR << std::endl;
+}
+
+void	WS::Socket::accept()
+{
+	struct sockaddr_storage their_addr;
+	socklen_t addr_size;
+	int	new_socket;
+
+	addr_size = sizeof their_addr;
+	new_socket = ::accept(sock, (struct sockaddr *)&their_addr, &addr_size);
+	if (new_socket < 0)
+	{
+		std::cerr << RED << "accept error: " << RESET_COLOR << strerror(errno) << std::endl;
+		freeaddrinfo(servinfo);
+		exit(1);
+	}
+	std::cout << GREEN << "Accept created successfully!" << RESET_COLOR << std::endl;
+}
+
+void	WS::Socket::connect()
+{
+	int status;
+
+	status = ::connect(sock, servinfo->ai_addr, servinfo->ai_addrlen);
+	if (status < 0)
+	{
+		std::cerr << RED << "connect error: " << RESET_COLOR << strerror(errno) << std::endl;
+		freeaddrinfo(servinfo);
+		exit(1);
+	}
+	std::cout << GREEN << "Connect successfull!" << RESET_COLOR << std::endl;
+}
 

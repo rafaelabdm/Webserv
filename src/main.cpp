@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:50:42 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/02 12:11:10 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/02 13:19:49 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,11 @@
 
 int	main(void)
 {
-	WS::Socket sk("localhost", "8080");
+	WS::Socket sk("3490");
 	// WS::Socket sk;
 	sk.bind();
+	sk.listen();
+	while(1)
+		sk.accept();
+	// sk.connect();
 }

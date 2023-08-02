@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/02 12:17:20 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/02 13:14:00 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <sys/socket.h> // socket()
 # include <sys/types.h> // socket()
 # include <string.h> // memset()
+#include <unistd.h> // close()
 
 namespace WS
 {
@@ -42,7 +43,9 @@ namespace WS
 		Socket();
 		~Socket();
 		void	bind();
-		// void	connectIt();
+		void	listen();
+		void	accept();
+		void	connect();
 		int getSock();
 	};
 }
