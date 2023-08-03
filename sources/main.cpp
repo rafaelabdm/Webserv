@@ -6,17 +6,17 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:50:42 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/02 13:19:49 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/03 09:44:50 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/Socket.hpp"
+#include "Socket.hpp"
 
-//c++ -Wall -Wextra -Werror src/main.cpp src/Socket.cpp -o webserv
+//c++ -Wall -Wextra -Werror -std=c++98 src/main.cpp src/Socket.cpp -o webserv
 
 int	main(void)
 {
-	WS::Socket sk("3490");
+	WS::Socket sk("rabustam.42.fr", "8080");
 	// WS::Socket sk;
 	sk.bind();
 	sk.listen();

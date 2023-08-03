@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Socket.cpp                                         :+:      :+:    :+:   */
+/*   Socket.ipp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/02 13:34:23 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/03 10:22:59 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/Socket.hpp"
+#include "Socket.hpp"
 
 WS::Socket::Socket(const std::string s_name, const std::string s_port) : server_name(s_name.c_str()), port(s_port.c_str())
 {
@@ -32,12 +32,11 @@ WS::Socket::Socket(void) : server_name(NULL), port("8080")
 
 WS::Socket::~Socket()
 {
-	freeaddrinfo(servinfo);
 }
 
 void	WS::Socket::setAddrStruct(void)
 {
-	hints = {};
+	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
 	hints.ai_socktype = SOCK_STREAM; //TCP or UDP
 	hints.ai_flags = AI_PASSIVE; // allows bind
@@ -95,6 +94,8 @@ void	WS::Socket::bind()
 		exit(1);
 	}
 	std::cout << GREEN << "Bind successfull!" << RESET_COLOR << std::endl;
+
+	freeaddrinfo(servinfo);
 }
 
 void	WS::Socket::listen()
