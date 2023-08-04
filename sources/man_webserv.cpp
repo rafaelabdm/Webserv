@@ -1,27 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   colors.hpp                                         :+:      :+:    :+:   */
+/*   man_webserv.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/04 19:40:58 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/04 19:40:58 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/04 20:02:49 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/04 20:02:49 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COLORS_HPP
-# define COLORS_HPP
+#include <man_webserv.hpp>
 
-# define RESET_COLOR  "\033[0m"
-# define INVERT_COLOR "\033[7m"
-# define RED          "\033[0;31m"
-# define GREEN        "\033[0;32m"
-# define YELLOW       "\033[0;33m"
-# define BLUE         "\033[0;34m"
-# define MAGENTA      "\033[0;35m"
-# define CYAN         "\033[0;36m"
+bool	manual_option(const std::string& option)
+{
+  if (option == "-h" || option == "--help")
+  {
+    std::cout<< HELP_MSG << std::endl;
 
-# define MSG_OK "[ " GREEN "OK" RESET_COLOR " ] "
+    return (true);
+  }
 
-#endif // COLORS_HPP
+  return (false);
+}
