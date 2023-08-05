@@ -14,12 +14,12 @@
 
 bool	manual_option(const std::string& option)
 {
-  if (option == "-h" || option == "--help")
-  {
-    std::cout<< HELP_MSG << std::endl;
+	if (option == "-h" || option == "--help")
+	{
+		std::cout<< HELP_MSG << std::endl;
 
-    return (true);
-  }
+		return (true);
+	}
 
-  return (false);
+	return (false);
 }

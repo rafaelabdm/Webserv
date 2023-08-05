@@ -22,6 +22,7 @@
 # define MAGENTA      "\033[0;35m"
 # define CYAN         "\033[0;36m"
 
-# define MSG_OK "[ " GREEN "OK" RESET_COLOR " ] "
+# define MSG_OK			"[ " GREEN "OK" RESET_COLOR " ] "
+# define MSG_WARNING	"[ " YELLOW "WARNING" RESET_COLOR " ] "
 
 #endif // COLORS_HPP

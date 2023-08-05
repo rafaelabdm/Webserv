@@ -503,15 +503,6 @@ int	setsockopt
 	socklen_t optlen
 );
 
-// # include <signal.h>
-// /**
-//  * @brief 
-//  * 
-//  * @param sig 
-//  * @param func 
-//  */
-// void	(*signal(int sig, void (*func)(int)))(int);
-
 # include <sys/socket.h>
 /**
  * @brief Cria um novo socket para comunicação em rede.
