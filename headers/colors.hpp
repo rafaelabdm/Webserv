@@ -24,5 +24,6 @@
 
 # define MSG_OK			"[ " GREEN "OK" RESET_COLOR " ] "
 # define MSG_WARNING	"[ " YELLOW "WARNING" RESET_COLOR " ] "
+# define MSG_SETUP		"[ " BLUE "SETUP" RESET_COLOR " ] "
 
 #endif // COLORS_HPP

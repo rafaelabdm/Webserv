@@ -31,6 +31,7 @@ static void	signal_handler(int signal)
 
 void	set_signal(void)
 {
+	std::cout << MSG_SETUP << "Setting up signals." << std::endl;
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
 }
