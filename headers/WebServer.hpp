@@ -1,34 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   WebServer.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/02 09:50:42 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/09 12:48:24 by rabustam         ###   ########.fr       */
+/*   Created: 2023/08/09 12:32:11 by rabustam          #+#    #+#             */
+/*   Updated: 2023/08/09 12:52:46 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Socket.hpp"
-#include "WebServer.hpp"
+#ifndef WEBSERVER_HPP
+# define WEBSERVER_HPP
 
-//c++ -Wall -Wextra -Werror -std=c++98 src/main.cpp src/Socket.cpp -o webserv
+# include "Socket.hpp"
+# include <vector>
 
-int	main(void)
+namespace WS
 {
-	WS::WebServer server;
-	// try
-	// {
-	// 	WS::Socket sk("localhost", "8000");
-	// 	sk.bind();
-	// 	sk.listen();
-	// 	while(1)
-	// 		sk.accept();
-	// }
-	// catch (WS::Socket::SocketException &e)
-	// {
-	// 	std::cout << e.what() << std::endl;
-	// }
-	
+	class WebServer
+	{
+		private:
+		std::vector<WS::Socket*>	connections; //lista de conexões
+
+		public:
+		WebServer();
+		~WebServer();
+		void	start_servers();
+		void	handle_connections();
+	};
 }
+
+# include "WebServer.ipp"
+
+#endif /* WebServer_hpp */
