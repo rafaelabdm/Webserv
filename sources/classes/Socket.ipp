@@ -6,25 +6,25 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/03 10:22:59 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/09 12:28:45 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
 
-WS::Socket::Socket(const std::string s_name, const std::string s_port) : server_name(s_name.c_str()), port(s_port.c_str())
+WS::Socket::Socket(const std::string s_name, const std::string s_port) : host(s_name.c_str()), port(s_port.c_str())
 {
 	loadAddressInfo();
 	createSocket();
 }
 
-WS::Socket::Socket(const std::string s_port) : server_name(NULL), port(s_port.c_str())
+WS::Socket::Socket(const std::string s_port) : host(NULL), port(s_port.c_str())
 {
 	loadAddressInfo();
 	createSocket();
 }
 
-WS::Socket::Socket(void) : server_name(NULL), port("8080")
+WS::Socket::Socket(void) : host(NULL), port("8080")
 {
 	loadAddressInfo();
 	createSocket();
@@ -47,11 +47,11 @@ void	WS::Socket::loadAddressInfo()
 	int	status;
 
 	setAddrStruct();
-	status = getaddrinfo(server_name, port, &hints, &servinfo);
+	status = getaddrinfo(host, port, &hints, &servinfo);
 	if(status)
 	{
 		std::cerr << RED << "getaddrinfo error: " << RESET_COLOR << gai_strerror(status) << std::endl;
-		exit(1);
+		throw SocketException();
 	}
 	std::cout << GREEN << "Address loaded successfully!" << RESET_COLOR << std::endl;
 }
@@ -63,7 +63,7 @@ void	WS::Socket::createSocket()
 	{
 		std::cerr << RED << "socket error: " << RESET_COLOR << strerror(errno) << std::endl;
 		freeaddrinfo(servinfo);
-		exit(1);
+		throw SocketException();
 	}
 	std::cout << GREEN << "Socket created successfully!" << RESET_COLOR << std::endl;
 }
@@ -82,7 +82,7 @@ void	WS::Socket::bind()
 	{
 		std::cerr << RED << "setsockopt error: " << RESET_COLOR << strerror(errno) << std::endl;
 		freeaddrinfo(servinfo);
-		exit(1);
+		throw SocketException();
 	}
 	std::cout << GREEN << "Setsockopt successfull!" << RESET_COLOR << std::endl;
 
@@ -91,7 +91,7 @@ void	WS::Socket::bind()
 	{
 		std::cerr << RED << "bind error: " << RESET_COLOR << strerror(errno) << std::endl;
 		freeaddrinfo(servinfo);
-		exit(1);
+		throw SocketException();
 	}
 	std::cout << GREEN << "Bind successfull!" << RESET_COLOR << std::endl;
 
@@ -106,8 +106,7 @@ void	WS::Socket::listen()
 	if (status < 0)
 	{
 		std::cerr << RED << "listen error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(servinfo);
-		exit(1);
+		throw SocketException();
 	}
 	std::cout << GREEN << "Listen successfull!" << RESET_COLOR << std::endl;
 }
@@ -123,10 +122,13 @@ void	WS::Socket::accept()
 	if (new_socket < 0)
 	{
 		std::cerr << RED << "accept error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(servinfo);
-		exit(1);
+		throw SocketException();
 	}
 	std::cout << GREEN << "Accept created successfully!" << RESET_COLOR << std::endl;
+
+	std::string hello = "hello world :)";
+	send(new_socket, hello.data(), hello.length(), 0);
+	close(new_socket);
 }
 
 void	WS::Socket::connect()
@@ -138,8 +140,12 @@ void	WS::Socket::connect()
 	{
 		std::cerr << RED << "connect error: " << RESET_COLOR << strerror(errno) << std::endl;
 		freeaddrinfo(servinfo);
-		exit(1);
+		throw SocketException();
 	}
 	std::cout << GREEN << "Connect successfull!" << RESET_COLOR << std::endl;
 }
 
+const char* WS::Socket::SocketException::what() const throw()
+{
+	return ("erro :/");
+}

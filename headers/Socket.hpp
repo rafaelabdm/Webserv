@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/03 09:37:25 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/09 12:25:18 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ namespace WS
 		private:
 		struct addrinfo		hints;
 		struct addrinfo		*servinfo;
-		const char			*server_name;
+		const char			*host;
 		const char			*port;
 		int					sock;
 
@@ -40,7 +40,7 @@ namespace WS
 		void createSocket();
 		
 		public:
-		Socket(const std::string server_name, const std::string port);
+		Socket(const std::string host, const std::string port);
 		Socket(const std::string port);
 		Socket();
 		~Socket();
