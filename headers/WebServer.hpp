@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 12:32:11 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/09 12:52:46 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/10 09:17:02 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "Socket.hpp"
 # include <vector>
+# include <poll.h>
 
 namespace WS
 {

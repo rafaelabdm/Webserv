@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/09 13:01:16 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/10 11:23:17 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,8 @@
 # include <stdlib.h> // close()
 # include <errno.h> //errno
 
-
-//DEFINES QUE SERÃO SUBSTITUÍDOS PELO ARQUIVO .CONF
-# define MY_PORT "8080"
-# define MY_HOST "localhost"
+//DEFINES QUE SERÃO SUBSTITUÍDOS PELO .CONF
+# include "temporary_defines.hpp"
 
 namespace WS
 {
@@ -51,7 +49,7 @@ namespace WS
 		~Socket();
 		void	bind();
 		void	listen();
-		void	accept();
+		int		accept();
 		void	connect();
 		int		getSock();
 

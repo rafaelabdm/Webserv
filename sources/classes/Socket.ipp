@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/09 12:28:45 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/10 11:18:38 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void	WS::Socket::listen()
 	std::cout << GREEN << "Listen successfull!" << RESET_COLOR << std::endl;
 }
 
-void	WS::Socket::accept()
+int	WS::Socket::accept()
 {
 	struct sockaddr_storage their_addr;
 	socklen_t addr_size;
@@ -124,11 +124,8 @@ void	WS::Socket::accept()
 		std::cerr << RED << "accept error: " << RESET_COLOR << strerror(errno) << std::endl;
 		throw SocketException();
 	}
-	std::cout << GREEN << "Accept created successfully!" << RESET_COLOR << std::endl;
-
-	std::string hello = "hello world :)";
-	send(new_socket, hello.data(), hello.length(), 0);
-	close(new_socket);
+	std::cout << GREEN << "Accept successfully!" << RESET_COLOR << std::endl;
+	return (new_socket);
 }
 
 void	WS::Socket::connect()
