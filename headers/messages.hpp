@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   messages.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:24:26 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:24:26 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/11 18:45:51 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/11 18:45:51 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <signal_handler.hpp>
+#ifndef MESSAGES_HPP
+# define MESSAGES_HPP
 
-int	main(void)
-{
-	std::cout << "Press Ctrl+C to exit the program." << std::endl;
+# include <colors.hpp>
+# include <iostream>
 
-	while (keep());
+# define MSG_OK			"[ " GREEN	"OK"		RESET_COLOR " ] "
+# define MSG_WARNING	"[ " YELLOW	"WARNING"	RESET_COLOR " ] "
+# define MSG_SETUP		"[ " BLUE	"SETUP"		RESET_COLOR " ] "
 
-	return (0);
-}
+#endif // MESSAGES_HPP
