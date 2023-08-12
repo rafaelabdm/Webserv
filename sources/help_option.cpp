@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   messages.hpp                                       :+:      :+:    :+:   */
+/*   help_option.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:45:51 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:45:51 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/11 21:33:36 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/11 21:33:36 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MESSAGES_HPP
-# define MESSAGES_HPP
+#include <help_option.hpp>
 
-# include <colors.hpp>
-# include <iostream>
+bool	help_option(const std::string& option)
+{
+	if (!keep())
+		return (false);
+	if (option == "-h" || option == "--help")
+	{
+		std::cout<< MSG_HELP << std::endl;
 
-# define MSG_OK			"[ " GREEN	"OK"		RESET_COLOR " ] "
-# define MSG_WARNING	"[ " YELLOW	"WARNING"	RESET_COLOR " ] "
-# define MSG_SETUP		"[ " BLUE	"SETUP"		RESET_COLOR " ] "
+		return (true);
+	}
 
-#endif // MESSAGES_HPP
+	return (false);
+}

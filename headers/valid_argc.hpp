@@ -1,23 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   messages.hpp                                       :+:      :+:    :+:   */
+/*   valid_argc.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:45:51 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:45:51 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/11 21:20:28 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/11 21:20:28 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MESSAGES_HPP
-# define MESSAGES_HPP
+#ifndef VALID_ARGC_HPP
+# define VALID_ARGC_HPP
 
 # include <colors.hpp>
 # include <iostream>
+# include <messages.hpp>
+# include <signal_handler.hpp>
 
-# define MSG_OK			"[ " GREEN	"OK"		RESET_COLOR " ] "
-# define MSG_WARNING	"[ " YELLOW	"WARNING"	RESET_COLOR " ] "
-# define MSG_SETUP		"[ " BLUE	"SETUP"		RESET_COLOR " ] "
+/**
+ * @brief Check if argc is equal to 2.
+ *
+ *
+ * @param argc Number of arguments passed to the program.
+ * @return Returns true if argc is equal to 2 or false if not.
+ *
+ * @note This function relies on the keep() function to check if Ctrl + C has
+ *       been pressed.
+ */
+bool	valid_argc(const int argc);
 
-#endif // MESSAGES_HPP
+#endif // VALID_ARGC_HPP

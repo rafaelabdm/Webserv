@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   messages.hpp                                       :+:      :+:    :+:   */
+/*   valid_argc.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:45:51 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:45:51 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/11 21:20:36 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/11 21:20:36 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MESSAGES_HPP
-# define MESSAGES_HPP
+#include <valid_argc.hpp>
 
-# include <colors.hpp>
-# include <iostream>
+bool	valid_argc(const int argc)
+{
+	if (!keep())
+		return (false);
+	if (argc != 2)
+	{
+		std::cout << MSG_WARNING << " missing configuration file operand" << std::endl;
+		std::cout << "Try './webserv --help' for more information." << std::endl;
+		return (false);
+	}
 
-# define MSG_OK			"[ " GREEN	"OK"		RESET_COLOR " ] "
-# define MSG_WARNING	"[ " YELLOW	"WARNING"	RESET_COLOR " ] "
-# define MSG_SETUP		"[ " BLUE	"SETUP"		RESET_COLOR " ] "
-
-#endif // MESSAGES_HPP
+	return (true);
+}
