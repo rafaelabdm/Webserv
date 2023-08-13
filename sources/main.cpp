@@ -10,18 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
 #include <help_option.hpp>
 #include <signal_handler.hpp>
 #include <valid_argc.hpp>
+// #include <WebServer.hpp>
 
 int	main(const int argc, const char** argv)
 {
-	if (ft::help_option(argv[1]))
-		return (0);
+	// Initial checks
+	{
+		if (ft::help_option(argv[1]))
+			return (0);
 
-	if (!ft::valid_argc(argc))
-		return (1);
+		if (!ft::valid_argc(argc))
+			return (1);
+	}
+
+	// Main Web server stuffs
+	{
+		// ft::WebServer	ws(argv[1]);
+
+		// ws.start_servers();
+		while (ft::keep());
+	}
 
 	return (0);
 }

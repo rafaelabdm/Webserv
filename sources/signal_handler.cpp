@@ -27,7 +27,7 @@ static void signal_handler(int signal)
 		return;
 }
 
-bool keep(void)
+bool ft::keep(void)
 {
 	static bool	first_run = false;
 
