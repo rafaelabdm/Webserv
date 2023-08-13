@@ -17,13 +17,11 @@
 
 int	main(const int argc, const char** argv)
 {
-	if (!valid_argc(argc))
-		return (1);
-	if (help_option(argv[1]))
+	if (ft::help_option(argv[1]))
 		return (0);
 
-	std::cout << "Press Ctrl + C to exit the program." << std::endl;
-	while (keep());
+	if (!ft::valid_argc(argc))
+		return (1);
 
 	return (0);
 }

@@ -12,13 +12,16 @@
 
 #include <help_option.hpp>
 
-bool	help_option(const std::string& option)
+bool	ft::help_option(const char* option)
 {
-	if (!keep())
+	if (!option)
 		return (false);
-	if (option == "-h" || option == "--help")
+
+	const std::string	str_option = option;
+
+	if (str_option == "-h" || str_option == "--help")
 	{
-		std::cout<< MSG_HELP << std::endl;
+		std::cout<< FT_HELP << std::endl;
 
 		return (true);
 	}

@@ -16,8 +16,10 @@
 # include <colors.hpp>
 # include <iostream>
 
-# define MSG_OK			"[ " GREEN	"OK"		RESET_COLOR " ] "
-# define MSG_WARNING	"[ " YELLOW	"WARNING"	RESET_COLOR " ] "
-# define MSG_SETUP		"[ " BLUE	"SETUP"		RESET_COLOR " ] "
+# define FT_OK		"[" GREEN	"  OK   "	RESET_COLOR "] "
+# define FT_FAIL	"[" RED		" FAIL  "	RESET_COLOR "] "
+# define FT_WARNING	"[" YELLOW	"WARNING"	RESET_COLOR "] "
+# define FT_SETUP	"[" BLUE	" SETUP "	RESET_COLOR "] "
+# define FT_CLOSE	"[" BLUE	" CLOSE "	RESET_COLOR "] "
 
 #endif // MESSAGES_HPP

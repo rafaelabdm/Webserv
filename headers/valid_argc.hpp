@@ -16,18 +16,18 @@
 # include <colors.hpp>
 # include <iostream>
 # include <messages.hpp>
-# include <signal_handler.hpp>
 
-/**
- * @brief Check if argc is equal to 2.
- *
- *
- * @param argc Number of arguments passed to the program.
- * @return Returns true if argc is equal to 2 or false if not.
- *
- * @note This function relies on the keep() function to check if Ctrl + C has
- *       been pressed.
- */
-bool	valid_argc(const int argc);
+namespace	ft
+{
+	/**
+	 * @brief Check if argc is equal to 2.
+	 *
+	 *
+	 * @param argc Number of arguments passed to the program.
+	 * @return Returns true if argc is equal to 2 or false if not.
+	 *
+	 */
+	bool	valid_argc(const int argc);
+}
 
 #endif // VALID_ARGC_HPP

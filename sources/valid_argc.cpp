@@ -12,16 +12,19 @@
 
 #include <valid_argc.hpp>
 
-bool	valid_argc(const int argc)
+bool	ft::valid_argc(const int argc)
 {
-	if (!keep())
-		return (false);
-	if (argc != 2)
-	{
-		std::cout << MSG_WARNING << " missing configuration file operand" << std::endl;
-		std::cout << "Try './webserv --help' for more information." << std::endl;
-		return (false);
-	}
+	if (argc == 2)
+		return (true);
 
-	return (true);
+	std::string	error = "unknown";
+
+	error = (argc == 1) ? "Missing configuration file operand." : error;
+	error = (argc > 2) ? "Too many arguments." : error;
+
+	std::cout << FT_WARNING << error << std::endl;
+	std::cout << "Try './webserv --help' for more information." << std::endl;
+
+	return (false);
+
 }

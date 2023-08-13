@@ -35,7 +35,7 @@ VALFLAGS	 = --leak-check=full \
 			   --track-origins=yes \
 			   --track-fds=yes \
 			   --show-reachable=yes \
-			   --error-limit=1
+			   --error-limit=yes
 
 all: $(NAME)
 

@@ -16,31 +16,32 @@
 # include <colors.hpp>
 # include <iostream>
 # include <messages.hpp>
-# include <signal_handler.hpp>
 
-const char * const MSG_HELP = "\
+# define FT_HELP \
+"\
 Usage: webserv <Configuration File>.conf \n\
- \n\
+\n\
 A project about basic HTTP server creation. \n\
- \n\
+\n\
 	-h, --help	display this help page and exit. \n\
 \n\
 More about this project can be found on \n\
-https://github.com/rafaelabdm/Webserv/ \n\
-";
+https://github.com/rafaelabdm/Webserv/\
+"
 
-/**
- * @brief Check if the given option is a help option.
- *
- * This function checks whether the provided option is equivalent to the help
- * option ("-h" or "--help").
- *
- * @param option The command-line option to check.
- * @return True if the option is a help option or false if not.
- *
- * @note This function depends on the keep() function to check if Ctrl + C has
- *       been pressed.
- */
-bool	help_option(const std::string& option);
+namespace	ft
+{
+	/**
+	 * @brief Check if the given option is a help option.
+	 *
+	 * This function checks whether the provided option is equivalent to the
+	 * help option ("-h" or "--help").
+	 *
+	 * @param option The command-line option to check.
+	 * @return True if the option is a help option or false if not.
+	 *
+	 */
+	bool	help_option(const char* option);
+}
 
 #endif // HELP_OPTION_HPP

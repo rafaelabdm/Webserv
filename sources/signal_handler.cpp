@@ -18,10 +18,10 @@ static void signal_handler(int signal)
 {
 	ctrl_c_pressed = true;
 
-	std::cout
-		<< '\n' << MSG_WARNING
-		<< "Signal " << signal << " (Ctrl + C) received." << '\n'
-		<< "Closing webserv..."
+	std::cout 
+		<< '\r'
+		<< FT_WARNING
+		<< "Signal " << signal << " (Ctrl + C) received."
 		<< std::endl;
 
 		return;
@@ -33,11 +33,13 @@ bool keep(void)
 
 	if (!first_run)
 	{
-		std::cout << MSG_SETUP << "Setting up signals." << std::endl;
+		std::cout << FT_SETUP << "Setting up signals." << std::endl;
 
 		signal(SIGINT, signal_handler);
 
 		first_run = true;
+
+		std::cout << FT_OK << "Signals ready." << std::endl;
 	}
 
 	return (!ctrl_c_pressed);
