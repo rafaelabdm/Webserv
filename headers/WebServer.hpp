@@ -17,13 +17,17 @@
 # include "ConfigFile.hpp"
 # include <iostream>
 # include <messages.hpp>
+# include <signal_handler.hpp>
+# include "Socket.hpp"
+# include <vector>
 
 namespace ft
 {
 	class WebServer
 	{
 		private:
-		ft::ConfigFile	_config_file;
+		ft::ConfigFile			_config_file;
+		std::vector<ft::Socket>	_connections;
 
 		public:
 		WebServer(const std::string& config_file);

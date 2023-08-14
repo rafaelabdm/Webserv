@@ -20,11 +20,16 @@ ft::WebServer::WebServer(const std::string& config_file) : _config_file(config_f
 		<< GREEN << config_file << RESET_COLOR
 		<< " file."
 		<< std::endl;
+
+	for (size_t i = 0; ft::keep() && i < _config_file.size(); i++)
+		_connections.push_back(Socket(_config_file.getHost(i), _config_file.getPort(i)));
 }
 
 ft::WebServer::~WebServer()
 {
 	std::cout << FT_CLOSE << "Closing Web server." << std::endl;
+
+	std::cout << FT_OK << "Web server closed." << std::endl;
 }
 
 void	ft::WebServer::start_servers()
