@@ -1,24 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   messages.hpp                                       :+:      :+:    :+:   */
+/*   ConfigFile.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:45:51 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:45:51 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/05 07:18:00 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/05 07:18:00 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MESSAGES_HPP
-# define MESSAGES_HPP
+#ifndef CONFIGFILE_HPP
+# define CONFIGFILE_HPP
 
 # include <colors.hpp>
+# include <iostream>
+# include <messages.hpp>
 
-# define FT_OK		"[" GREEN	"  OK   "	RESET_COLOR "] "
-# define FT_FAIL	"[" RED		" FAIL  "	RESET_COLOR "] "
-# define FT_WARNING	"[" YELLOW	"WARNING"	RESET_COLOR "] "
-# define FT_SETUP	"[" BLUE	" SETUP "	RESET_COLOR "] "
-# define FT_CLOSE	"[" BLUE	" CLOSE "	RESET_COLOR "] "
+namespace ft
+{
+	class ConfigFile
+	{
+		public:
+			ConfigFile(const std::string& file);
+			~ConfigFile(void);
 
-#endif // MESSAGES_HPP
+		private:
+	};
+}
+
+# include <ConfigFile.ipp>
+
+#endif //CONFIGFILE_HPP

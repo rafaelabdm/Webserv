@@ -1,24 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   messages.hpp                                       :+:      :+:    :+:   */
+/*   ConfigFile.ipp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:45:51 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:45:51 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/05 08:12:59 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/05 08:12:59 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MESSAGES_HPP
-# define MESSAGES_HPP
+#include <ConfigFile.hpp>
 
-# include <colors.hpp>
+ft::ConfigFile::ConfigFile(const std::string& config_file)
+{
+	std::cout
+		<< FT_SETUP
+		<< "Parsing "
+		<< GREEN << config_file << RESET_COLOR
+		<< " configuration file."
+		<< std::endl;
 
-# define FT_OK		"[" GREEN	"  OK   "	RESET_COLOR "] "
-# define FT_FAIL	"[" RED		" FAIL  "	RESET_COLOR "] "
-# define FT_WARNING	"[" YELLOW	"WARNING"	RESET_COLOR "] "
-# define FT_SETUP	"[" BLUE	" SETUP "	RESET_COLOR "] "
-# define FT_CLOSE	"[" BLUE	" CLOSE "	RESET_COLOR "] "
+	return;
+}
 
-#endif // MESSAGES_HPP
+ft::ConfigFile::~ConfigFile()
+{
+	std::cout << FT_CLOSE << "Closing configuration file." << std::endl;
+
+	return;
+}

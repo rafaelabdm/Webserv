@@ -19,7 +19,7 @@
 
 # include <signal.h>
 /**
- * Installs a signal handler for a specific signal.
+ * @brief Installs a signal handler for a specific signal.
  * 
  * @param sig The signal number for which you want to set up a handler.
  * @param func A pointer to the signal handling function that will be called

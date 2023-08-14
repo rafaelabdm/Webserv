@@ -13,7 +13,7 @@
 #include <help_option.hpp>
 #include <signal_handler.hpp>
 #include <valid_argc.hpp>
-// #include <WebServer.hpp>
+#include <WebServer.hpp>
 
 int	main(const int argc, const char** argv)
 {
@@ -27,10 +27,11 @@ int	main(const int argc, const char** argv)
 	}
 
 	// Main Web server stuffs
+	if (ft::keep())
 	{
-		// ft::WebServer	ws(argv[1]);
+		ft::WebServer	ws(argv[1]);
 
-		// ws.start_servers();
+		ws.start_servers();
 		while (ft::keep());
 	}
 
