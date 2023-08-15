@@ -1,42 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WebServer.hpp                                      :+:      :+:    :+:   */
+/*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/09 12:32:11 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/14 12:27:02 by rabustam         ###   ########.fr       */
+/*   Created: 2023/08/14 12:42:17 by rabustam          #+#    #+#             */
+/*   Updated: 2023/08/15 09:07:05 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERVER_HPP
-# define WEBSERVER_HPP
+#ifndef REQUEST_HPP
+# define REQUEST_HPP
 
-# include "Socket.hpp"
-# include <vector>
-# include <poll.h>
+# include <string>
 
-
-#include <dirent.h>
-#include <fstream>
-#include <string>
 namespace WS
 {
-	class WebServer
+	class Request
 	{
 		private:
-		std::vector<WS::Socket*>	connections; //lista de conexões
-		std::string						get_page();
+		std::string	_request;
 
 		public:
-		WebServer();
-		~WebServer();
-		void	start_servers();
-		void	handle_connections();
+		Request(char *client_buffer);
+		~Request();
 	};
 }
 
-# include "WebServer.ipp"
-
-#endif /* WebServer_hpp */
+#endif /* Request_hpp */

@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 12:37:17 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/10 11:20:55 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/14 12:39:06 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ WS::WebServer::WebServer()
 	//pra cada conexão inicial, dar bind e listen...
 	start_servers();
 	handle_connections();
+	// get_page();
 }
 
 WS::WebServer::~WebServer()
@@ -66,7 +67,7 @@ struct pollfd	*realloc_pollfds(struct pollfd	*old_pollfds, int& fd_count, int ne
 		new_pollfds[i] = old_pollfds[i];
 	}
 	new_pollfds[fd_count].fd = new_socket;
-	new_pollfds[fd_count].events = POLLIN;
+	new_pollfds[fd_count].revents = POLLIN;
 	(fd_count)++;
 	delete[] old_pollfds;
 	return (new_pollfds);
@@ -80,7 +81,6 @@ void	WS::WebServer::handle_connections()
 	int				num_events;
 	int				new_socket = -1;
 	char			client_buf[256];
-	std::string		msg = "Hello There, from your server!\n";
 
 	pfds[0].fd = connections[0]->getSock();
 	pfds[0].events = POLLIN; // Tell me when ready to read
@@ -109,6 +109,7 @@ void	WS::WebServer::handle_connections()
 				{
 					std::cout << "RECV CONNECTION" <<std::endl;
 					int nbytes = recv(pfds[i].fd, client_buf, sizeof(client_buf), 0);
+					std::cout << client_buf << std::endl;
 					int sender_fd = pfds[i].fd;
 					if (nbytes <= 0)
 					{
@@ -127,12 +128,11 @@ void	WS::WebServer::handle_connections()
 							if (dest_fd != connections[0]->getSock())
 							{
 								std::cout << "SEND" << std::endl;
+								std::string msg = get_page();
 								if(send(dest_fd, msg.data(), msg.length(), 0) == -1)
 								{
 									std::cout << "error: " << strerror(errno) << std::endl;
 								}
-								close(dest_fd);
-								pfds = remove_pollfds(pfds, fd_count, i);
 							}
 						}
 					}
@@ -140,4 +140,29 @@ void	WS::WebServer::handle_connections()
 			}
 		}
 	}
+}
+
+
+std::string	WS::WebServer::get_page()
+{
+	// std::string page;
+	DIR *dr;
+	struct dirent *en;
+	std::string path = "./pages/";
+	
+	dr = opendir("./pages");
+	en = readdir(dr);
+   	std::cout << "[" << en->d_name << "]\n";
+	std::ifstream file(path.append(en->d_name).c_str());
+	closedir(dr);
+
+// HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!
+   std::string page = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 285\n\n";
+   std::string line;
+   while(std::getline(file, line))
+   {
+		page.append(line);
+		page.append("\n");
+   }
+   return page;
 }
