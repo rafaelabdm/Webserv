@@ -41,6 +41,8 @@ namespace ft
 
 		size_t	size(void) const;
 
+		t_server_config	getServer(size_t server_id) const;
+
 		std::string	getHost(size_t server_id) const;
 		std::string	getPort(size_t server_id) const;
 

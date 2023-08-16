@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   colors.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:46:58 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:46:58 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/08/02 10:00:08 by rabustam          #+#    #+#             */
+/*   Updated: 2023/08/02 10:00:09 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,4 +22,4 @@
 # define MAGENTA      "\033[0;35m"
 # define CYAN         "\033[0;36m"
 
-#endif // COLORS_HPP
+#endif /* colors_hpp */

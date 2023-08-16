@@ -13,27 +13,48 @@
 #ifndef WEBSERVER_HPP
 # define WEBSERVER_HPP
 
-# include <colors.hpp>
-# include "ConfigFile.hpp"
+//C
+# include <dirent.h>
+# include <fstream>
+# include <poll.h>
+
+//C++98
 # include <iostream>
-# include <messages.hpp>
-# include <signal_handler.hpp>
-# include "Socket.hpp"
 # include <vector>
+
+//Classes
+# include "ConfigFile.hpp"
+# include "Request.hpp"
+# include "Socket.hpp"
+
+//my headers
+# include "colors.hpp"
+# include "messages.hpp"
+# include "signal_handler.hpp"
 
 namespace ft
 {
 	class WebServer
 	{
 		private:
-		ft::ConfigFile			_config_file;
-		std::vector<ft::Socket>	_connections;
+		ft::ConfigFile				_config_file;
+		std::vector<ft::Socket*>	_connections;
+		std::string					get_page();
 
 		public:
 		WebServer(const std::string& config_file);
 		~WebServer();
 		void	start_servers();
+
+		class	PollException : std::exception
+		{
+			public:
+			const char* what() const throw();
+		};
 	};
+
+	struct pollfd	*realloc_pollfds(struct pollfd	*old_pollfds, int& fd_count, int new_socket);
+	struct pollfd	*remove_pollfds(struct pollfd	*old_pollfds, int& fd_count, int fds_position);
 }
 
 # include "WebServer.ipp"

@@ -56,6 +56,9 @@ ft::ConfigFile::~ConfigFile()
 size_t	ft::ConfigFile::size(void) const
 { return ( _servers.size() ); }
 
+ft::t_server_config ft::ConfigFile::getServer(size_t server_id) const
+{ return ( this->_servers[server_id] ); }
+
 std::string	ft::ConfigFile::getHost(size_t server_id) const
 { return ( this->_servers[server_id].host ); }
 
