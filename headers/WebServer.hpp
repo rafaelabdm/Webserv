@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 12:32:11 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/15 10:30:42 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:22:03 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@
 #include <dirent.h>
 #include <fstream>
 #include <string>
-namespace WS
+namespace ft
 {
 	class WebServer
 	{
 		private:
-		std::vector<WS::Socket*>	connections; //lista de conexões
+		std::vector<ft::Socket*>	connections; //lista de conexões
 		std::string						get_page();
 
 		public:

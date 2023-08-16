@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/14 12:42:17 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/15 10:29:32 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:21:41 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@
 # include <vector>
 # include <iostream>
 
-namespace WS
+namespace ft
 {
 	class Request
 	{
 		private:
+		std::string	_endpoint;
 		std::string	_method;
-		std::string	_path;
 		//????		_body; POST/DELETE
 		
 		void	getRequestInfo(char *buffer);

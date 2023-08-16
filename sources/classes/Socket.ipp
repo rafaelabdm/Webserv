@@ -6,48 +6,36 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/10 11:18:38 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:26:07 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
 
-WS::Socket::Socket(const std::string s_name, const std::string s_port) : host(s_name.c_str()), port(s_port.c_str())
+ft::Socket::Socket(t_server_config& server) : _server(server)
 {
 	loadAddressInfo();
 	createSocket();
 }
 
-WS::Socket::Socket(const std::string s_port) : host(NULL), port(s_port.c_str())
-{
-	loadAddressInfo();
-	createSocket();
-}
-
-WS::Socket::Socket(void) : host(NULL), port("8080")
-{
-	loadAddressInfo();
-	createSocket();
-}
-
-WS::Socket::~Socket()
+ft::Socket::~Socket()
 {
 }
 
-void	WS::Socket::setAddrStruct(void)
+void	ft::Socket::setAddrStruct(void)
 {
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
-	hints.ai_socktype = SOCK_STREAM; //TCP or UDP
-	hints.ai_flags = AI_PASSIVE; // allows bind
+	memset(&_hints, 0, sizeof(_hints));
+	_hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
+	_hints.ai_socktype = SOCK_STREAM; //TCP or UDP
+	_hints.ai_flags = AI_PASSIVE; // allows bind
 }
 
-void	WS::Socket::loadAddressInfo()
+void	ft::Socket::loadAddressInfo()
 {
 	int	status;
 
 	setAddrStruct();
-	status = getaddrinfo(host, port, &hints, &servinfo);
+	status = getaddrinfo(_server.host.c_str(), _server.port.c_str(), &_hints, &_servinfo);
 	if(status)
 	{
 		std::cerr << RED << "getaddrinfo error: " << RESET_COLOR << gai_strerror(status) << std::endl;
@@ -56,53 +44,53 @@ void	WS::Socket::loadAddressInfo()
 	std::cout << GREEN << "Address loaded successfully!" << RESET_COLOR << std::endl;
 }
 
-void	WS::Socket::createSocket()
+void	ft::Socket::createSocket()
 {
-	sock = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-	if (sock < 0)
+	_sock = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
+	if (_sock < 0)
 	{
 		std::cerr << RED << "socket error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(servinfo);
+		freeaddrinfo(_servinfo);
 		throw SocketException();
 	}
 	std::cout << GREEN << "Socket created successfully!" << RESET_COLOR << std::endl;
 }
 
-int	WS::Socket::getSock()
+int	ft::Socket::getSock()
 {
-	return(sock);
+	return(_sock);
 }
 
-void	WS::Socket::bind()
+void	ft::Socket::bind()
 {
 	int status;
 	int	yes = 1;
 	
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
+	if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
 	{
 		std::cerr << RED << "setsockopt error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(servinfo);
+		freeaddrinfo(_servinfo);
 		throw SocketException();
 	}
 	std::cout << GREEN << "Setsockopt successfull!" << RESET_COLOR << std::endl;
 
-	status = ::bind(sock, servinfo->ai_addr, servinfo->ai_addrlen);
+	status = ::bind(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
 	if (status < 0)
 	{
 		std::cerr << RED << "bind error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(servinfo);
+		freeaddrinfo(_servinfo);
 		throw SocketException();
 	}
 	std::cout << GREEN << "Bind successfull!" << RESET_COLOR << std::endl;
 
-	freeaddrinfo(servinfo);
+	freeaddrinfo(_servinfo);
 }
 
-void	WS::Socket::listen()
+void	ft::Socket::listen()
 {
 	int status;
 
-	status = ::listen(sock, 10);
+	status = ::listen(_sock, 10);
 	if (status < 0)
 	{
 		std::cerr << RED << "listen error: " << RESET_COLOR << strerror(errno) << std::endl;
@@ -111,14 +99,14 @@ void	WS::Socket::listen()
 	std::cout << GREEN << "Listen successfull!" << RESET_COLOR << std::endl;
 }
 
-int	WS::Socket::accept()
+int	ft::Socket::accept()
 {
 	struct sockaddr_storage their_addr;
 	socklen_t addr_size;
 	int	new_socket;
 
 	addr_size = sizeof their_addr;
-	new_socket = ::accept(sock, (struct sockaddr *)&their_addr, &addr_size);
+	new_socket = ::accept(_sock, (struct sockaddr *)&their_addr, &addr_size);
 	if (new_socket < 0)
 	{
 		std::cerr << RED << "accept error: " << RESET_COLOR << strerror(errno) << std::endl;
@@ -128,21 +116,21 @@ int	WS::Socket::accept()
 	return (new_socket);
 }
 
-void	WS::Socket::connect()
+void	ft::Socket::connect()
 {
 	int status;
 
-	status = ::connect(sock, servinfo->ai_addr, servinfo->ai_addrlen);
+	status = ::connect(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
 	if (status < 0)
 	{
 		std::cerr << RED << "connect error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(servinfo);
+		freeaddrinfo(_servinfo);
 		throw SocketException();
 	}
 	std::cout << GREEN << "Connect successfull!" << RESET_COLOR << std::endl;
 }
 
-const char* WS::Socket::SocketException::what() const throw()
+const char* ft::Socket::SocketException::what() const throw()
 {
 	return ("erro :/");
 }

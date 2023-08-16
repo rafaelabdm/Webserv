@@ -6,13 +6,13 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 12:37:17 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/14 12:39:06 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:26:17 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServer.hpp"
 
-WS::WebServer::WebServer()
+ft::WebServer::WebServer()
 {
 	//ler arquivo de configuração...
 	//criar servidores de acordo com o arquivo
@@ -25,14 +25,14 @@ WS::WebServer::WebServer()
 	// get_page();
 }
 
-WS::WebServer::~WebServer()
+ft::WebServer::~WebServer()
 {
 	// pra cada coneção dar delete()
 }
 
-void	WS::WebServer::start_servers()
+void	ft::WebServer::start_servers()
 {
-	std::vector<WS::Socket*>::iterator it;
+	std::vector<ft::Socket*>::iterator it;
 
 	for (it = connections.begin(); it != connections.end(); it++)
 	{
@@ -73,7 +73,7 @@ struct pollfd	*realloc_pollfds(struct pollfd	*old_pollfds, int& fd_count, int ne
 	return (new_pollfds);
 }
 
-void	WS::WebServer::handle_connections()
+void	ft::WebServer::handle_connections()
 {
 
 	int				fd_count = 1; //1
@@ -143,7 +143,7 @@ void	WS::WebServer::handle_connections()
 }
 
 
-std::string	WS::WebServer::get_page()
+std::string	ft::WebServer::get_page()
 {
 	// std::string page;
 	DIR *dr;

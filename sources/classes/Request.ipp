@@ -6,24 +6,24 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/14 12:41:55 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/15 10:29:18 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:25:50 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-WS::Request::Request(char *client_buffer)
+ft::Request::Request(char *client_buffer)
 {
 	getRequestInfo(client_buffer);
 }
 
-WS::Request::~Request()
+ft::Request::~Request()
 {
 	std::cout << "Method: " << _method << std::endl;
-	std::cout << "Path: " << _path << std::endl;
+	std::cout << "Endpoint: " << _endpoint << std::endl;
 }
 
-void	WS::Request::setMethod(std::string m)
+void	ft::Request::setMethod(std::string m)
 {
 	if (m == "GET")
 		_method = "GET";
@@ -33,22 +33,22 @@ void	WS::Request::setMethod(std::string m)
 		_method = "DELETE";
 }
 
-void	WS::Request::setPath(std::string p)
+void	ft::Request::setPath(std::string p)
 {
-	_path = p;
+	_endpoint = p;
 }
 
-std::string			WS::Request::getMethod()
+std::string			ft::Request::getMethod()
 {
 	return (_method);
 }
 
-std::string	WS::Request::getPath()
+std::string	ft::Request::getPath()
 {
-	return (_path);
+	return (_endpoint);
 }
 
-void	WS::Request::getRequestInfo(char *buffer)
+void	ft::Request::getRequestInfo(char *buffer)
 {
 	std::vector<std::string>	req;
 	std::string					temp;
