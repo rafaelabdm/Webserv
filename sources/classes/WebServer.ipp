@@ -132,16 +132,25 @@ std::string	ft::WebServer::get_page()
 	// std::string page;
 	DIR *dr;
 	struct dirent *en;
-	std::string path = "./pages/";
+	std::string path = "./examples/";
 	
-	dr = opendir("./examples");
-	en = readdir(dr);
-   	std::cout << "[" << en->d_name << "]\n";
+	dr = opendir("./examples/");
+	// en = readdir(dr);
+	if( dr != NULL ) {
+			for(int i = 0;ft::keep() && i < 3; i++) {
+				en = readdir( dr );
+				if( en == NULL ) break;
+
+				std::cout << "[" << en->d_name << "]\n";
+				// printf( "%s\n", direntp->d_name );
+			}
+	}
 	std::ifstream file(path.append(en->d_name).c_str());
 	closedir(dr);
 
 // HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!
-   std::string page = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+//    std::string page = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+   std::string page = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 12\n\n";
    std::string line;
    while(std::getline(file, line))
    {
