@@ -78,22 +78,35 @@ void	ft::Request::setPath(std::string path)
 	_endpoint = path;
 }
 
-void	ft::Request::setBody(char* body)
+void	ft::Request::setBody(std::string request)
 {
-	std::string req = body;
-	int i = req.find("\n\n", 0) + 2;
-	req = req.substr(i, req.length() - i);
-	_body = req;
+	size_t	start;
+
+	start = request.find("\n\n", 0) + 2;
+	_body = request.substr(start, request.length() - start);
 }
 
-void	ft::Request::setHost(std::string host)
+void	ft::Request::setHost(std::string request)
 {
-	_host = host;
+	size_t	start;
+	size_t	end;
+
+	start = request.find("Host: ", 0) + 6;
+	end = request.find("\n", start);
+	_host = request.substr(start, end - start);
 }
 
-void	ft::Request::setContentType(std::string content)
+void	ft::Request::setContentType(std::string request)
 {
-	_content_type = content;
+	size_t						start;
+	size_t						end;
+
+	start = request.find("Content-Type: ", 0);
+	if (start == std::string::npos)
+		return ;
+	start += 14;
+	end = request.find("\n", start);
+	_content_type = request.substr(start, end - start);
 }
 
 void	ft::Request::setProtocol(std::string protocol)
@@ -101,23 +114,22 @@ void	ft::Request::setProtocol(std::string protocol)
 	_protocol = protocol;
 }
 
-void	ft::Request::getFirstLineInfo(char *buffer, std::vector<std::string>& req)
+void	ft::Request::getFirstLineInfo(std::string request)
 {
-	std::string					temp;
+	std::vector<std::string>	req;
 	bool						stop;
-	int							start;
-	int							end;
+	size_t						start;
+	size_t						end;
 
-	temp = buffer;
 	stop = false;
 	start = 0;
 	for (end = 0; !stop; end++)
 	{
-		if (buffer[end] == ' ' || buffer[end] == '\n')
+		if (request[end] == ' ' || request[end] == '\n')
 		{
-			if (buffer[end] == '\n')
+			if (request[end] == '\n')
 				stop = true;
-			req.push_back(temp.substr(start, end - start));
+			req.push_back(request.substr(start, end - start));
 			start = end + 1;
 		}
 	}
@@ -128,24 +140,12 @@ void	ft::Request::getFirstLineInfo(char *buffer, std::vector<std::string>& req)
 
 void	ft::Request::getRequestInfo(char *buffer)
 {
-	std::vector<std::string>	req;
-	std::string					temp;
-	int							start;
-	int							end;
+	std::string					request;
 	
-	getFirstLineInfo(buffer, req);
-	temp = buffer;
-
-	start = temp.find("Host: ", 0) + 6;
-	end = temp.find("\n", start);
-	req.push_back(temp.substr(start, end - start));
-
-	start = temp.find("Content-Type: ", 0) + 14;
-	end = temp.find("\n", start);
-	req.push_back(temp.substr(start, end - start));
-
-	setHost(req[3]);
-	setContentType(req[4]);
+	request = buffer;
+	getFirstLineInfo(request);
+	setHost(request);
+	setContentType(request);
 	if (_method == "POST")
 		setBody(buffer);
 }

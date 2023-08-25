@@ -32,12 +32,12 @@ namespace ft
 		std::string	_body;
 
 		void	getRequestInfo(char *buffer);
-		void	getFirstLineInfo(char *buffer, std::vector<std::string>& req);
+		void	getFirstLineInfo(std::string request);
 		
-		void	setHost(std::string host);
+		void	setHost(std::string request);
 		void	setMethod(std::string method);
 		void	setPath(std::string path);
-		void	setBody(char* body);
+		void	setBody(std::string request);
 		void	setContentType(std::string content);
 		void	setProtocol(std::string protocol);
 
