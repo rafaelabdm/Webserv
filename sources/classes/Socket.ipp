@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.ipp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/16 18:01:04 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/08/25 09:00:30 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,18 @@ void	ft::Socket::createSocket()
 		if (_sock < 0)
 			throw SocketException();
 		std::cout << FT_OK << "Socket created successfully!" << std::endl;
+		
+		int	yes = 1;
+
+		if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
+			throw SetSockOptException();
+		std::cout << FT_OK << "Setsockopt successfull!" << std::endl;
+
+		int status = fcntl(_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC); //non_blocking
+		if (status < 0)
+			throw SetSockOptException();
+		std::cout << FT_OK << "fcntl successfull!" << std::endl;
+
 	}
 	catch (SocketException& e)
 	{
@@ -81,12 +93,6 @@ void	ft::Socket::bind()
 
 	try
 	{
-		int	yes = 1;
-
-		if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
-			throw SetSockOptException();
-		std::cout << FT_OK << "Setsockopt successfull!" << std::endl;
-
 		int status;
 
 		status = ::bind(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
@@ -160,6 +166,21 @@ void	ft::Socket::connect()
 		std::cerr << e.what() << strerror(errno) << std::endl;
 		freeaddrinfo(_servinfo);
 	}
+}
+
+std::string	ft::Socket::getPort()
+{
+	return (_server.port);
+}
+
+std::string ft::Socket::getHost()
+{
+	std::string host = "";
+	
+	host.append(_server.host);
+	host.append(":");
+	host.append(_server.port);
+	return (host);
 }
 
 const char* ft::Socket::GetAddrInfoException::what() const throw()

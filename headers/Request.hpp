@@ -16,6 +16,8 @@
 # include <string>
 # include <vector>
 # include <iostream>
+# include <algorithm>
+# include "colors.hpp"
 
 namespace ft
 {
@@ -24,17 +26,31 @@ namespace ft
 		private:
 		std::string	_endpoint;
 		std::string	_method;
-		//????		_body; POST/DELETE
+		std::string	_protocol;
+		std::string	_host;
+		std::string _content_type;
+		std::string	_body;
 
 		void	getRequestInfo(char *buffer);
-		void	setMethod(std::string m);
-		void	setPath(std::string p);
+		void	getFirstLineInfo(char *buffer, std::vector<std::string>& req);
+		
+		void	setHost(std::string host);
+		void	setMethod(std::string method);
+		void	setPath(std::string path);
+		void	setBody(char* body);
+		void	setContentType(std::string content);
+		void	setProtocol(std::string protocol);
 
 		public:
 		Request(char *client_buffer);
 		~Request();
 		std::string	getMethod();
 		std::string	getPath();
+		std::string	getProtocol();
+		std::string	getHost();
+		std::string	getEndpoint();
+		std::string	getContentType();
+		std::string	getBody();
 	};
 }
 

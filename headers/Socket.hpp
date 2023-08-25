@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/16 18:00:53 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/08/25 08:58:11 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <sys/types.h> // socket()
 # include <stdlib.h> // close()
 # include <unistd.h> // close()
+#include <fcntl.h> // fcntl()
 
 # include <cstring> //std::memset
 # include <iostream> //std::cout
@@ -39,18 +40,20 @@ namespace ft
 		int					_sock;
 		ft::t_server_config	_server;
 
-		void setAddrStruct(void);
+		void setAddrStruct();
 		void loadAddressInfo();
 		void createSocket();
 
 		public:
 		Socket(const ft::t_server_config& server);
 		~Socket();
-		void	bind();
-		void	listen();
-		int		accept();
-		void	connect();
-		int		getSock();
+		void		bind();
+		void		listen();
+		int			accept();
+		void		connect();
+		int			getSock();
+		std::string	getPort();
+		std::string getHost();
 
 		class	GetAddrInfoException : std::exception
 		{

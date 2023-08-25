@@ -55,6 +55,7 @@ void	ft::WebServer::start_servers()
 	int				new_socket = -1;
 	char			client_buf[256];
 
+	// memset(pfds, 0 , sizeof(pfds));
 	pfds[0].fd = _connections[0]->getSock();
 	pfds[0].events = POLLIN; // Tell me when ready to read
 
@@ -64,7 +65,7 @@ void	ft::WebServer::start_servers()
 
 		try
 		{
-			num_events = poll(pfds, fd_count, 10000);
+			num_events = poll(pfds, fd_count, (3 * 60 * 1000));
 			if (num_events == -1)
 				throw PollException();
 			std::cout << FT_OK << "Loop 1 is fine." << std::endl;
@@ -77,6 +78,14 @@ void	ft::WebServer::start_servers()
 					if (pfds[i].fd == _connections[0]->getSock())
 					{
 						new_socket = _connections[0]->accept();
+						if (new_socket < 0)
+						{
+							if (errno != EWOULDBLOCK)
+							{
+								perror("  accept() failed");
+							}
+							break;
+						}
 						pfds = realloc_pollfds(pfds, fd_count, new_socket);
 					}
 					else
@@ -102,7 +111,8 @@ void	ft::WebServer::start_servers()
 								if (dest_fd != _connections[0]->getSock())
 								{
 									std::cout << "SEND" << std::endl;
-									std::string msg = get_page();
+									// std::string msg = get_page();
+									std::string msg = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 									if(send(dest_fd, msg.data(), msg.length(), 0) == -1)
 									{
 										std::cout << "error: " << strerror(errno) << std::endl;
