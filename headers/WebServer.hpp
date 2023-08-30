@@ -15,7 +15,8 @@
 
 //C
 # include <dirent.h>
-# include <poll.h>
+// # include <poll.h>
+# include <sys/epoll.h>
 
 //C++98
 # include <fstream>
@@ -39,22 +40,43 @@ namespace ft
 		private:
 		ft::ConfigFile				_config_file;
 		std::vector<ft::Socket*>	_connections;
-		std::string					get_page();
+		int							_epoll;
+
+
+		void	epoll();
+		void	epollAddServers();
+		int		epoll_wait(struct epoll_event* events);
+
+		int		isServerSideEvent(int epoll_fd);
+		void	recv(int client_fd, struct epoll_event& events_setup);
+		void	send(int client_fd, struct epoll_event& events_setup);
+
+
+		std::string		get_page();
 
 		public:
 		WebServer(const std::string& config_file);
 		~WebServer();
 		void	start_servers();
 
-		class	PollException : std::exception
+		class	EpollException : std::exception
+		{
+			public:
+			const char* what() const throw();
+		};
+
+		class	EpollCtlException : std::exception
+		{
+			public:
+			const char* what() const throw();
+		};
+
+		class	EpollWaitException : std::exception
 		{
 			public:
 			const char* what() const throw();
 		};
 	};
-
-	struct pollfd	*realloc_pollfds(struct pollfd	*old_pollfds, int& fd_count, int new_socket);
-	struct pollfd	*remove_pollfds(struct pollfd	*old_pollfds, int& fd_count, int fds_position);
 }
 
 # include "WebServer.ipp"

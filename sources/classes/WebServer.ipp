@@ -42,100 +42,178 @@ ft::WebServer::~WebServer()
 	for (it = _connections.begin(); it != _connections.end(); it++)
 		delete *it;
 
+	close(_epoll);
 	std::cout << FT_OK << "Web server closed." << std::endl;
+}
+
+
+
+
+
+
+
+
+void	ft::WebServer::epoll()
+{
+	try
+	{
+		_epoll = epoll_create(1);
+		if (_epoll < 0)
+			throw EpollException();
+	}
+	catch (EpollException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+	}
+}
+
+void	ft::WebServer::epollAddServers()
+{
+	struct epoll_event					events_setup;
+	std::vector<ft::Socket*>::iterator	it;
+
+	events_setup.events = EPOLLIN | EPOLLOUT;
+	try
+	{
+		for (it = _connections.begin(); it != _connections.end(); it++)
+		{
+			events_setup.data.fd = (*it)->getSock();
+			if (epoll_ctl(_epoll, EPOLL_CTL_ADD, (*it)->getSock(), &events_setup) < 0) 
+				throw EpollCtlException();
+		}
+	}
+	catch (EpollCtlException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+	}
+}
+
+int	ft::WebServer::epoll_wait(struct epoll_event* events)
+{
+	int nfds;
+	
+	try
+	{
+		nfds = ::epoll_wait(_epoll, events, 10, -1); //10 = numero maximo de eventos, mudar depois
+		if (nfds == -1)
+			throw EpollWaitException();
+		return (nfds);
+	}
+	catch (EpollWaitException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+		return (-1);
+	}
+}
+
+int	ft::WebServer::isServerSideEvent(int epoll_fd)
+{
+	std::vector<ft::Socket*>::iterator it;
+
+	for (it = _connections.begin(); it != _connections.end(); it++)
+	{
+		if (epoll_fd == (*it)->getSock())
+			return ((*it)->accept());
+	}
+	return (0);
+}
+
+void	ft::WebServer::recv(int client_fd, struct epoll_event& events_setup)
+{
+	std::cout << YELLOW << "hello from read" << RESET_COLOR << std::endl;
+	char	client_buffer[300];
+	int		bytes;
+
+	memset(client_buffer, 0, 300); //300 tamanho do client_buffer, mudar depois
+	events_setup.data.fd = client_fd;
+	bytes = ::recv(client_fd, client_buffer, sizeof(client_buffer), 0);
+	if (bytes < 0)
+	{
+		if (bytes == 0)
+			std::cout << "Client [" << client_fd << "] hang up." << std::endl;
+		else
+			std::cout << "recv error" << std::endl;
+		epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
+		close(client_fd);
+		return ;
+	}
+	std::cout << client_buffer << std::endl;
+	events_setup.events = EPOLLOUT;
+	epoll_ctl(_epoll, EPOLL_CTL_MOD, client_fd, &events_setup);
+}
+
+void	ft::WebServer::send(int client_fd, struct epoll_event& events_setup)
+{
+	std::cout << YELLOW << "hello from write" << RESET_COLOR << std::endl;
+
+	std::string msg = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+
+	::send(client_fd, msg.data(), msg.length(), 0);
+
+	events_setup.data.fd = client_fd;
+	epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
+	close(client_fd);
 }
 
 void	ft::WebServer::start_servers()
 {
 	std::cout << FT_SETUP << "Starting up Web server" << std::endl;
+	std::cout << FT_WARNING << "Press Ctrl + C to stop the Web server." << std::endl;
 
-	int				fd_count = 1; //1
-	struct pollfd	*pfds = new struct pollfd[fd_count];
-	int				num_events;
-	int				new_socket = -1;
-	char			client_buf[256];
+	int	number_of_events;
+	int new_conn;
+	struct epoll_event events[10]; //10 = numero maximo de eventos, mudar depois
+	struct epoll_event events_setup;
 
-	// memset(pfds, 0 , sizeof(pfds));
-	pfds[0].fd = _connections[0]->getSock();
-	pfds[0].events = POLLIN; // Tell me when ready to read
-
-	while(ft::keep())
+	epoll();
+	epollAddServers();
+	
+	while (ft::keep())
 	{
-		std::cout << "LOOP 1" << std::endl;
-
-		try
+		number_of_events = epoll_wait(events);
+		for (int n = 0; n < number_of_events; n++)
 		{
-			num_events = poll(pfds, fd_count, (3 * 60 * 1000));
-			if (num_events == -1)
-				throw PollException();
-			std::cout << FT_OK << "Loop 1 is fine." << std::endl;
-			for (int i = 0; ft::keep() && i < fd_count; i++)
+			std::cout << "socket [" << events[n].data.fd << "] event happened" << std::endl;
+			if ((new_conn = isServerSideEvent(events[n].data.fd)) != 0)
 			{
-				std::cout << "LOOP 2 ==> fd[" << pfds[i].fd << "]" << std::endl;
-
-				if (pfds[i].revents & POLLIN)
-				{
-					if (pfds[i].fd == _connections[0]->getSock())
-					{
-						new_socket = _connections[0]->accept();
-						if (new_socket < 0)
-						{
-							if (errno != EWOULDBLOCK)
-							{
-								perror("  accept() failed");
-							}
-							break;
-						}
-						pfds = realloc_pollfds(pfds, fd_count, new_socket);
-					}
-					else
-					{
-						std::cout << "RECV CONNECTION" <<std::endl;
-						int nbytes = recv(pfds[i].fd, client_buf, sizeof(client_buf), 0);
-						std::cout << client_buf << std::endl;
-						int sender_fd = pfds[i].fd;
-						if (nbytes <= 0)
-						{
-							if (nbytes == 0)
-								std::cout << "pollserver: socket[" << sender_fd << "] hung up\n" << std::endl;
-							else
-								std::cout << "recv error: " << strerror(errno) << std::endl;
-							close(pfds[i].fd);
-							pfds = remove_pollfds(pfds, fd_count, i);
-						}
-						else
-						{
-							for(int j = 0; ft::keep() && j < fd_count; j++)
-							{
-								int dest_fd = pfds[j].fd;
-								if (dest_fd != _connections[0]->getSock())
-								{
-									std::cout << "SEND" << std::endl;
-									// std::string msg = get_page();
-									std::string msg = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-									if(send(dest_fd, msg.data(), msg.length(), 0) == -1)
-									{
-										std::cout << "error: " << strerror(errno) << std::endl;
-									}
-								}
-							}
-						}
-					}
-				}
+                events_setup.data.fd = new_conn;
+                events_setup.events = EPOLLIN;
+				if (epoll_ctl(_epoll, EPOLL_CTL_ADD, new_conn, &events_setup) == -1)
+					throw EpollCtlException();
 			}
-		}
-		catch (PollException& e)
-		{
-			std::cerr << e.what() << std::endl;
-			break;
+			else if (events[n].events & EPOLLIN)
+				recv(events[n].data.fd, events_setup);
+			else if (events[n].events & EPOLLOUT)
+				send(events[n].data.fd, events_setup);
 		}
 	}
-
-	std::cout << FT_OK << "Web server ready to rock!" << std::endl;
-
-	std::cout
-		<< FT_WARNING << "Press Ctrl + C to stop the Web server." << std::endl;
 }
+
+const char* ft::WebServer::EpollException::what() const throw()
+{
+	return (FT_FAIL "epoll error: ");
+}
+
+const char* ft::WebServer::EpollCtlException::what() const throw()
+{
+	return (FT_FAIL "epoll_ctl error: ");
+}
+
+const char* ft::WebServer::EpollWaitException::what() const throw()
+{
+	return (FT_FAIL "epoll_wait error: ");
+}
+
+
+
+
+
+
+
+
+
+
+
 
 std::string	ft::WebServer::get_page()
 {
@@ -168,41 +246,4 @@ std::string	ft::WebServer::get_page()
 		page.append("\n");
    }
    return page;
-}
-
-struct pollfd	*ft::realloc_pollfds(struct pollfd	*old_pollfds, int& fd_count, int new_socket)
-{
-	struct pollfd	*new_pollfds;
-	
-	std::cout << "Realocando..." << std::endl;
-	new_pollfds = new struct pollfd[fd_count + 1];
-	for (int i = 0; i < fd_count; i++)
-	{
-		new_pollfds[i] = old_pollfds[i];
-	}
-	new_pollfds[fd_count].fd = new_socket;
-	new_pollfds[fd_count].revents = POLLIN;
-	(fd_count)++;
-	delete[] old_pollfds;
-	return (new_pollfds);
-}
-
-struct pollfd	*ft::remove_pollfds(struct pollfd	*old_pollfds, int& fd_count, int fds_position)
-{
-	struct pollfd	*new_pollfds;
-	
-	fd_count--;
-	new_pollfds = new struct pollfd[fd_count];
-	for (int i = 0; i < fd_count; i++)
-	{
-		if (i != fds_position)
-			new_pollfds[i] = old_pollfds[i];
-	}
-	delete[] old_pollfds;
-	return (new_pollfds);
-}
-
-const char* ft::WebServer::PollException::what() const throw()
-{
-	return (FT_FAIL "LOOP 1 error");
 }
