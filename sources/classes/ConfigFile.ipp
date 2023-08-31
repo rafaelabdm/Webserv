@@ -1,274 +1,646 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ConfigFile.ipp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/05 08:12:59 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/05 08:12:59 by rapdos-s         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <ConfigFile.hpp>
 
-static void debugMessage(const std::string& action, const std::string& message, const std::string& color)
+ft::ConfigFile::ConfigFile(const std::string& config_file)
 {
-  if(DEBUG)
-    std::cout << "[ " << color << action <<  RESET_COLOR " ] " << message << std::endl;
+	std::string					fileContent = ft::readFileContents(config_file);
+	std::vector<std::string>	tokens = ft::tokenizer(fileContent);
 
-  return;
+	std::cout
+		<< FT_SETUP
+		<< "Parsing "
+		<< GREEN << config_file << RESET_COLOR
+		<< " configuration file."
+		<< std::endl;
+
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		if (tokens[i] == "server")
+		{
+			i++;
+			while (tokens[i] == "#")
+				i++;
+			if (tokens[i] != "{")
+				throw ft::ConfigFile::BadTokenException();
+			i++;
+			this->_servers.push_back(parseServer(tokens, i));
+		}
+	}
+
+	return;
 }
 
-static std::string trim_spaces(const std::string& str)
+ft::ConfigFile::~ConfigFile()
 {
-  std::string trimmedStr = str;
+	std::cout << FT_CLOSE << "Closing configuration file." << std::endl;
 
-  size_t start = 0;
-  while (start < trimmedStr.length() && std::isspace(trimmedStr[start]))
-    ++start;
-  trimmedStr.erase(0, start);
-
-  size_t end = trimmedStr.length();
-  while (end > 0 && std::isspace(trimmedStr[end - 1]))
-    --end;
-  trimmedStr.erase(end);
-
-  return (trimmedStr);
+	return;
 }
 
-static std::string readFileContents(const std::string& filename)
+size_t	ft::ConfigFile::size(void) const
 {
-  std::string content = "";
-
-  try
-  {
-    std::ifstream file(filename.c_str());
-
-    if (!file)
-      throw ConfigFile::CouldOpenConfigFileException ();
-
-    std::string line = "";
-    while (std::getline(file, line))
-    {
-
-      size_t pos = line.find('\r');
-      while (pos != std::string::npos)
-      {
-        line.erase(pos, 1);
-        pos = line.find('\r', pos);
-      }
-
-      size_t commentPos = line.find('#');
-      if (commentPos != std::string::npos)
-        line.erase(commentPos);
-
-      bool isWhitespaceLine = true;
-      for (size_t i = 0; i < line.length(); ++i)
-      {
-        if (!std::isspace(line[i]))
-        {
-          isWhitespaceLine = false;
-          break;
-        }
-      }
-      if (!isWhitespaceLine)
-        content += trim_spaces(line) + ' ';
-    }
-  }
-  catch ( ConfigFile::CouldOpenConfigFileException& e )
-  { std::cout << e.what (); }
-
-  return (content);
+	return (_servers.size());
 }
 
-static std::vector<std::string> tokenizer(const std::string& fileContent)
+std::vector<ft::t_server_config> ft::ConfigFile::getServers(void) const
 {
-  std::vector<std::string> tokens;
-  std::istringstream iss;
-  std::string token;
-
-  iss.str(fileContent);
-  while (iss >> token)
-    tokens.push_back(token);
-
-  return (tokens);
+	return (this->_servers);
 }
 
-static t_location_config parseLocation(const std::vector<std::string>& tokens, size_t* i)
+ft::t_server_config ft::ConfigFile::getServer(size_t server_id) const
 {
-  t_location_config location;
-
-  if (tokens[*i] == "location")
-  {
-    location.dir = tokens[*i + 1];
-    (*i)++;
-  }
-
-  while (*i < tokens.size() && tokens[*i] != "}")
-  {
-    if (tokens[*i] == "root")
-      location.root = tokens[*i + 1];
-    else if (tokens[*i] == "index")
-      location.index = tokens[*i + 1];
-    else if (tokens[*i] == "redirect")
-      location.redirect = tokens[*i + 1];
-    else if (tokens[*i] == "upload_enabled")
-      location.upload_enabled = tokens[*i + 1];
-    else if (tokens[*i] == "upload_dir")
-      location.upload_dir = tokens[*i + 1];
-    else if (tokens[*i] == "cgi_enabled")
-      location.cgi_enabled = tokens[*i + 1];
-    else if (tokens[*i] == "cgi_path")
-      location.cgi_path = tokens[*i + 1];
-
-    (*i)++;
-  }
-
-  return (location);
+	return (this->_servers[server_id]);
 }
 
-static t_server_config parseServer(const std::vector<std::string>& tokens, size_t* i)
+std::string	ft::ConfigFile::getPort(size_t server_id) const
 {
-  t_server_config server;
-
-  while (*i < tokens.size() && tokens[*i] != "}")
-  {
-    if (tokens[*i] == "location")
-      server.locations.push_back(parseLocation(tokens, i));
-    else
-    {
-      if (tokens[*i] == "host")
-        server.host = tokens[*i + 1];
-      else if (tokens[*i] == "port")
-        server.port = tokens[*i + 1];
-      else if (tokens[*i] == "server_name")
-        server.server_name = tokens[*i + 1];
-      else if (tokens[*i] == "error_page")
-      {
-        server.error_page[tokens[*i + 1]] = tokens[*i + 2];
-        (*i)++;
-      }
-    }
-    (*i)++;
-  }
-
-  return (server);
+	return (this->_servers[server_id].port);
 }
 
-ConfigFile::ConfigFile(const std::string& filename) : size(0)
+std::vector<std::string>	ft::ConfigFile::getServerNames(size_t server_id) const
 {
-  debugMessage(CONFIG_FILE_MSG, "ConfigFile's constructor called", BLUE);
-
-  std::string                   fileContent = readFileContents(filename);
-  std::vector<std::string>      tokens = tokenizer(fileContent);
-
-  for (size_t i = 0; i < tokens.size(); i++)
-  {
-    if (tokens[i] == "server")
-      this->_servers.push_back(parseServer(tokens, &i));
-  }
-
-  const_cast<size_t&>(this->size) = _servers.size();
-
-  return;
+	return (this->_servers[server_id].server_names);
 }
 
-ConfigFile::~ConfigFile(void)
+std::string	ft::ConfigFile::getServerName(size_t server_id, size_t server_name_id) const
 {
-  debugMessage(CONFIG_FILE_MSG, "ConfigFile's destructor called", BLUE);
-
-  return;
+	return (this->_servers[server_id].server_names[server_name_id]);
 }
 
-std::vector<t_server_config> ConfigFile::getServers(void) const
-{ return ( this->_servers ); }
-
-std::vector<t_location_config> ConfigFile::getLocations(size_t server_id) const
-{ return ( this->_servers[server_id].locations ); }
-
-t_server_config ConfigFile::getServer(size_t server_id) const
-{ return ( this->_servers[server_id] ); }
-
-t_location_config ConfigFile::getLocation(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id] ); }
-
-std::string ConfigFile::getHost(size_t server_id) const
-{ return ( this->_servers[server_id].host ); }
-
-std::string ConfigFile::getPort(size_t server_id) const
-{ return ( this->_servers[server_id].port ); }
-
-std::string ConfigFile::getServerName(size_t server_id) const
-{ return ( this->_servers[server_id].server_name ); }
-
-std::string ConfigFile::getLocationDir(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].dir ); }
-
-std::string ConfigFile::getLocationRoot(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].root ); }
-
-std::string ConfigFile::getLocationIndex(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].index ); }
-
-std::string ConfigFile::getLocationRedirect(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].redirect ); }
-
-std::string ConfigFile::getLocationUploadEnabled(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].upload_enabled ); }
-
-std::string ConfigFile::getLocationUploadDir(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].upload_dir ); }
-
-std::string ConfigFile::getLocationCgiEnabled(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].cgi_enabled ); }
-
-std::string ConfigFile::getLocationCgiPath(size_t server_id, size_t location_id) const
-{ return ( this->_servers[server_id].locations[location_id].cgi_path ); }
-
-std::ostream& operator<<(std::ostream& out, const ConfigFile& config_file)
+std::map<std::string, std::string>	ft::ConfigFile::getErrorPages(size_t server_id) const
 {
-  out << config_file.getServers();
-
-  return ( out );
+	return(this->_servers[server_id].error_pages);
 }
 
-std::ostream& operator<<(std::ostream& out, const std::vector<t_server_config>& servers)
+std::string	ft::ConfigFile::getErrorPage(size_t server_id, std::string page) const
 {
-  out << YELLOW << "server counter: " << RESET_COLOR << servers.size() << std::endl;
+	std::map<std::string, std::string>::const_iterator	it = this->_servers[server_id].error_pages.find(page);
 
-  for (size_t i = 0; i < servers.size(); i++)
-  {
-    out << GREEN << "id " << RESET_COLOR << i << '\n';
-    out << servers[i];
-  }
-  out << std::endl;
+	if (it != this->_servers[server_id].error_pages.end())
+		return (it->second);
 
-  return ( out );
+	return ("");
 }
 
-std::ostream& operator<<(std::ostream& out, const t_server_config& server)
+std::vector<ft::t_location_config>	ft::ConfigFile::getLocations(size_t server_id) const
 {
-  out << GREEN << "server " << RESET_COLOR << "{\n";
-  out << "  " << GREEN << "host " << RESET_COLOR << server.host << '\n';
-  out << "  " << GREEN << "port " << RESET_COLOR << server.port << '\n';
-  out << "  " << GREEN << "server_name " << RESET_COLOR << server.server_name << '\n';
-  for
-  (
-    std::map<std::string, std::string>::const_iterator it = server.error_page.begin();
-    it != server.error_page.end();
-    it++
-  )
-    out << "  " << GREEN << "error_page " << it->first << RESET_COLOR << ' ' << it->second << '\n';
-  for (size_t i = 0; i < server.locations.size(); i++)
-    out << MAGENTA << "  id " << RESET_COLOR << i << '\n' << server.locations[i];
-  out << "}" << std::endl;
-
-  return ( out );
+	return (this->_servers[server_id].locations);
 }
 
-std::ostream& operator<<(std::ostream& out, const t_location_config& location)
+ft::t_location_config	ft::ConfigFile::getLocation(size_t server_id, size_t location_id) const
 {
-  out << "  " << MAGENTA << "location " << RESET_COLOR << location.dir << " {\n";
-  out << "    " << MAGENTA << "root " << RESET_COLOR << location.root << '\n';
-  out << "    " << MAGENTA << "index " << RESET_COLOR << location.index << '\n';
-  out << "    " << MAGENTA << "redirect " << RESET_COLOR << location.redirect << '\n';
-  out << "    " << MAGENTA << "upload_enabled " << RESET_COLOR << location.upload_enabled << '\n';
-  out << "    " << MAGENTA << "upload_dir " << RESET_COLOR << location.upload_dir << '\n';
-  out << "    " << MAGENTA << "cgi_enabled " << RESET_COLOR << location.cgi_enabled << '\n';
-  out << "    " << MAGENTA << "cgi_path " << RESET_COLOR << location.cgi_path << '\n';
-  out << "  }" << std::endl;
-
-  return ( out );
+	return (this->_servers[server_id].locations[location_id]);
 }
 
-const char* ConfigFile::CouldOpenConfigFileException::what () const throw ()
-{ return ( "Error: Can't open config file." ); }
+std::string	ft::ConfigFile::getLocationEndpoint(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].endpoint);
+}
+
+std::string	ft::ConfigFile::getLocationRoot(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].root);
+}
+
+std::string	ft::ConfigFile::getLocationRedirect(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].redirect);
+}
+
+std::vector<std::string>	ft::ConfigFile::getLocationIndexes(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].indexes);
+}
+
+std::string	ft::ConfigFile::getLocationIndex(size_t server_id, size_t location_id, size_t index_id) const
+{
+	return (this->_servers[server_id].locations[location_id].indexes[index_id]);
+}
+
+bool	ft::ConfigFile::getLocationUploadEnabled(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].upload_enabled);
+}
+
+std::string	ft::ConfigFile::getLocationUploadDir(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].upload_dir);
+}
+
+bool	ft::ConfigFile::getLocationCgiEnabled(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].cgi_enabled);
+}
+
+std::string	ft::ConfigFile::getLocationCgiDir(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].cgi_dir);
+}
+
+const char*	ft::ConfigFile::CouldNotOpenConfigFileException::what () const throw ()
+{
+	return (FT_FAIL "Error: Can't open config file.");
+}
+
+const char*	ft::ConfigFile::BadTokenException::what () const throw ()
+{
+	return (FT_FAIL "Error: Can't parse configuration file.");
+}
+
+static std::string	ft::readFileContents(const std::string& filename)
+{
+	std::cout << FT_SETUP << "Reading configuration file." << std::endl;
+
+	std::string	content = "";
+
+	try
+	{
+		std::ifstream	file(filename.c_str());
+
+		if (!file)
+			throw ft::ConfigFile::CouldNotOpenConfigFileException();
+
+		std::string	line = "";
+
+		while (std::getline(file, line))
+		{
+			size_t	carriage_return_pos = line.find('\r');
+
+			while (carriage_return_pos != std::string::npos)
+			{
+				line.erase(carriage_return_pos, 1);
+				carriage_return_pos = line.find('\r', carriage_return_pos);
+			}
+
+			size_t	tab_pos = line.find('\t');
+
+			while (tab_pos != std::string::npos)
+			{
+				line.replace(tab_pos, 1, " ");
+				tab_pos = line.find('\t', tab_pos);
+			}
+
+			size_t	commentPos = line.find('#');
+
+			if (commentPos != std::string::npos)
+				line.erase(commentPos);
+
+			bool	isWhitespaceLine = true;
+
+			for (size_t i = 0; i < line.length(); ++i)
+			{
+				if (!std::isspace(line[i]))
+				{
+					isWhitespaceLine = false;
+
+					break;
+				}
+			}
+			if (!isWhitespaceLine)
+				content += ft::trim_spaces(line) + " # ";
+		}
+		std::cout << FT_OK << "Configuration file is fine." << std::endl;
+	}
+	catch (ConfigFile::CouldNotOpenConfigFileException& e)
+	{ std::cout << e.what() << std::endl; }
+
+
+	return (content);
+}
+
+static std::vector<std::string>	ft::tokenizer(const std::string& fileContent)
+{
+	std::cout << FT_SETUP << "Creating tokens." << std::endl;
+
+	std::vector<std::string>	tokens;
+	std::istringstream			iss;
+	std::string					token;
+
+	iss.str(fileContent);
+	while (iss >> token)
+		tokens.push_back(token);
+
+	std::cout << FT_OK << "Tokens are fine too." << std::endl;
+
+	return (tokens);
+}
+
+static std::string	ft::trim_spaces(const std::string& str)
+{
+	std::string	trimmedStr = str;
+	size_t		start = 0;
+
+	while (start < trimmedStr.length() && std::isspace(trimmedStr[start]))
+		++start;
+	trimmedStr.erase(0, start);
+
+	size_t	end = trimmedStr.length();
+	while (end > 0 && std::isspace(trimmedStr[end - 1]))
+		--end;
+	trimmedStr.erase(end);
+
+	return (trimmedStr);
+}
+
+static ft::t_server_config	ft::parseServer(const std::vector<std::string>& tokens, size_t& i)
+{
+	ft::t_server_config	server;
+
+	while (tokens[i] == "#")
+		i++;
+	try
+	{
+		while (i < tokens.size() && tokens[i] != "}")
+		{
+			if (tokens[i] == "port")
+				parsePort(server.port, tokens, i);
+			else if (tokens[i] == "server_names")
+				parseServerNames(server.server_names, tokens, i);
+			else if (tokens[i] == "error_page")
+				parseErrorPages(server.error_pages, tokens, i);
+			else if (tokens[i] == "location")
+				server.locations.push_back(parseLocations(tokens, i));
+			// else
+			// 	throw ft::ConfigFile::BadTokenException();
+			i++;
+		}
+		if (tokens[i] != "}")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+
+	return (server);
+}
+
+static void	ft::parsePort(std::string& port, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (port != "")
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		port = tokens[i];
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseServerNames(std::vector<std::string>& server_names, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (!server_names.empty())
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		while (i < tokens.size() && tokens[i] != "#")
+		{
+			server_names.push_back(tokens[i++]);
+		}
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseErrorPages(std::map<std::string, std::string>& error_pages, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#" || tokens[i + 1] == "#")
+			throw ft::ConfigFile::BadTokenException();
+
+		std::map<std::string, std::string>::iterator it = error_pages.find(tokens[i]);
+
+		if (it != error_pages.end())
+			throw ft::ConfigFile::BadTokenException();
+
+		error_pages.insert(std::make_pair(tokens[i], tokens[i + 1]));
+		i += 2;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static ft::t_location_config	ft::parseLocations(const std::vector<std::string>& tokens, size_t& i)
+{
+	t_location_config	location;
+	bool				upload_enabled_initialized = false;
+	bool				cgi_enabled_initialized = false;
+
+	try
+	{
+		while (tokens[i] == "#")
+			i++;
+		if (tokens[i] == "}")
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		location.endpoint = tokens[i++];
+
+		if (tokens[i] == "{")
+			i++;
+		else
+			throw ft::ConfigFile::BadTokenException();
+
+		while (tokens[i] == "#")
+			i++;
+
+		while (i < tokens.size() && tokens[i] != "}")
+		{
+			if (tokens[i] == "root")
+				parseRoot(location.root, tokens, i);
+			else if (tokens[i] == "redirect")
+				parseRedirect(location.redirect, tokens, i);
+			else if (tokens[i] == "indexes")
+				parseIndexes(location.indexes, tokens, i);
+			else if (tokens[i] == "upload_enabled" && upload_enabled_initialized)
+				throw ft::ConfigFile::BadTokenException();
+			else if (tokens[i] == "upload_enabled" && !upload_enabled_initialized)
+			{
+				parseUploadEnabled(location.upload_enabled, tokens, i);
+				upload_enabled_initialized = true;
+			}
+			else if (tokens[i] == "upload_dir")
+				parseUploadDir(location.upload_dir, tokens, i);
+			else if (tokens[i] == "cgi_enabled" && cgi_enabled_initialized)
+				throw ft::ConfigFile::BadTokenException();
+			else if (tokens[i] == "cgi_enabled" && !cgi_enabled_initialized)
+			{
+				parseCgiEnabled(location.cgi_enabled, tokens, i);
+				cgi_enabled_initialized = true;
+			}
+			else if (tokens[i] == "cgi_dir")
+				parseCgiDir(location.cgi_dir, tokens, i);
+			else
+			{
+				std::cout << RED << tokens[i] << std::endl;
+				throw ft::ConfigFile::BadTokenException();
+			}
+			i++;
+		}
+		if (tokens[i] != "}")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+
+	return (location);
+}
+
+static void	ft::parseRoot(std::string& root, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (root != "")
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		root = tokens[i];
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseRedirect(std::string& redirect, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (redirect != "")
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		redirect = tokens[i];
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseIndexes(std::vector<std::string>& indexes, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (!indexes.empty())
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		while (i < tokens.size() && tokens[i] != "#")
+		{
+			indexes.push_back(tokens[i++]);
+		}
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseUploadEnabled(bool& upload_enabled, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		if (tokens[i] == "true")
+			upload_enabled = true;
+		else if (tokens[i] == "false")
+			upload_enabled = false;
+		else
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseUploadDir(std::string& upload_dir, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (upload_dir != "")
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		upload_dir = tokens[i];
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseCgiEnabled(bool& cgi_enabled, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		if (tokens[i] == "true")
+			cgi_enabled = true;
+		else if (tokens[i] == "false")
+			cgi_enabled = false;
+		else
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+static void	ft::parseCgiDir(std::string& cgi_dir, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (cgi_dir != "")
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		cgi_dir = tokens[i];
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << e.what() << std::endl; }
+}
+
+std::ostream&	operator <<(std::ostream& out, const ft::ConfigFile& config_file)
+{
+	out
+		<< YELLOW << "server counter: " << RESET_COLOR << config_file.size()
+		<< std::endl;
+	out << config_file.getServers();
+
+	return (out);
+}
+
+std::ostream&	operator <<(std::ostream& out, const std::vector<ft::t_server_config>& servers)
+{
+	for (size_t i = 0; i < servers.size(); i++)
+	{
+		out << GREEN << "id " << RESET_COLOR << i << '\n';
+		out << servers[i];
+	}
+
+	return (out);
+}
+
+std::ostream&	operator <<(std::ostream& out, const ft::t_server_config& server)
+{
+	out << GREEN << "server " << RESET_COLOR << "{\n";
+
+	out << "\t" << GREEN << "port " << RESET_COLOR << "[" << server.port << "]" << "\n";
+
+	out << "\t" << GREEN << "server_names " << RESET_COLOR;
+	for (size_t i = 0; i < server.server_names.size(); i++)
+		out << "[" << server.server_names[i] << "] ";
+	out << "\n";
+
+	std::map<std::string, std::string>::const_iterator	it;
+	for (it = server.error_pages.begin(); it != server.error_pages.end(); it++)
+		out << "\t" << GREEN << "error_page " << RESET_COLOR << "[" << it->first << "] [" << it->second << "]" << "\n";
+
+	out << server.locations;
+
+	out << "}" << std::endl;
+
+	return (out);
+}
+
+std::ostream&	operator <<(std::ostream& out, const std::vector<ft::t_location_config>& locations)
+{
+	if (locations.empty())
+		return (out);
+
+	std::vector<ft::t_location_config>::const_iterator	it = locations.begin();
+
+	while (it != locations.end())
+		out << *it++;
+
+	return (out);
+}
+
+std::ostream&	operator <<(std::ostream& out, const ft::t_location_config& location)
+{
+		out << "\t" << GREEN << "location " << RESET_COLOR << location.endpoint << " {\n";
+
+		out << "\t\t" << GREEN << "root " << RESET_COLOR << "[" << location.root << "]" << "\n";
+
+		out << "\t\t" << GREEN << "redirect " << RESET_COLOR << "[" << location.redirect << "]" << "\n";
+
+		out << "\t\t" << GREEN << "indexes " << RESET_COLOR;
+		for (size_t i = 0; i < location.indexes.size(); i++)
+			out << "[" << location.indexes[i] << "] ";
+		if (location.indexes.size() == 0)
+			out << "[]";
+		out << "\n";
+
+		out << "\t\t" << GREEN << "upload_enabled " << RESET_COLOR << "[";
+		out << ((location.upload_enabled == true)? "true": "false");
+		out << "]" << "\n";
+		out << "\t\t" << GREEN << "upload_dir " << RESET_COLOR << "[" << location.upload_dir << "]" << "\n";
+
+		out << "\t\t" << GREEN << "cgi_enabled " << RESET_COLOR << "[";
+		out << ((location.cgi_enabled == true)? "true": "false");
+		out << "]" << "\n";
+		out << "\t\t" << GREEN << "cgi_dir " << RESET_COLOR << "[" << location.cgi_dir << "]" << "\n";
+
+		out << "\t}" << std::endl;
+
+	return (out);
+}
+
+std::ostream&	operator <<(std::ostream& out, const std::vector<std::string>& strs)
+{
+	for (size_t i = 0; i < strs.size(); i++)
+		out << "[" << strs[i] << "] ";
+
+	return (out);
+}
+
+std::ostream&	operator <<(std::ostream& out, const std::map<std::string, std::string>& strs)
+{
+	for (std::map<std::string, std::string>::const_iterator it = strs.begin(); it != strs.end(); it++)
+		out << "[" << it->first << "] [" << it->second << "] " << std::endl;
+
+	return (out);
+}

@@ -1,84 +1,124 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ConfigFile.hpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/14 14:49:59 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/14 14:49:59 by rapdos-s         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CONFIGFILE_HPP
 # define CONFIGFILE_HPP
 
-# include <cctype>
 # include <colors.hpp>
+# include <exception>
 # include <iostream>
 # include <fstream>
 # include <sstream>
 # include <map>
-# include <string>
+# include <messages.hpp>
 # include <vector>
 
-# ifndef DEBUG
-#  define DEBUG false
-# endif // DEBUG
-
-# define CONFIG_FILE_MSG "CONFIG"
-# define DEFAULT_CONFIG_FILE_INPUT "serv.conf"
-
-typedef struct s_location_config
+namespace ft
 {
-  std::string dir;
-  std::string root;
-  std::string index;
-  std::string redirect;
-  std::string upload_enabled;
-  std::string upload_dir;
-  std::string cgi_enabled;
-  std::string cgi_path;
-} t_location_config;
+	typedef struct	s_location_config
+	{
+		std::string					endpoint;
+		std::string					root;
+		std::string					redirect;
+		std::vector<std::string>	indexes;
+		bool						upload_enabled;
+		std::string					upload_dir;
+		bool						cgi_enabled;
+		std::string					cgi_dir;
 
-typedef struct s_server_config
-{
-  std::string                         host;
-  std::string                         port;
-  std::string                         server_name;
-  std::map<std::string, std::string>  error_page;
-  std::vector<t_location_config>      locations;
-} t_server_config;
+	}	t_location_config;
 
-class ConfigFile
-{
-  public:
-    const size_t  size;
+	typedef struct	s_server_config
+	{
+		std::string							port;
+		std::vector<std::string>			server_names;
+		std::map<std::string, std::string>	error_pages;
+		std::vector<ft::t_location_config>	locations;
+	}	t_server_config;
 
-    ConfigFile(const std::string& file);
-    ~ConfigFile(void);
+	class ConfigFile
+	{
+		public:
+			ConfigFile(const std::string& file);
+			~ConfigFile(void);
 
-    std::vector<t_server_config>    getServers(void) const;
-    std::vector<t_location_config>  getLocations(size_t server_id) const;
+			size_t	size(void) const;
 
-    t_server_config   getServer(size_t server_id) const;
-    t_location_config getLocation(size_t server_id, size_t location_id) const;
+			std::vector<ft::t_server_config>	getServers(void) const;
+			ft::t_server_config					getServer(size_t server_id) const;
 
-    std::string getHost(size_t server_id) const;
-    std::string getPort(size_t server_id) const;
-    std::string getServerName(size_t server_id) const;
-    std::string getErrorPage(size_t server_id, unsigned short page) const;
+			std::string							getPort(size_t server_id) const;
+			std::vector<std::string>			getServerNames(size_t server_id) const;
+			std::string							getServerName(size_t server_id, size_t server_name_id) const;
+			std::map<std::string, std::string>	getErrorPages(size_t server_id) const;
+			std::string							getErrorPage(size_t server_id, std::string page) const;
 
-    std::string getLocationDir(size_t server_id, size_t location_id) const;
-    std::string getLocationRoot(size_t server_id, size_t location_id) const;
-    std::string getLocationIndex(size_t server_id, size_t location_id) const;
-    std::string getLocationRedirect(size_t server_id, size_t location_id) const;
-    std::string getLocationUploadEnabled(size_t server_id, size_t location_id) const;
-    std::string getLocationUploadDir(size_t server_id, size_t location_id) const;
-    std::string getLocationCgiEnabled(size_t server_id, size_t location_id) const;
-    std::string getLocationCgiPath(size_t server_id, size_t location_id) const;
+			std::vector<ft::t_location_config>	getLocations(size_t server_id) const;
+			ft::t_location_config				getLocation(size_t server_id, size_t location_id) const;
 
-    class CouldOpenConfigFileException;
+			std::string					getLocationEndpoint(size_t server_id, size_t location_id) const;
+			std::string					getLocationRoot(size_t server_id, size_t location_id) const;
+			std::string					getLocationRedirect(size_t server_id, size_t location_id) const;
+			std::vector<std::string>	getLocationIndexes(size_t server_id, size_t location_id) const;
+			std::string					getLocationIndex(size_t server_id, size_t location_id, size_t index_id) const;
+			bool						getLocationUploadEnabled(size_t server_id, size_t location_id) const;
+			std::string					getLocationUploadDir(size_t server_id, size_t location_id) const;
+			bool						getLocationCgiEnabled(size_t server_id, size_t location_id) const;
+			std::string					getLocationCgiDir(size_t server_id, size_t location_id) const;
 
-  private:
-    std::vector<t_server_config> _servers;
-};
+		class CouldNotOpenConfigFileException;
+		class BadTokenException;
 
-std::ostream& operator<<(std::ostream& out, const ConfigFile& config_file);
-std::ostream& operator<<(std::ostream& out, const std::vector<t_server_config>& servers);
-std::ostream& operator<<(std::ostream& out, const t_server_config& server);
-std::ostream& operator<<(std::ostream& out, const t_location_config& location);
+		private:
+			std::vector<ft::t_server_config>	_servers;
+	};
 
-class ConfigFile::CouldOpenConfigFileException : public std::exception
-{ public: const char* what() const throw(); };
+	class ConfigFile::CouldNotOpenConfigFileException : public std::exception
+	{ public: const char* what() const throw(); };
+
+	class ConfigFile::BadTokenException : public std::exception
+	{ public: const char* what() const throw(); };
+
+	static std::string				readFileContents(const std::string& filename);
+	static std::vector<std::string>	tokenizer(const std::string& fileContent);
+	static std::string				trim_spaces(const std::string& str);
+
+	static ft::t_server_config	parseServer(const std::vector<std::string>& tokens, size_t& i);
+
+	static void	parsePort(std::string& port, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseServerNames(std::vector<std::string>& server_names, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseErrorPages(std::map<std::string, std::string>& error_pages, const std::vector<std::string>& tokens, size_t& i);
+
+	static ft::t_location_config	parseLocations(const std::vector<std::string>& tokens, size_t& i);
+
+	static void	parseRoot(std::string& root, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseRedirect(std::string& redirect, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseIndexes(std::vector<std::string>& indexes, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseUploadEnabled(bool& upload_enabled, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseUploadDir(std::string& upload_dir, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseCgiEnabled(bool& cgi_enabled, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseCgiDir(std::string& cgi_dir, const std::vector<std::string>& tokens, size_t& i);
+}
+
+std::ostream& operator <<(std::ostream& out, const ft::ConfigFile& config_file);
+
+std::ostream& operator <<(std::ostream& out, const std::vector<ft::t_server_config>& servers);
+std::ostream& operator <<(std::ostream& out, const ft::t_server_config& server);
+
+std::ostream& operator <<(std::ostream& out, const std::vector<ft::t_location_config>& locations);
+std::ostream& operator <<(std::ostream& out, const ft::t_location_config& location);
+
+std::ostream& operator <<(std::ostream& out, const std::vector<std::string>& strs);
+std::ostream& operator <<(std::ostream& out, const std::map<std::string, std::string>& strs);
 
 # include <ConfigFile.ipp>
 

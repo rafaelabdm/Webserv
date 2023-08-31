@@ -1,69 +1,53 @@
-#include <c_external_functions.h>
-#include <colors.hpp>
-#include <iostream>
-#include <man_webserv.hpp>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/11 18:24:26 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/11 18:24:26 by rapdos-s         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include <ConfigFile.hpp>
 
-static bool valid_argc(const int argc)
+int	main(void)
 {
-  std::string message = "";
+	try
+	{
+		ft::ConfigFile	config("webserv.conf");
 
-  if (argc == 1)
-    message = "missing config file";
-  else if (argc > 2)
-    message = "too many arguments";
+		// std::cout << config;
+		// std::cout << config.size() << std::endl;
 
-  if (message != "")
-  {
-    errno = 42;
-    std::cout
-      << "webserv: " << message << std::endl
-      << "Try \'webserv --help\' for more information." << std::endl;
+		// std::cout << config.getServers();
+		// std::cout << config.getServer(0);
 
-    return (false);
-  }
+		// std::cout << config.getPort(0) << std::endl;
+		// std::cout << config.getServerNames(0) << std::endl;
+		// std::cout << config.getServerName(0, 0) << std::endl;
+		// std::cout << config.getErrorPages(0) << std::endl;
+		// std::cout << config.getErrorPage(0, "404") << std::endl;
 
-  return (true);
-}
+		// std::cout << config.getLocations(0);
+		// std::cout << config.getLocation(0, 0);
 
-static bool help_option(const std::string& option)
-{
-  if (option == "-h" || option == "--help")
-  {
-    std::cout<< HELP << std::endl;
+		// std::cout << config.getLocationEndpoint(0, 1) << std::endl;
+		// std::cout << config.getLocationRoot(0, 0) << std::endl;
+		// std::cout << config.getLocationRedirect(0, 2) << std::endl;
+		// std::cout << config.getLocationIndexes(0, 0) << std::endl;
+		// std::cout << config.getLocationIndex(0, 0, 0) << std::endl;
+		// std::cout << ((config.getLocationUploadEnabled(0, 3) == true)? "true": "false") << std::endl;
+		// std::cout << config.getLocationUploadDir(0, 3) << std::endl;
+		// std::cout << ((config.getLocationCgiEnabled(0, 4) == true)? "true": "false") << std::endl;
+		// std::cout << config.getLocationCgiDir(0, 4) << std::endl;
+	}
+	catch (std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		std::cout << "Webserv can't work in an unsafe environment." << std::endl;
+	}
 
-    return (true);
-  }
-
-  return (false);
-}
-
-static void print_debug(const bool print)
-{
-  if (print)
-  {
-    std::cout << YELLOW;
-    std::cout << "DEBUG = " << (DEBUG?"true":"false") << std::endl;
-    std::cout << "errno = " << errno << std::endl;
-    std::cout << RESET_COLOR;
-  }
-
-  return;
-}
-
-int main( int argc, char* argv[])
-{
-  errno = 0;
-
-  if (!valid_argc(argc))
-    return (errno);
-  if (help_option(argv[1]))
-    return (0);
-
-  ConfigFile config(argv[1]);
-  std::cout << config << std::endl;
-
-  print_debug(true);
-  return (0);
+	return (0);
 }
