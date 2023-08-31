@@ -26,6 +26,7 @@
 //Classes
 # include "ConfigFile.hpp"
 # include "Request.hpp"
+# include "Response.hpp"
 # include "Socket.hpp"
 
 //my headers

@@ -19,12 +19,12 @@ ft::Request::Request(char *client_buffer) : _endpoint(""),  _method(""), _body("
 
 ft::Request::~Request()
 {
-	std::cout << RED << "Method: " << _method << RESET_COLOR << std::endl;
-	std::cout << YELLOW << "Endpoint: " << _endpoint << RESET_COLOR << std::endl;
-	std::cout << CYAN << "Protocol: " << _protocol << RESET_COLOR << std::endl;
-	std::cout << GREEN << "Host: " << _host << RESET_COLOR << std::endl;
-	std::cout << MAGENTA << "Content-Type: " << _content_type << RESET_COLOR << std::endl;
-	std::cout << BLUE << "Body: " << _body << RESET_COLOR << std::endl;
+	std::cout << RED << "Method: [" << _method << "]" << RESET_COLOR << std::endl;
+	std::cout << YELLOW << "Endpoint: [" << _endpoint << "]" << RESET_COLOR << std::endl;
+	std::cout << CYAN << "Protocol: [" << _protocol << "]" << RESET_COLOR << std::endl;
+	std::cout << GREEN << "Host: [" << _host << "]" << RESET_COLOR << std::endl;
+	std::cout << MAGENTA << "Content-Type: [" << _content_type << "]" << RESET_COLOR << std::endl;
+	std::cout << BLUE << "Body: [" << _body << "]" << RESET_COLOR << std::endl;
 }
 
 
@@ -92,7 +92,7 @@ void	ft::Request::setHost(std::string request)
 	size_t	end;
 
 	start = request.find("Host: ", 0) + 6;
-	end = request.find("\n", start);
+	end = request.find("\r", start); //bizarramente tem um \r vindo no request?
 	_host = request.substr(start, end - start);
 }
 
@@ -125,7 +125,7 @@ void	ft::Request::getFirstLineInfo(std::string request)
 	start = 0;
 	for (end = 0; !stop; end++)
 	{
-		if (request[end] == ' ' || request[end] == '\n')
+		if (request[end] == ' ' || request[end] == '\n' || request[end] == '\r')
 		{
 			if (request[end] == '\n')
 				stop = true;
@@ -140,7 +140,7 @@ void	ft::Request::getFirstLineInfo(std::string request)
 
 void	ft::Request::getRequestInfo(char *buffer)
 {
-	std::string					request;
+	std::string	request;
 	
 	request = buffer;
 	getFirstLineInfo(request);

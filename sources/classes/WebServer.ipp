@@ -138,6 +138,8 @@ void	ft::WebServer::recv(int client_fd, struct epoll_event& events_setup)
 		return ;
 	}
 	std::cout << client_buffer << std::endl;
+	Request request(client_buffer);
+	Response response(request, _connections);
 	events_setup.events = EPOLLOUT;
 	epoll_ctl(_epoll, EPOLL_CTL_MOD, client_fd, &events_setup);
 }

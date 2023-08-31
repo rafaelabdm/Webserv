@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/25 08:58:11 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/31 11:28:02 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ namespace ft
 		void		connect();
 		int			getSock();
 		std::string	getPort();
-		std::string getHost();
+		std::vector<std::string> getHosts();
 
 		class	GetAddrInfoException : std::exception
 		{

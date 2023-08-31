@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.ipp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/31 09:53:02 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/08/31 11:37:43 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,14 +173,20 @@ std::string	ft::Socket::getPort()
 	return (_server.port);
 }
 
-std::string ft::Socket::getHost()
+std::vector<std::string> ft::Socket::getHosts()
 {
-	std::string host = "";
+	std::string host;
+	std::vector<std::string>hosts;
 	
-	host.append(_server.server_names[0]);
-	host.append(":");
-	host.append(_server.port);
-	return (host);
+	for (long unsigned int i = 0; i < _server.server_names.size(); i++)
+	{
+		host = "";
+		host.append(_server.server_names[i]);
+		host.append(":");
+		host.append(_server.port);
+		hosts.push_back(host);
+	}
+	return (hosts);
 }
 
 const char* ft::Socket::GetAddrInfoException::what() const throw()
