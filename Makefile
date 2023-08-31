@@ -26,9 +26,8 @@ CXX		 = c++
 DEL		 = rm -rf
 MKDIR	 = mkdir -p
 
-DEBUG		 = false
 CXXFLAGS	 = -Wall -Wextra -Werror -std=c++98 \
-			   -g3 -DDEBUG=$(DEBUG) -fmax-errors=1
+			   -g3 -fmax-errors=1
 DEPFLAGS	 = -MMD -MF
 VALFLAGS	 = --leak-check=full \
 			   --show-leak-kinds=all \
