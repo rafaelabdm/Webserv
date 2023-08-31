@@ -12,18 +12,34 @@
 
 #include <help_option.hpp>
 
-bool	ft::help_option(const char* option)
+static void	print_help_message(void)
 {
-	if (!option)
+	std::cout << "Usage: ./webserv [<Configuration File>.conf] \n";
+	std::cout << "   or: ./webserv \n\n";
+	std::cout << "A HTTP server in C++ 98 \n\n";
+	std::cout << "	-h, --help	display this help page and exit. \n\n";
+	std::cout << "By default, \"./examples/webserv.conf\" will load if no ";
+	std::cout << "configuration file is provided. \n\n";
+	std::cout << "More about this project can be found on \n";
+	std::cout << "https://github.com/rafaelabdm/Webserv/";
+	std::cout << std::endl;
+}
+
+bool	ft::help_option(const char** options)
+{
+	if (!options)
 		return (false);
 
-	const std::string	str_option = option;
-
-	if (str_option == "-h" || str_option == "--help")
+	for (int i = 0; options[i]; i++)
 	{
-		std::cout<< FT_HELP << std::endl;
+		const std::string	str_option = options[i];
 
-		return (true);
+		if (str_option == "-h" || str_option == "--help")
+		{
+			print_help_message();
+
+			return (true);
+		}
 	}
 
 	return (false);

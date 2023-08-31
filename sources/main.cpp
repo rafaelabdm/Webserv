@@ -11,27 +11,41 @@
 /* ************************************************************************** */
 
 #include <help_option.hpp>
-#include <valid_argc.hpp>
+#include <messages.hpp>
 #include <WebServer.hpp>
 #include <Request.hpp>
 
-int	main(const int argc, const char** argv)
+/**
+ * @brief Verify the number of arguments
+ * 
+ * @param argc Number of arguments
+ * @return true if argc is bigger than 2
+ * @return false if is equal or lower than 2
+ */
+static bool	check_argc(const int argc)
 {
-	// Initial checks
-	{
-		if (ft::help_option(argv[1]))
-			return (0);
+	if (argc > 2)
+		std::cout << FT_MANY_ARGS << std::endl;
 
-		if (!ft::valid_argc(argc))
-			return (1);
-	}
+	return (argc > 2);
+}
 
-	// Main Web server stuffs
-	ft::WebServer	ws(argv[1]);
+int	main(const int argc, const char** argv, const char** envp)
+{
+	if (ft::help_option(argv))
+		return (0);
+
+	if (check_argc(argc))
+		return (1);
+
+	std::string	configuration_file;
+	configuration_file = (argc == 1 ? FT_DEFAULT_CONFIG_FILE : argv[1]);
+	ft::WebServer	ws(configuration_file.c_str());
 
 	ws.start_servers();
 
 	return (0);
+	(void) envp;
 }
 
 // int main(void)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.ipp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/25 09:00:30 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/31 09:53:02 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 
 ft::Socket::Socket(const t_server_config& server) : _server(server)
 {
-	std::cout << FT_SETUP << "Setting up " << GREEN << this->_server.host << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << "." << std::endl;
+	std::cout << FT_SETUP << "Setting up " << GREEN << this->_server.server_names[0] << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << "." << std::endl;
 
 	loadAddressInfo();
 	createSocket();
 
-	std::cout << FT_OK << GREEN << this->_server.host << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << " is in a nice." << std::endl;
+	std::cout << FT_OK << GREEN << this->_server.server_names[0] << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << " is in a nice." << std::endl;
 }
 
 ft::Socket::~Socket()
 {
-	std::cout << FT_CLOSE << "Closing " << GREEN << this->_server.host << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << "." << std::endl;
+	std::cout << FT_CLOSE << "Closing " << GREEN << this->_server.server_names[0] << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << "." << std::endl;
 }
 
 void	ft::Socket::setAddrStruct(void)
@@ -42,7 +42,7 @@ void	ft::Socket::loadAddressInfo()
 	setAddrStruct();
 	try
 	{
-		status = getaddrinfo(this->_server.host.c_str(), this->_server.port.c_str(), &_hints, &_servinfo);
+		status = getaddrinfo(this->_server.server_names[0].c_str(), this->_server.port.c_str(), &_hints, &_servinfo);
 
 		if(status)
 			throw GetAddrInfoException();
@@ -177,7 +177,7 @@ std::string ft::Socket::getHost()
 {
 	std::string host = "";
 	
-	host.append(_server.host);
+	host.append(_server.server_names[0]);
 	host.append(":");
 	host.append(_server.port);
 	return (host);

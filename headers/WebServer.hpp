@@ -33,6 +33,8 @@
 # include "messages.hpp"
 # include "signal_handler.hpp"
 
+# define FT_DEFAULT_CONFIG_FILE "./examples/webserv.conf"
+
 namespace ft
 {
 	class WebServer

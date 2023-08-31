@@ -21,4 +21,7 @@
 # define FT_SETUP	"[" BLUE	" SETUP "	RESET_COLOR "] "
 # define FT_CLOSE	"[" BLUE	" CLOSE "	RESET_COLOR "] "
 
+# define FT_HELP_HINT	"Try './webserv --help' for more information."
+# define FT_MANY_ARGS	FT_WARNING "Too many arguments.\n" FT_HELP_HINT
+
 #endif // MESSAGES_HPP
