@@ -613,7 +613,7 @@ static void	ft::parseAllowedMethods(bool& allowed_methods_get, bool& allowed_met
 				allowed_methods_get = get_init = true;
 			else if (token_upper == "POST" && post_init == false)
 				allowed_methods_post = post_init = true;
-			else if (token_upper == "DELETE" && post_init == false)
+			else if (token_upper == "DELETE" && delete_init == false)
 				allowed_methods_delete = delete_init = true;
 			else
 				throw ft::ConfigFile::BadTokenException();
