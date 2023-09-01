@@ -148,6 +148,26 @@ std::string	ft::ConfigFile::getLocationCgiDir(size_t server_id, size_t location_
 	return (this->_servers[server_id].locations[location_id].cgi_dir);
 }
 
+bool	ft::ConfigFile::getLocationAutoindex(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].autoindex);
+}
+
+bool	ft::ConfigFile::getLocationAllowedMethodsGet(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].allowed_methods_get);
+}
+
+bool	ft::ConfigFile::getLocationAllowedMethodsPost(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].allowed_methods_post);
+}
+
+bool	ft::ConfigFile::getLocationAllowedMethodsDelete(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].allowed_methods_delete);
+}
+
 const char*	ft::ConfigFile::CouldNotOpenConfigFileException::what () const throw ()
 {
 	return (FT_FAIL "Error: Can't open config file.");
@@ -213,7 +233,7 @@ static std::string	ft::readFileContents(const std::string& filename)
 		std::cout << FT_OK << "Configuration file is fine." << std::endl;
 	}
 	catch (ConfigFile::CouldNotOpenConfigFileException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 12: " << e.what() << std::endl; }
 
 
 	return (content);
@@ -263,6 +283,10 @@ static ft::t_server_config	ft::parseServer(const std::vector<std::string>& token
 	{
 		while (i < tokens.size() && tokens[i] != "}")
 		{
+			while (tokens[i] == "#")
+				i++;
+			if (tokens[i] == "}")
+				continue;
 			if (tokens[i] == "port")
 				parsePort(server.port, tokens, i);
 			else if (tokens[i] == "server_names")
@@ -271,15 +295,18 @@ static ft::t_server_config	ft::parseServer(const std::vector<std::string>& token
 				parseErrorPages(server.error_pages, tokens, i);
 			else if (tokens[i] == "location")
 				server.locations.push_back(parseLocations(tokens, i));
-			// else
-			// 	throw ft::ConfigFile::BadTokenException();
+			else
+			{
+				std::cout << tokens[i] << std::endl;
+				throw ft::ConfigFile::BadTokenException();
+			}
 			i++;
 		}
 		if (tokens[i] != "}")
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 01: " << e.what() << std::endl; }
 
 	return (server);
 }
@@ -299,7 +326,7 @@ static void	ft::parsePort(std::string& port, const std::vector<std::string>& tok
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 02: " << e.what() << std::endl; }
 }
 
 static void	ft::parseServerNames(std::vector<std::string>& server_names, const std::vector<std::string>& tokens, size_t& i)
@@ -319,7 +346,7 @@ static void	ft::parseServerNames(std::vector<std::string>& server_names, const s
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 03: " << e.what() << std::endl; }
 }
 
 static void	ft::parseErrorPages(std::map<std::string, std::string>& error_pages, const std::vector<std::string>& tokens, size_t& i)
@@ -341,7 +368,7 @@ static void	ft::parseErrorPages(std::map<std::string, std::string>& error_pages,
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 04: " << e.what() << std::endl; }
 }
 
 static ft::t_location_config	ft::parseLocations(const std::vector<std::string>& tokens, size_t& i)
@@ -393,18 +420,19 @@ static ft::t_location_config	ft::parseLocations(const std::vector<std::string>& 
 			}
 			else if (tokens[i] == "cgi_dir")
 				parseCgiDir(location.cgi_dir, tokens, i);
+			else if (tokens[i] == "autoindex")
+				parseAutoindex(location.autoindex, tokens, i);
+			else if (tokens[i] == "allowed_methods")
+				parseAllowedMethods(location.allowed_methods_get, location.allowed_methods_post, location.allowed_methods_delete, tokens, i);
 			else
-			{
-				std::cout << RED << tokens[i] << std::endl;
 				throw ft::ConfigFile::BadTokenException();
-			}
 			i++;
 		}
 		if (tokens[i] != "}")
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 05: " << e.what() << std::endl; }
 
 	return (location);
 }
@@ -424,7 +452,7 @@ static void	ft::parseRoot(std::string& root, const std::vector<std::string>& tok
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 06: " << e.what() << std::endl; }
 }
 
 static void	ft::parseRedirect(std::string& redirect, const std::vector<std::string>& tokens, size_t& i)
@@ -462,7 +490,7 @@ static void	ft::parseIndexes(std::vector<std::string>& indexes, const std::vecto
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 07: " << e.what() << std::endl; }
 }
 
 static void	ft::parseUploadEnabled(bool& upload_enabled, const std::vector<std::string>& tokens, size_t& i)
@@ -501,7 +529,7 @@ static void	ft::parseUploadDir(std::string& upload_dir, const std::vector<std::s
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 08: " << e.what() << std::endl; }
 }
 
 static void	ft::parseCgiEnabled(bool& cgi_enabled, const std::vector<std::string>& tokens, size_t& i)
@@ -540,7 +568,63 @@ static void	ft::parseCgiDir(std::string& cgi_dir, const std::vector<std::string>
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
-	{ std::cout << e.what() << std::endl; }
+	{ std::cout << "ERROR 09: " << e.what() << std::endl; }
+}
+static void	ft::parseAutoindex(bool& autoindex, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		if (tokens[i] == "true")
+			autoindex = true;
+		else if (tokens[i] == "false")
+			autoindex = false;
+		else
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << "ERROR 10: " << e.what() << std::endl; }
+}
+
+static void	ft::parseAllowedMethods(bool& allowed_methods_get, bool& allowed_methods_post, bool& allowed_methods_delete, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		bool	get_init = false;
+		bool	post_init = false;
+		bool	delete_init = false;
+
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		while (i < tokens.size() && tokens[i] != "#")
+		{
+			std::string	token_upper = tokens[i];
+
+			for (size_t j = 0; j < token_upper.size(); j++)
+				token_upper[j] = std::toupper(token_upper[j]);
+
+			if (token_upper == "GET" && get_init == false)
+				allowed_methods_get = get_init = true;
+			else if (token_upper == "POST" && post_init == false)
+				allowed_methods_post = post_init = true;
+			else if (token_upper == "DELETE" && post_init == false)
+				allowed_methods_delete = delete_init = true;
+			else
+				throw ft::ConfigFile::BadTokenException();
+
+			i++;
+		}
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << "ERROR 11: " << e.what() << std::endl; }
 }
 
 std::ostream&	operator <<(std::ostream& out, const ft::ConfigFile& config_file)
@@ -623,6 +707,14 @@ std::ostream&	operator <<(std::ostream& out, const ft::t_location_config& locati
 		out << ((location.cgi_enabled == true)? "true": "false");
 		out << "]" << "\n";
 		out << "\t\t" << GREEN << "cgi_dir " << RESET_COLOR << "[" << location.cgi_dir << "]" << "\n";
+
+		out << "\t\t" << GREEN << "autoindex " << RESET_COLOR;
+		out << ((location.autoindex == true)? "[true]\n": "[false]\n");
+
+		out << "\t\t" << GREEN << "allowed_methods: " << RESET_COLOR;
+		out << ((location.allowed_methods_get == true)? "[GET] ": "[]");
+		out << ((location.allowed_methods_post == true)? "[POST] ": "[]");
+		out << ((location.allowed_methods_delete == true)? "[DELETE]\n": "[]\n");
 
 		out << "\t}" << std::endl;
 

@@ -13,6 +13,7 @@
 #ifndef CONFIGFILE_HPP
 # define CONFIGFILE_HPP
 
+# include <cctype>
 # include <colors.hpp>
 # include <exception>
 # include <iostream>
@@ -21,6 +22,20 @@
 # include <map>
 # include <messages.hpp>
 # include <vector>
+
+# define DEFAULT_PORT	""
+# define DEFAULT_ENDPOINT				""
+# define DEFAULT_ROOT					""
+# define DEFAULT_REDIRECT				""
+# define DEFAULT_INDEXES				""
+# define DEFAULT_UPLOAD_ENABLED			false
+# define DEFAULT_UPLOAD_DIR				""
+# define DEFAULT_CGI_ENABLED			false
+# define DEFAULT_CGI_DIR				""
+# define DEFAULT_AUTOINDEX				false
+# define DEFAULT_ALLOWED_METHODS_GET	false
+# define DEFAULT_ALLOWED_METHODS_POST	false
+# define DEFAULT_ALLOWED_METHODS_DELETE	false
 
 namespace ft
 {
@@ -34,6 +49,10 @@ namespace ft
 		std::string					upload_dir;
 		bool						cgi_enabled;
 		std::string					cgi_dir;
+		bool						autoindex;
+		bool						allowed_methods_get;
+		bool						allowed_methods_post;
+		bool						allowed_methods_delete;
 
 	}	t_location_config;
 
@@ -74,6 +93,10 @@ namespace ft
 			std::string					getLocationUploadDir(size_t server_id, size_t location_id) const;
 			bool						getLocationCgiEnabled(size_t server_id, size_t location_id) const;
 			std::string					getLocationCgiDir(size_t server_id, size_t location_id) const;
+			bool						getLocationAutoindex(size_t server_id, size_t location_id) const;
+			bool						getLocationAllowedMethodsGet(size_t server_id, size_t location_id) const;
+			bool						getLocationAllowedMethodsPost(size_t server_id, size_t location_id) const;
+			bool						getLocationAllowedMethodsDelete(size_t server_id, size_t location_id) const;
 
 		class CouldNotOpenConfigFileException;
 		class BadTokenException;
@@ -107,6 +130,8 @@ namespace ft
 	static void	parseUploadDir(std::string& upload_dir, const std::vector<std::string>& tokens, size_t& i);
 	static void	parseCgiEnabled(bool& cgi_enabled, const std::vector<std::string>& tokens, size_t& i);
 	static void	parseCgiDir(std::string& cgi_dir, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseAutoindex(bool& autoindex, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseAllowedMethods(bool& allowed_methods_get, bool& allowed_methods_post, bool& allowed_methods_delete, const std::vector<std::string>& tokens, size_t& i);
 }
 
 std::ostream& operator <<(std::ostream& out, const ft::ConfigFile& config_file);

@@ -21,6 +21,10 @@ ft::WebServer::WebServer(const std::string& config_file) : _config_file(config_f
 		<< " file."
 		<< std::endl;
 
+	std::cout << _config_file.getLocations(0);
+	std::cout << _config_file.getLocation(0,5);
+	std::cout << _config_file.getLocation(0,6);
+
 	for (size_t i = 0; ft::keep() && i < _config_file.size(); i++)
 		_connections.push_back(new ft::Socket(_config_file.getServer(i)));
 
