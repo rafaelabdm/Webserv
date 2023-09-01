@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/31 11:14:00 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/01 16:01:20 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,40 @@
 
 # include "Request.hpp"
 # include "Socket.hpp"
+# include "signal_handler.hpp"
+# include <dirent.h>
 # include <vector>
 # include <map>
+
+//temps defines
+# define ERROR_PAGE_PATH	"/home/rabustam/42sp/wb_main/examples/"
 
 namespace ft
 {
 	class Response
 	{
 		private:
-		ft::Request&	_request;
-		ft::Socket		_server;
-		std::string		_protocol;
-		std::string 	_status_code;
-		std::string 	_content_type;
-		std::string 	_content_length;
-		std::string 	_connection_type;
-		std::string 	_date;
-		std::string 	_body;
+		ft::Request&			_request;
+		ft::t_server_config		_server;
+		ft::t_location_config	_location;
+		std::string				_protocol;
+		std::string 			_status_code;
+		std::string 			_content_type;
+		std::string 			_content_length;
+		std::string 			_connection_type;
+		std::string 			_date;
+		std::string 			_body;
 		
-		ft::Socket	setServer(std::vector<ft::Socket*>& servers);
-		void		checkProtocol();
-		void		checkEndpoint();
+		ft::t_server_config	setServer(std::vector<ft::Socket*>& servers);
+		void			checkProtocol();
+		bool			checkEndpoint();
+		bool			checkMethod();
+		bool			checkRedirect();
+		void			processRequest();
+		void			handleNotFound();
+		std::string		numberToString(int size);
+		std::string		getErrorPage();
+		std::string		getPage();
 
 		
 		public:

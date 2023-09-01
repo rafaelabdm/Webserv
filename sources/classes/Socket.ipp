@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/31 11:37:43 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/31 11:50:12 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,6 +187,11 @@ std::vector<std::string> ft::Socket::getHosts()
 		hosts.push_back(host);
 	}
 	return (hosts);
+}
+
+ft::t_server_config	ft::Socket::getServer()
+{
+	return (_server);
 }
 
 const char* ft::Socket::GetAddrInfoException::what() const throw()

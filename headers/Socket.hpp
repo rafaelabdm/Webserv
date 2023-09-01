@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/31 11:28:02 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/31 11:49:37 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,9 @@ namespace ft
 		void		listen();
 		int			accept();
 		void		connect();
+
+		//getters
+		ft::t_server_config	getServer();
 		int			getSock();
 		std::string	getPort();
 		std::vector<std::string> getHosts();
