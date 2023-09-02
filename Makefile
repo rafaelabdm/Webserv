@@ -11,7 +11,6 @@
 # **************************************************************************** #
 
 NAME		 = webserv
-CONF_FILE	 = examples/webserv.conf
 
 SRC_DIR	 = ./sources
 BLD_DIR	 = ./build
@@ -50,13 +49,11 @@ fclean: clean
 re: fclean all
 
 test: $(NAME)
-	./$(NAME) $(CONF_FILE)
-
-help: $(NAME)
-	./$(NAME) --help
+	clear
+	@./$(NAME)
 
 valgrind: $(NAME)
-	valgrind $(VALFLAGS) ./$(NAME) $(CONF_FILE)
+	valgrind $(VALFLAGS) ./$(NAME)
 
 $(BLD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BLD_DIR)
 	$(CXX) $(CXXFLAGS) $(HDR) -c $< -o $@ $(DEPFLAGS) $(@:.o=.d)
