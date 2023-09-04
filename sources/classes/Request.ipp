@@ -12,18 +12,18 @@
 
 #include "Request.hpp"
 
-ft::Request::Request(char *client_buffer) : _endpoint(""),  _method(""), _body("")
+ft::Request::Request(std::string client_buffer) : _endpoint(""),  _method(""), _body("")
 {
 	getRequestInfo(client_buffer);
 }
 
 ft::Request::~Request()
 {
-	std::cout << RED << "Method: [" << _method << "]" << RESET_COLOR << std::endl;
-	std::cout << YELLOW << "Endpoint: [" << _endpoint << "]" << RESET_COLOR << std::endl;
-	std::cout << CYAN << "Protocol: [" << _protocol << "]" << RESET_COLOR << std::endl;
-	std::cout << GREEN << "Host: [" << _host << "]" << RESET_COLOR << std::endl;
-	std::cout << MAGENTA << "Content-Type: [" << _content_type << "]" << RESET_COLOR << std::endl;
+	// std::cout << RED << "Method: [" << _method << "]" << RESET_COLOR << std::endl;
+	// std::cout << YELLOW << "Endpoint: [" << _endpoint << "]" << RESET_COLOR << std::endl;
+	// std::cout << CYAN << "Protocol: [" << _protocol << "]" << RESET_COLOR << std::endl;
+	// std::cout << GREEN << "Host: [" << _host << "]" << RESET_COLOR << std::endl;
+	// std::cout << MAGENTA << "Content-Type: [" << _content_type << "]" << RESET_COLOR << std::endl;
 	std::cout << BLUE << "Body: [" << _body << "]" << RESET_COLOR << std::endl;
 }
 
@@ -78,12 +78,33 @@ void	ft::Request::setPath(std::string path)
 	_endpoint = path;
 }
 
-void	ft::Request::setBody(std::string request)
+std::string ft::Request::getBoundry()
 {
 	size_t	start;
 
+	start = _content_type.find("boundary=", 0) + 9;
+	return (_content_type.substr(start, _content_type.length() - start));
+}
+
+void	ft::Request::setBody(std::string request)
+{
+	size_t	start;
+	size_t	end;
+	std::string boundry;
+
+	std::cout << "Content Type: [" << _content_type << "]" << std::endl;
+	if (_content_type.find("boundary", 0))
+	{
+		boundry = getBoundry();
+		start = request.find("boundary=", 0) + boundry.length() + 11;
+		start = request.find(boundry, start) + boundry.length() + 2;
+		end = request.rfind(boundry, request.length()) - 2;
+		_body = request.substr(start, end - start);
+		return ;
+	}
 	start = request.find("\n\n", 0) + 2;
 	_body = request.substr(start, request.length() - start);
+	_body = "body";
 }
 
 void	ft::Request::setHost(std::string request)
@@ -105,7 +126,7 @@ void	ft::Request::setContentType(std::string request)
 	if (start == std::string::npos)
 		return ;
 	start += 14;
-	end = request.find("\n", start);
+	end = request.find("\r", start);
 	_content_type = request.substr(start, end - start);
 }
 
@@ -138,14 +159,11 @@ void	ft::Request::getFirstLineInfo(std::string request)
 	setProtocol(req[2]);
 }
 
-void	ft::Request::getRequestInfo(char *buffer)
+void	ft::Request::getRequestInfo(std::string buffer)
 {
-	std::string	request;
-	
-	request = buffer;
-	getFirstLineInfo(request);
-	setHost(request);
-	setContentType(request);
+	getFirstLineInfo(buffer);
+	setHost(buffer);
+	setContentType(buffer);
 	if (_method == "POST")
 		setBody(buffer);
 }

@@ -31,8 +31,9 @@ namespace ft
 		std::string _content_type;
 		std::string	_body;
 
-		void	getRequestInfo(char *buffer);
+		void	getRequestInfo(std::string buffer);
 		void	getFirstLineInfo(std::string request);
+		std::string	getBoundry();
 		
 		void	setHost(std::string request);
 		void	setMethod(std::string method);
@@ -42,7 +43,7 @@ namespace ft
 		void	setProtocol(std::string protocol);
 
 		public:
-		Request(char *client_buffer);
+		Request(std::string client_buffer);
 		~Request();
 		std::string	getMethod();
 		std::string	getPath();

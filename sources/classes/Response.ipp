@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/01 16:34:59 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/04 13:22:12 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ ft::Response::Response(ft::Request& request, std::vector<ft::Socket*>& servers):
 	if (checkRedirect())
 		return ;
 	processRequest();
+	std::cout << "Request for server " << _request.getHost() << " was processed." << std::endl;
 }
 
 ft::Response::~Response()
@@ -145,32 +146,32 @@ std::string	ft::Response::getPage()
 	dr = opendir(path_to_dir.data());
 	if( dr == NULL )
 	{
-		// throw ft::Response::ServerNotFoundException();
+		// throw ft::Response::RootNotFpundException();
 		std::cout << "ERROR: DIR NOT FOUND" << std::endl;
 	}
+	std::cout << _location.indexes[0] << std::endl;
 		
 	for(int i = 0; ft::keep() && en->d_name != _location.indexes[0]; i++) {
 		en = readdir(dr);
-	}
-	
-	if (en == NULL)
-	{
-		// throw ft::Response::ServerNotFoundException();
-		std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+		if (en == NULL)
+		{
+			// throw ft::Response::PageNotFpundException();
+			std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+		}
 	}
 
 	path_to_dir.append("/");
 	std::ifstream file(path_to_dir.append(en->d_name).c_str());
 	closedir(dr);
 
-   std::string page = "";
-   std::string line;
-   while(std::getline(file, line))
-   {
+	std::string page = "";
+	std::string line;
+	while(std::getline(file, line))
+	{
 		page.append(line);
 		page.append("\n");
-   }
-   return page;
+	}
+	return page;
 }
 
 bool	ft::Response::checkMethod()
@@ -209,6 +210,7 @@ void	ft::Response::processRequest()
 		//checkBody(); -> body size && content_type
 		//se o size > tamanho maximo, retorna 413 #request-entity-too-large
 		//se o content type != do aceito, retorna 415 #unsupported-media-type
+		saveBodyContent();
 	}
 	else if (_request.getMethod() == "DELETE")
 	{
@@ -217,6 +219,26 @@ void	ft::Response::processRequest()
 	
 }
 
+void	ft::Response::saveBodyContent()
+{
+	std::string body = _request.getBody();
+	
+	size_t	start;
+	size_t	end;
+
+	start = body.find("filename=", 0) + 10;
+	end = body.find("\"", start);
+	
+	std::string	file_name = "./examples/";
+	file_name.append(body.substr(start, end - start));
+
+	start = body.find("PNG", 0) - 1;
+
+	std::ofstream	file;
+	file.open(file_name.data(), std::ios::binary);
+	file << body.substr(start, body.length() - start);
+	file.close();
+}
 
 const char* ft::Response::ServerNotFoundException::what() const throw()
 {
