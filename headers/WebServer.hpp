@@ -34,7 +34,8 @@
 # include "messages.hpp"
 # include "signal_handler.hpp"
 
-# define FT_DEFAULT_CONFIG_FILE "./examples/webserv.conf"
+# define FT_DEFAULT_CONFIG_FILE			"./examples/webserv.conf"
+# define FT_DEFAULT_CLIENT_BUFFER_SIZE	300
 
 namespace ft
 {
