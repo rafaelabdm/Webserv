@@ -53,6 +53,7 @@ namespace ft
 		bool						allowed_methods_get;
 		bool						allowed_methods_post;
 		bool						allowed_methods_delete;
+		std::string					max_body_size;
 
 	}	t_location_config;
 
@@ -97,6 +98,7 @@ namespace ft
 			bool						getLocationAllowedMethodsGet(size_t server_id, size_t location_id) const;
 			bool						getLocationAllowedMethodsPost(size_t server_id, size_t location_id) const;
 			bool						getLocationAllowedMethodsDelete(size_t server_id, size_t location_id) const;
+			std::string					getLocationMaxBodySize(size_t server_id, size_t location_id) const;
 
 		class CouldNotOpenConfigFileException;
 		class BadTokenException;
@@ -132,6 +134,7 @@ namespace ft
 	static void	parseCgiDir(std::string& cgi_dir, const std::vector<std::string>& tokens, size_t& i);
 	static void	parseAutoindex(bool& autoindex, const std::vector<std::string>& tokens, size_t& i);
 	static void	parseAllowedMethods(bool& allowed_methods_get, bool& allowed_methods_post, bool& allowed_methods_delete, const std::vector<std::string>& tokens, size_t& i);
+	static void	parseMaxBodySize(std::string& max_body_size, const std::vector<std::string>& tokens, size_t& i);
 }
 
 std::ostream& operator <<(std::ostream& out, const ft::ConfigFile& config_file);

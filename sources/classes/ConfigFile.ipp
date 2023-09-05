@@ -168,6 +168,11 @@ bool	ft::ConfigFile::getLocationAllowedMethodsDelete(size_t server_id, size_t lo
 	return (this->_servers[server_id].locations[location_id].allowed_methods_delete);
 }
 
+std::string	ft::ConfigFile::getLocationMaxBodySize(size_t server_id, size_t location_id) const
+{
+	return (this->_servers[server_id].locations[location_id].max_body_size);
+}
+
 const char*	ft::ConfigFile::CouldNotOpenConfigFileException::what () const throw ()
 {
 	return (FT_FAIL "Error: Can't open config file.");
@@ -377,6 +382,10 @@ static ft::t_location_config	ft::parseLocations(const std::vector<std::string>& 
 	bool				upload_enabled_initialized = false;
 	bool				cgi_enabled_initialized = false;
 
+	location.allowed_methods_get = true;
+	location.allowed_methods_post = true;
+	location.allowed_methods_delete = true;
+
 	try
 	{
 		while (tokens[i] == "#")
@@ -424,6 +433,8 @@ static ft::t_location_config	ft::parseLocations(const std::vector<std::string>& 
 				parseAutoindex(location.autoindex, tokens, i);
 			else if (tokens[i] == "allowed_methods")
 				parseAllowedMethods(location.allowed_methods_get, location.allowed_methods_post, location.allowed_methods_delete, tokens, i);
+			else if (tokens[i] == "max_body_size")
+				parseMaxBodySize(location.max_body_size, tokens, i);
 			else
 				throw ft::ConfigFile::BadTokenException();
 			i++;
@@ -609,22 +620,45 @@ static void	ft::parseAllowedMethods(bool& allowed_methods_get, bool& allowed_met
 			for (size_t j = 0; j < token_upper.size(); j++)
 				token_upper[j] = std::toupper(token_upper[j]);
 
-			if (token_upper == "GET" && get_init == false)
-				allowed_methods_get = get_init = true;
-			else if (token_upper == "POST" && post_init == false)
-				allowed_methods_post = post_init = true;
-			else if (token_upper == "DELETE" && delete_init == false)
-				allowed_methods_delete = delete_init = true;
-			else
-				throw ft::ConfigFile::BadTokenException();
+			if (token_upper == "GET" && get_init == false) get_init = true;
+			else if (token_upper == "POST" && post_init == false) post_init = true;
+			else if (token_upper == "DELETE" && delete_init == false) delete_init = true;
+			else throw ft::ConfigFile::BadTokenException();
 
 			i++;
 		}
+
+		if (get_init == true || post_init == true || delete_init == true)
+		{
+			if (get_init == false) allowed_methods_get = false;
+			if (post_init == false) allowed_methods_post = false;
+			if (delete_init == false) allowed_methods_delete = false;
+		}
+		allowed_methods_get = true;
+
 		if (i >= tokens.size() || tokens[i] != "#")
 			throw ft::ConfigFile::BadTokenException();
 	}
 	catch (ft::ConfigFile::BadTokenException& e)
 	{ std::cout << "ERROR 11: " << e.what() << std::endl; }
+}
+
+static void	ft::parseMaxBodySize(std::string& max_body_size, const std::vector<std::string>& tokens, size_t& i)
+{
+	try
+	{
+		if (max_body_size != "")
+			throw ft::ConfigFile::BadTokenException();
+		i++;
+		if (i >= tokens.size() || tokens[i] == "#")
+			throw ft::ConfigFile::BadTokenException();
+		max_body_size = tokens[i];
+		i++;
+		if (i >= tokens.size() || tokens[i] != "#")
+			throw ft::ConfigFile::BadTokenException();
+	}
+	catch (ft::ConfigFile::BadTokenException& e)
+	{ std::cout << "ERROR 12: " << e.what() << std::endl; }
 }
 
 std::ostream&	operator <<(std::ostream& out, const ft::ConfigFile& config_file)
@@ -712,9 +746,11 @@ std::ostream&	operator <<(std::ostream& out, const ft::t_location_config& locati
 		out << ((location.autoindex == true)? "[true]\n": "[false]\n");
 
 		out << "\t\t" << GREEN << "allowed_methods: " << RESET_COLOR;
-		out << ((location.allowed_methods_get == true)? "[GET] ": "[]");
-		out << ((location.allowed_methods_post == true)? "[POST] ": "[]");
+		out << ((location.allowed_methods_get == true)? "[GET] ": "[] ");
+		out << ((location.allowed_methods_post == true)? "[POST] ": "[] ");
 		out << ((location.allowed_methods_delete == true)? "[DELETE]\n": "[]\n");
+
+		out << "\t\t" << GREEN << "max_body_size " << RESET_COLOR << "[" << location.max_body_size << "]" << "\n";
 
 		out << "\t}" << std::endl;
 
