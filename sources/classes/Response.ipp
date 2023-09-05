@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/04 13:22:12 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/05 10:40:01 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 ft::Response::Response(ft::Request& request, std::vector<ft::Socket*>& servers): _request(request), _server(setServer(servers))
 {
 	std::cout << "Request for server " << _request.getHost() << " is being processed." << std::endl;
+
 	checkProtocol();
-	if (!checkEndpoint() || !checkMethod())
-	{
-		handleNotFound();
+	if (!checkEndpoint())
 		return ;
-	}
+	if (!checkMethod())
+		return ;
 	if (checkRedirect())
 		return ;
 	processRequest();
@@ -96,6 +96,7 @@ bool	ft::Response::checkEndpoint()
 		}
 	}
 	_status_code = "404"; //not found
+	handleNotFound();
 	return (false);
 }
 
@@ -176,13 +177,16 @@ std::string	ft::Response::getPage()
 
 bool	ft::Response::checkMethod()
 {
-	if (_location.allowed_methods_get && _request.getMethod() == "GET")
+	if (_location.allowed_methods_get == true && _request.getMethod() == "GET")
 		return (true);
-	if (_location.allowed_methods_post && _request.getMethod() == "POST")
+	if (_location.allowed_methods_post == true && _request.getMethod() == "POST")
 		return (true);
-	if (_location.allowed_methods_delete && _request.getMethod() == "DELETE")
+	if (_location.allowed_methods_delete == true && _request.getMethod() == "DELETE")
 		return (true);
 	_status_code = "405"; //method not allowed
+	_content_type = "text/plain";
+	_body = "method not allowed";
+	_content_length = numberToString(_body.size());
 	return (false);
 }
 
@@ -207,10 +211,15 @@ void	ft::Response::processRequest()
 	}
 	else if (_request.getMethod() == "POST")
 	{
-		//checkBody(); -> body size && content_type
-		//se o size > tamanho maximo, retorna 413 #request-entity-too-large
+		//if (_request.getBody() > _locaction.max_size)
+			//	retorna 413 #request-entity-too-large
 		//se o content type != do aceito, retorna 415 #unsupported-media-type
 		saveBodyContent();
+		_status_code = 201;
+		_body = "Created";
+		_connection_type = "Keep-alive";
+		_content_type = "text/plain";
+		_content_length = "7";
 	}
 	else if (_request.getMethod() == "DELETE")
 	{
@@ -229,10 +238,12 @@ void	ft::Response::saveBodyContent()
 	start = body.find("filename=", 0) + 10;
 	end = body.find("\"", start);
 	
-	std::string	file_name = "./examples/";
+	std::string	file_name = "./examples/"; //dir to save files
 	file_name.append(body.substr(start, end - start));
 
-	start = body.find("PNG", 0) - 1;
+	start = body.find("Content-Type:", 0);
+	end = body.find("\n", start) + 3;
+	start = end;
 
 	std::ofstream	file;
 	file.open(file_name.data(), std::ios::binary);

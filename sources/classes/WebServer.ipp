@@ -127,7 +127,7 @@ void	ft::WebServer::recv(int client_fd, struct epoll_event& events_setup)
 
 	memset(client_buffer, 0, FT_DEFAULT_CLIENT_BUFFER_SIZE);
 	events_setup.data.fd = client_fd;
-	while (bytes != -1)
+	while (bytes != -1 && bytes != 0)
 	{
 		std::cout << "stuck in the recv loop" << std::endl;
 		bytes = ::recv(client_fd, client_buffer, sizeof(client_buffer), 0);
@@ -137,13 +137,19 @@ void	ft::WebServer::recv(int client_fd, struct epoll_event& events_setup)
 	// std::cout << "REQUEST:\n" << total_request << std::endl;
 
 //----------------------TEST-------------------------------
-	Request request(total_request);
-	Response response(request, _connections);
-	std::string msg = response.getResponse();
-	::send(client_fd, msg.data(), msg.length(), 0);
+	std::cout << RED << "testing area" << RESET_COLOR << std::endl;
+	if (total_request.length() > 0)
+	{
+		Request request(total_request);
+		Response response(request, _connections);
+		std::string msg = response.getResponse();
+		::send(client_fd, msg.data(), msg.length(), 0);
+	}
 	events_setup.data.fd = client_fd;
 	epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
 	close(client_fd);
+	std::cout << RED << "finishing testing area" << RESET_COLOR << std::endl;
+
 //---------------------------------------------------------
 
 	// events_setup.events = EPOLLOUT;
