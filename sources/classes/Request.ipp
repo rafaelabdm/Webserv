@@ -19,12 +19,12 @@ ft::Request::Request(std::string client_buffer) : _endpoint(""),  _method(""), _
 
 ft::Request::~Request()
 {
-	// std::cout << RED << "Method: [" << _method << "]" << RESET_COLOR << std::endl;
-	// std::cout << YELLOW << "Endpoint: [" << _endpoint << "]" << RESET_COLOR << std::endl;
-	// std::cout << CYAN << "Protocol: [" << _protocol << "]" << RESET_COLOR << std::endl;
-	// std::cout << GREEN << "Host: [" << _host << "]" << RESET_COLOR << std::endl;
-	// std::cout << MAGENTA << "Content-Type: [" << _content_type << "]" << RESET_COLOR << std::endl;
-	// std::cout << "Content-Length: [" << _content_length << "]" << std::endl;
+	std::cout << RED << "Method: [" << _method << "]" << RESET_COLOR << std::endl;
+	std::cout << YELLOW << "Endpoint: [" << _endpoint << "]" << RESET_COLOR << std::endl;
+	std::cout << CYAN << "Protocol: [" << _protocol << "]" << RESET_COLOR << std::endl;
+	std::cout << GREEN << "Host: [" << _host << "]" << RESET_COLOR << std::endl;
+	std::cout << MAGENTA << "Content-Type: [" << _content_type << "]" << RESET_COLOR << std::endl;
+	std::cout << BLUE << "Content-Length: [" << _content_length << "]" << RESET_COLOR << std::endl;
 	// std::cout << BLUE << "Body: [" << _body << "]" << RESET_COLOR << std::endl;
 }
 

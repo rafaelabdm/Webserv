@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/06 12:46:50 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/06 18:30:11 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,10 @@ void	ft::Response::processRequest()
 	{
 		_body = getPage();
 		_content_type = "text/html"; //depois ver como vamos checar isso pra devolver
+		if (_request.getEndpoint().find(".png") != std::string::npos)
+			_content_type = "image/png";
 		_content_length = numberToString(_body.size());
+		_connection_type = "Keep-alive";
 	}
 	else if (_request.getMethod() == "POST")
 	{
@@ -251,21 +254,7 @@ void	ft::Response::deleteFile()
 	
 	file_name.append(body);
 	status = std::remove(file_name.data());
-	if (status == 0)
-	{
-		_status_code = "204";
-		_body = "File Uploaded";
-		_connection_type = "Keep-alive";
-		_content_type = "text/plain";
-		_content_length = "7";
-	}
-	else
-	{
-		_status_code = "404";
-		_body = "File is not in the Web Server";
-		_content_type = "text/html";
-		_content_length = numberToString(_body.size());
-	}
+	!status ? _status_code = "204" : _status_code = "404";
 }
 
 void	ft::Response::saveBodyContent()
