@@ -6,25 +6,30 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/16 11:26:07 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/08/31 11:50:12 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
 
-ft::Socket::Socket(t_server_config& server) : _server(server)
+ft::Socket::Socket(const t_server_config& server) : _server(server)
 {
+	std::cout << FT_SETUP << "Setting up " << GREEN << this->_server.server_names[0] << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << "." << std::endl;
+
 	loadAddressInfo();
 	createSocket();
+
+	std::cout << FT_OK << GREEN << this->_server.server_names[0] << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << " is in a nice." << std::endl;
 }
 
 ft::Socket::~Socket()
 {
+	std::cout << FT_CLOSE << "Closing " << GREEN << this->_server.server_names[0] << RESET_COLOR << " socket on port " << GREEN << this->_server.port << RESET_COLOR << "." << std::endl;
 }
 
 void	ft::Socket::setAddrStruct(void)
 {
-	memset(&_hints, 0, sizeof(_hints));
+	std::memset(&_hints, 0, sizeof(_hints));
 	_hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
 	_hints.ai_socktype = SOCK_STREAM; //TCP or UDP
 	_hints.ai_flags = AI_PASSIVE; // allows bind
@@ -35,25 +40,47 @@ void	ft::Socket::loadAddressInfo()
 	int	status;
 
 	setAddrStruct();
-	status = getaddrinfo(_server.host.c_str(), _server.port.c_str(), &_hints, &_servinfo);
-	if(status)
+	try
 	{
-		std::cerr << RED << "getaddrinfo error: " << RESET_COLOR << gai_strerror(status) << std::endl;
-		throw SocketException();
+		status = getaddrinfo(this->_server.server_names[0].c_str(), this->_server.port.c_str(), &_hints, &_servinfo);
+
+		if(status)
+			throw GetAddrInfoException();
+		std::cout << FT_OK << "Address loaded successfully!" << std::endl;
 	}
-	std::cout << GREEN << "Address loaded successfully!" << RESET_COLOR << std::endl;
+	catch (Socket::GetAddrInfoException& e)
+	{
+		std::cerr << e.what() << gai_strerror(status) << std::endl;
+	}
 }
 
 void	ft::Socket::createSocket()
 {
 	_sock = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
-	if (_sock < 0)
+
+	try
 	{
-		std::cerr << RED << "socket error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(_servinfo);
-		throw SocketException();
+		if (_sock < 0)
+			throw SocketException();
+		std::cout << FT_OK << "Socket created successfully!" << std::endl;
+		
+		int	yes = 1;
+
+		if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
+			throw SetSockOptException();
+		std::cout << FT_OK << "Setsockopt successfull!" << std::endl;
+
+		int status = fcntl(_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC); //non_blocking
+		if (status < 0)
+			throw SetSockOptException();
+		std::cout << FT_OK << "fcntl successfull!" << std::endl;
+
 	}
-	std::cout << GREEN << "Socket created successfully!" << RESET_COLOR << std::endl;
+	catch (SocketException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+		freeaddrinfo(_servinfo);
+	}
 }
 
 int	ft::Socket::getSock()
@@ -63,40 +90,43 @@ int	ft::Socket::getSock()
 
 void	ft::Socket::bind()
 {
-	int status;
-	int	yes = 1;
-	
-	if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
-	{
-		std::cerr << RED << "setsockopt error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(_servinfo);
-		throw SocketException();
-	}
-	std::cout << GREEN << "Setsockopt successfull!" << RESET_COLOR << std::endl;
 
-	status = ::bind(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
-	if (status < 0)
+	try
 	{
-		std::cerr << RED << "bind error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(_servinfo);
-		throw SocketException();
+		int status;
+
+		status = ::bind(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
+		if (status < 0)
+			throw BindException();
+		std::cout << FT_OK << "Bind successfull!" << std::endl;
 	}
-	std::cout << GREEN << "Bind successfull!" << RESET_COLOR << std::endl;
+	catch (SetSockOptException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+	}
+	catch (BindException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+	}
 
 	freeaddrinfo(_servinfo);
 }
 
 void	ft::Socket::listen()
 {
-	int status;
-
-	status = ::listen(_sock, 10);
-	if (status < 0)
+	try
 	{
-		std::cerr << RED << "listen error: " << RESET_COLOR << strerror(errno) << std::endl;
-		throw SocketException();
+		int status;
+
+		status = ::listen(_sock, 10);
+		if (status < 0)
+			throw ListenException();
+		std::cout << FT_OK << "Listen successfull!" << std::endl;
 	}
-	std::cout << GREEN << "Listen successfull!" << RESET_COLOR << std::endl;
+	catch (ListenException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+	}
 }
 
 int	ft::Socket::accept()
@@ -105,32 +135,96 @@ int	ft::Socket::accept()
 	socklen_t addr_size;
 	int	new_socket;
 
-	addr_size = sizeof their_addr;
-	new_socket = ::accept(_sock, (struct sockaddr *)&their_addr, &addr_size);
-	if (new_socket < 0)
+	try
 	{
-		std::cerr << RED << "accept error: " << RESET_COLOR << strerror(errno) << std::endl;
-		throw SocketException();
+		addr_size = sizeof their_addr;
+		new_socket = ::accept(_sock, (struct sockaddr *)&their_addr, &addr_size);
+		if (new_socket < 0)
+			throw AcceptException();
+		std::cout << FT_OK << "Accept successfull!" << std::endl;
 	}
-	std::cout << GREEN << "Accept successfully!" << RESET_COLOR << std::endl;
+	catch (AcceptException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+	}
 	return (new_socket);
 }
 
 void	ft::Socket::connect()
 {
-	int status;
-
-	status = ::connect(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
-	if (status < 0)
+	try
 	{
-		std::cerr << RED << "connect error: " << RESET_COLOR << strerror(errno) << std::endl;
-		freeaddrinfo(_servinfo);
-		throw SocketException();
+		int status;
+
+		status = ::connect(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
+		if (status < 0)
+			throw ConnectException();
+		std::cout << FT_OK << "Connect successfull!" << std::endl;
 	}
-	std::cout << GREEN << "Connect successfull!" << RESET_COLOR << std::endl;
+	catch (ConnectException& e)
+	{
+		std::cerr << e.what() << strerror(errno) << std::endl;
+		freeaddrinfo(_servinfo);
+	}
+}
+
+std::string	ft::Socket::getPort()
+{
+	return (_server.port);
+}
+
+std::vector<std::string> ft::Socket::getHosts()
+{
+	std::string host;
+	std::vector<std::string>hosts;
+	
+	for (long unsigned int i = 0; i < _server.server_names.size(); i++)
+	{
+		host = "";
+		host.append(_server.server_names[i]);
+		host.append(":");
+		host.append(_server.port);
+		hosts.push_back(host);
+	}
+	return (hosts);
+}
+
+ft::t_server_config	ft::Socket::getServer()
+{
+	return (_server);
+}
+
+const char* ft::Socket::GetAddrInfoException::what() const throw()
+{
+	return (FT_FAIL "getaddrinfo error: ");
 }
 
 const char* ft::Socket::SocketException::what() const throw()
 {
-	return ("erro :/");
+	return (FT_FAIL "socket error: ");
+}
+
+const char* ft::Socket::SetSockOptException::what() const throw()
+{
+	return (FT_FAIL "setsockopt error: ");
+}
+
+const char* ft::Socket::BindException::what() const throw()
+{
+	return (FT_FAIL "bind error: ");
+}
+
+const char* ft::Socket::ListenException::what() const throw()
+{
+	return (FT_FAIL "bind error: ");
+}
+
+const char* ft::Socket::AcceptException::what() const throw()
+{
+	return (FT_FAIL "accept error: ");
+}
+
+const char* ft::Socket::ConnectException::what() const throw()
+{
+	return (FT_FAIL "accept error: ");
 }

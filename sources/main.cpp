@@ -3,35 +3,59 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/02 09:50:42 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/15 10:23:51 by rabustam         ###   ########.fr       */
+/*   Created: 2023/08/11 18:24:26 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/08/11 18:24:26 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Socket.hpp"
-#include "WebServer.hpp"
-#include "Request.hpp"
+#include <help_option.hpp>
+#include <messages.hpp>
+#include <WebServer.hpp>
+#include <Request.hpp>
 
-
-//c++ -Wall -Wextra -Werror -std=c++98 src/main.cpp src/Socket.cpp -o webserv
-
-int	main(void)
+/**
+ * @brief Verify the number of arguments
+ * 
+ * @param argc Number of arguments
+ * @return true if argc is bigger than 2
+ * @return false if is equal or lower than 2
+ */
+static bool	check_argc(const int argc)
 {
-	WS::WebServer server;
-	// try
-	// {
-	// 	WS::Socket sk("localhost", "8000");
-	// 	sk.bind();
-	// 	sk.listen();
-	// 	while(1)
-	// 		sk.accept();
-	// }
-	// catch (WS::Socket::SocketException &e)
-	// {
-	// 	std::cout << e.what() << std::endl;
-	// }
-	// char buf[225] = "GET / HTTP/1.1\n bla bla bla";
-	// WS::Request req(buf);
+	if (argc > 2)
+		std::cout << FT_MANY_ARGS << std::endl;
+
+	return (argc > 2);
 }
+
+int	main(const int argc, const char** argv, const char** envp)
+{
+	if (ft::help_option(argv))
+		return (0);
+
+	if (check_argc(argc))
+		return (1);
+
+	std::string	configuration_file;
+	configuration_file = (argc == 1 ? FT_DEFAULT_CONFIG_FILE : argv[1]);
+	ft::WebServer	ws(configuration_file.c_str());
+
+	ws.start_servers();
+
+	return (0);
+	(void) envp;
+}
+
+// int main(void)
+// {
+// 	char buffer[300];
+
+// 	int fd = open("/home/rabustam/42sp/wb_main/examples/request_test", O_RDONLY);
+// 	if (fd < 0)
+// 		return (42);
+// 	read(fd, &buffer, 300);
+
+// 	ft::Request req(buffer);
+// }

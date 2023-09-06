@@ -22,4 +22,4 @@
 # define MAGENTA      "\033[0;35m"
 # define CYAN         "\033[0;36m"
 
-#endif // COLORS_HPP
+#endif /* colors_hpp */
