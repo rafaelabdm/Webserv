@@ -126,7 +126,6 @@ void	ft::WebServer::recv(int client_fd, struct epoll_event& events_setup)
 	int			bytes = 1;
 
 	memset(client_buffer, 0, FT_DEFAULT_CLIENT_BUFFER_SIZE);
-	events_setup.data.fd = client_fd;
 	while (bytes != -1 && bytes != 0)
 	{
 		std::cout << "stuck in the recv loop" << std::endl;

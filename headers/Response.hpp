@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/04 12:28:41 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/06 11:59:08 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include "Socket.hpp"
 # include "signal_handler.hpp"
 # include <dirent.h>
+# include <cstdio>
 # include <vector>
 # include <map>
 
@@ -44,12 +45,14 @@ namespace ft
 		bool			checkEndpoint();
 		bool			checkMethod();
 		bool			checkRedirect();
+		bool			checkIndexes(std::string file_name);
 		void			processRequest();
 		void			handleNotFound();
 		std::string		numberToString(int size);
 		std::string		getErrorPage();
 		std::string		getPage();
 		void			saveBodyContent();
+		void			deleteFile();
 
 		
 		public:

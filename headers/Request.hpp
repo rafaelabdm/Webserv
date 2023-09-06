@@ -29,6 +29,7 @@ namespace ft
 		std::string	_protocol;
 		std::string	_host;
 		std::string _content_type;
+		std::string _content_length;
 		std::string	_body;
 
 		void	getRequestInfo(std::string buffer);
@@ -40,6 +41,7 @@ namespace ft
 		void	setPath(std::string path);
 		void	setBody(std::string request);
 		void	setContentType(std::string content);
+		void	setContentLength(std::string content);
 		void	setProtocol(std::string protocol);
 
 		public:
@@ -51,6 +53,7 @@ namespace ft
 		std::string	getHost();
 		std::string	getEndpoint();
 		std::string	getContentType();
+		std::string	getContentLength();
 		std::string	getBody();
 	};
 }

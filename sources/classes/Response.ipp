@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/06 09:05:48 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/06 12:46:50 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ ft::Response::~Response()
 {
 }
 
-
-//	retorno da classe Response para o WebServer
 std::string ft::Response::getResponse()
 {
 	std::string response = "";
@@ -124,7 +122,7 @@ void	ft::Response::handleNotFound()
 std::string	ft::Response::getErrorPage()
 {
 	std::string error_page = _server.error_pages[_status_code];
-	std::string path = ERROR_PAGE_PATH;
+	std::string path = "/home/rabustam/42sp/webserver_backup/examples/";
 	path.append(error_page);
 	std::ifstream file(path.c_str());
 
@@ -138,6 +136,16 @@ std::string	ft::Response::getErrorPage()
 	return page;
 }
 
+bool	ft::Response::checkIndexes(std::string file_name)
+{
+	for (long unsigned int i = 0; i < _location.indexes.size(); i++)
+	{
+		if (file_name == _location.indexes[i])
+			return (true);
+	}
+	return (false);
+}
+
 std::string	ft::Response::getPage()
 {
 	DIR*			dr;
@@ -148,17 +156,19 @@ std::string	ft::Response::getPage()
 	dr = opendir(path_to_dir.data());
 	if( dr == NULL )
 	{
-		// throw ft::Response::RootNotFpundException();
 		std::cout << "ERROR: DIR NOT FOUND" << std::endl;
+		_status_code = "500";
+		return (getErrorPage());
 	}
 	
 	//make a function to check all indexes :)
-	for(int i = 0; ft::keep() && en->d_name != _location.indexes[0]; i++) {
+	while (ft::keep() && !checkIndexes(en->d_name)) {
 		en = readdir(dr);
 		if (en == NULL)
 		{
-			// throw ft::Response::PageNotFpundException();
 			std::cout << "ERROR: FILE NOT FOUND" << std::endl;
+			_status_code = "500";
+			return (getErrorPage());
 		}
 	}
 
@@ -212,21 +222,50 @@ void	ft::Response::processRequest()
 	}
 	else if (_request.getMethod() == "POST")
 	{
-		//if (_request.getBody() > _locaction.max_size)
+		if (atoi(_request.getContentLength().data()) > atoi(_location.max_body_size.data()))
+		{
 			//	retorna 413 #request-entity-too-large
+			_status_code = "413";
+			_connection_type = "Keep-alive";
+			_body = getPage();
+			_content_type = "text/html"; //depois ver como vamos checar isso pra devolver
+			_content_length = numberToString(_body.size());
+			return ;
+		}
 		//se o content type != do aceito, retorna 415 #unsupported-media-type
 		saveBodyContent();
-		_status_code = 201;
-		_body = "Created";
+		_body = getPage();
+		_content_type = "text/html"; //depois ver como vamos checar isso pra devolver
+		_content_length = numberToString(_body.size());
+	}
+	else if (_request.getMethod() == "DELETE")
+		deleteFile();
+	
+}
+
+void	ft::Response::deleteFile()
+{
+	std::string body = _request.getBody();
+	std::string	file_name = "./examples/"; //dir to save files
+	int			status;
+	
+	file_name.append(body);
+	status = std::remove(file_name.data());
+	if (status == 0)
+	{
+		_status_code = "204";
+		_body = "File Uploaded";
 		_connection_type = "Keep-alive";
 		_content_type = "text/plain";
 		_content_length = "7";
 	}
-	else if (_request.getMethod() == "DELETE")
+	else
 	{
-		
+		_status_code = "404";
+		_body = "File is not in the Web Server";
+		_content_type = "text/html";
+		_content_length = numberToString(_body.size());
 	}
-	
 }
 
 void	ft::Response::saveBodyContent()

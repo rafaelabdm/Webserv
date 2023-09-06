@@ -12,7 +12,7 @@
 
 #include "Request.hpp"
 
-ft::Request::Request(std::string client_buffer) : _endpoint(""),  _method(""), _body("")
+ft::Request::Request(std::string client_buffer) : _endpoint(""),  _method(""), _content_length("") ,_body("")
 {
 	getRequestInfo(client_buffer);
 }
@@ -24,7 +24,8 @@ ft::Request::~Request()
 	// std::cout << CYAN << "Protocol: [" << _protocol << "]" << RESET_COLOR << std::endl;
 	// std::cout << GREEN << "Host: [" << _host << "]" << RESET_COLOR << std::endl;
 	// std::cout << MAGENTA << "Content-Type: [" << _content_type << "]" << RESET_COLOR << std::endl;
-	std::cout << BLUE << "Body: [" << _body << "]" << RESET_COLOR << std::endl;
+	// std::cout << "Content-Length: [" << _content_length << "]" << std::endl;
+	// std::cout << BLUE << "Body: [" << _body << "]" << RESET_COLOR << std::endl;
 }
 
 
@@ -60,6 +61,11 @@ std::string	ft::Request::getContentType()
 	return (_content_type);
 }
 
+std::string	ft::Request::getContentLength()
+{
+	return (_content_length);
+}
+
 std::string	ft::Request::getBody()
 {
 	return (_body);
@@ -88,12 +94,11 @@ std::string ft::Request::getBoundry()
 
 void	ft::Request::setBody(std::string request)
 {
-	size_t	start;
-	size_t	end;
 	std::string boundry;
+	size_t		start;
+	size_t		end;
 
-	std::cout << "Content Type: [" << _content_type << "]" << std::endl;
-	if (_content_type.find("boundary", 0))
+	if (_content_type.find("boundary", 0) != std::string::npos)
 	{
 		boundry = getBoundry();
 		start = request.find("boundary=", 0) + boundry.length() + 11;
@@ -102,9 +107,8 @@ void	ft::Request::setBody(std::string request)
 		_body = request.substr(start, end - start);
 		return ;
 	}
-	start = request.find("\n\n", 0) + 2;
+	start = request.rfind("\n", request.length()) + 1;
 	_body = request.substr(start, request.length() - start);
-	_body = "body";
 }
 
 void	ft::Request::setHost(std::string request)
@@ -128,6 +132,19 @@ void	ft::Request::setContentType(std::string request)
 	start += 14;
 	end = request.find("\r", start);
 	_content_type = request.substr(start, end - start);
+}
+
+void	ft::Request::setContentLength(std::string request)
+{
+	size_t						start;
+	size_t						end;
+
+	start = request.find("Content-Length: ", 0);
+	if (start == std::string::npos)
+		return ;
+	start += 16;
+	end = request.find("\r", start);
+	_content_length = request.substr(start, end - start);
 }
 
 void	ft::Request::setProtocol(std::string protocol)
@@ -164,6 +181,7 @@ void	ft::Request::getRequestInfo(std::string buffer)
 	getFirstLineInfo(buffer);
 	setHost(buffer);
 	setContentType(buffer);
-	if (_method == "POST")
+	setContentLength(buffer);
+	if (_method == "POST" || _method == "DELETE")
 		setBody(buffer);
 }
