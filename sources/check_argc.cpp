@@ -1,24 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   messages.hpp                                       :+:      :+:    :+:   */
+/*   check_argc.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 18:45:51 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 18:45:51 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/09/07 14:25:00 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/09/07 14:25:00 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MESSAGES_HPP
-# define MESSAGES_HPP
+#include <check_argc.hpp>
 
-# include <colors.hpp>
+bool	ft::check_argc(const int argc)
+{
+	if (argc > 2)
+		std::cout << FT_MANY_ARGS << std::endl;
 
-# define FT_OK		"[" GREEN	"  OK   "	RESET_COLOR "] "
-# define FT_FAIL	"[" RED		" FAIL  "	RESET_COLOR "] "
-# define FT_WARNING	"[" YELLOW	"WARNING"	RESET_COLOR "] "
-# define FT_SETUP	"[" BLUE	" SETUP "	RESET_COLOR "] "
-# define FT_CLOSE	"[" BLUE	" CLOSE "	RESET_COLOR "] "
-
-#endif // MESSAGES_HPP
+	return (argc > 2);
+}
