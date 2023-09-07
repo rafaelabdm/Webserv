@@ -22,12 +22,9 @@ int	main(const int argc, const char** argv, const char** envp)
 	if (ft::check_argc(argc))
 		return (1);
 
-	std::string	configuration_file;
-	configuration_file = (argc == 1 ? FT_DEFAULT_CONFIG_FILE : argv[1]);
-	ft::WebServer	ws(configuration_file.c_str());
+	ft::WebServer	ws(argv[1], envp);
 
 	ws.start_servers();
 
 	return (0);
-	(void) envp;
 }

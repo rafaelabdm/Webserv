@@ -12,6 +12,9 @@
 
 #include <ConfigFile.hpp>
 
+ft::ConfigFile::ConfigFile(void)
+{ return; }
+
 ft::ConfigFile::ConfigFile(const std::string& config_file)
 {
 	std::string					fileContent = ft::readFileContents(config_file);

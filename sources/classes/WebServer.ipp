@@ -12,14 +12,27 @@
 
 #include "WebServer.hpp"
 
-ft::WebServer::WebServer(const std::string& config_file) : _config_file(config_file)
+ft::WebServer::WebServer(const char* configuration_file, const char** envp)
 {
+	(void) envp;
+
+	std::string	str_configuration_file;
+	if (configuration_file == NULL)
+		str_configuration_file = FT_DEFAULT_CONFIG_FILE;
+	else
+		str_configuration_file = configuration_file;
+
+	if (str_configuration_file == "")
+		str_configuration_file = FT_DEFAULT_CONFIG_FILE;
+
 	std::cout
 		<< FT_SETUP
 		<< "Setting up Web server from "
-		<< GREEN << config_file << RESET_COLOR
+		<< GREEN << str_configuration_file << RESET_COLOR
 		<< " file."
 		<< std::endl;
+
+	_config_file = ConfigFile(str_configuration_file);
 
 	for (size_t i = 0; ft::keep() && i < _config_file.size(); i++)
 		_connections.push_back(new ft::Socket(_config_file.getServer(i)));

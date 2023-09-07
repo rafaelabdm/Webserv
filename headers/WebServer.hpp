@@ -59,7 +59,7 @@ namespace ft
 		std::string		get_page();
 
 		public:
-		WebServer(const std::string& config_file);
+		WebServer(const char* configuration_file, const char** envp);
 		~WebServer();
 		void	start_servers();
 

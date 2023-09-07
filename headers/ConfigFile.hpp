@@ -68,6 +68,7 @@ namespace ft
 	class ConfigFile
 	{
 		public:
+			ConfigFile(void);
 			ConfigFile(const std::string& file);
 			~ConfigFile(void);
 
