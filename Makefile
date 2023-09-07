@@ -10,11 +10,11 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME		 = webserv
+NAME = webserv
 
 SRC_DIR	 = ./sources
 BLD_DIR	 = ./build
-HDR_DIR	 = ./headers $(SRC_DIR)/classes $(SRC_DIR)/templates
+HDR_DIR	 = ./headers $(SRC_DIR)/classes
 
 SRC	 = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ	 = $(patsubst $(SRC_DIR)/%.cpp,$(BLD_DIR)/%.o,$(SRC))
@@ -25,15 +25,8 @@ CXX		 = c++
 DEL		 = rm -rf
 MKDIR	 = mkdir -p
 
-CXXFLAGS	 = -Wall -Wextra -Werror -std=c++98 \
-			   -g3 -fmax-errors=1
+CXXFLAGS	 = -Wall -Wextra -Werror -std=c++98
 DEPFLAGS	 = -MMD -MF
-VALFLAGS	 = --leak-check=full \
-			   --show-leak-kinds=all \
-			   --track-origins=yes \
-			   --track-fds=yes \
-			   --show-reachable=yes \
-			   --error-limit=yes
 
 all: $(NAME)
 
@@ -48,13 +41,6 @@ fclean: clean
 
 re: fclean all
 
-test: $(NAME)
-	clear
-	@./$(NAME)
-
-valgrind: $(NAME)
-	valgrind $(VALFLAGS) ./$(NAME)
-
 $(BLD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BLD_DIR)
 	$(CXX) $(CXXFLAGS) $(HDR) -c $< -o $@ $(DEPFLAGS) $(@:.o=.d)
 
@@ -63,4 +49,4 @@ $(BLD_DIR):
 
 -include $(DEP)
 
-.PHONY: all clean fclean re test help valgrind
+.PHONY: all clean fclean re
