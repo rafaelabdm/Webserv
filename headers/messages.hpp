@@ -11,14 +11,14 @@
 /* ************************************************************************** */
 
 #ifndef MESSAGES_HPP
-# define MESSAGES_HPP
+#define MESSAGES_HPP
 
-# include <colors.hpp>
+#include <colors.hpp>
 
-# define FT_OK		"[" GREEN	"  OK   "	RESET_COLOR "] "
-# define FT_FAIL	"[" RED		" FAIL  "	RESET_COLOR "] "
-# define FT_WARNING	"[" YELLOW	"WARNING"	RESET_COLOR "] "
-# define FT_SETUP	"[" BLUE	" SETUP "	RESET_COLOR "] "
-# define FT_CLOSE	"[" BLUE	" CLOSE "	RESET_COLOR "] "
+#define FT_OK "[" GREEN "  OK   " RESET_COLOR "] "
+#define FT_ERROR "[" RED " ERROR " RESET_COLOR "] "
+#define FT_WARNING "[" YELLOW "WARNING" RESET_COLOR "] "
+#define FT_SETUP "[" BLUE " SETUP " RESET_COLOR "] "
+#define FT_CLOSE "[" BLUE " CLOSE " RESET_COLOR "] "
 
 #endif // MESSAGES_HPP

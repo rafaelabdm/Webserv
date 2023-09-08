@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.ipp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/08/31 11:50:12 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/08 10:14:58 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,35 +196,35 @@ ft::t_server_config	ft::Socket::getServer()
 
 const char* ft::Socket::GetAddrInfoException::what() const throw()
 {
-	return (FT_FAIL "getaddrinfo error: ");
+	return (FT_ERROR "getaddrinfo error: ");
 }
 
 const char* ft::Socket::SocketException::what() const throw()
 {
-	return (FT_FAIL "socket error: ");
+	return (FT_ERROR "socket error: ");
 }
 
 const char* ft::Socket::SetSockOptException::what() const throw()
 {
-	return (FT_FAIL "setsockopt error: ");
+	return (FT_ERROR "setsockopt error: ");
 }
 
 const char* ft::Socket::BindException::what() const throw()
 {
-	return (FT_FAIL "bind error: ");
+	return (FT_ERROR "bind error: ");
 }
 
 const char* ft::Socket::ListenException::what() const throw()
 {
-	return (FT_FAIL "bind error: ");
+	return (FT_ERROR "bind error: ");
 }
 
 const char* ft::Socket::AcceptException::what() const throw()
 {
-	return (FT_FAIL "accept error: ");
+	return (FT_ERROR "accept error: ");
 }
 
 const char* ft::Socket::ConnectException::what() const throw()
 {
-	return (FT_FAIL "accept error: ");
+	return (FT_ERROR "accept error: ");
 }

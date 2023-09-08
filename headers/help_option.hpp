@@ -11,11 +11,11 @@
 /* ************************************************************************** */
 
 #ifndef HELP_OPTION_HPP
-# define HELP_OPTION_HPP
+#define HELP_OPTION_HPP
 
-# include <iostream>
+#include <iostream>
 
-namespace	ft
+namespace ft
 {
 	/**
 	 * @brief Check if the given option is a help option.
@@ -27,7 +27,7 @@ namespace	ft
 	 * @return True if the option is a help option or false if not.
 	 *
 	 */
-	bool	help_option(const char**);
+	bool help_option(const char **);
 }
 
 #endif // HELP_OPTION_HPP

@@ -12,7 +12,7 @@
 
 #include <check_argc.hpp>
 
-bool	ft::check_argc(const int argc)
+bool ft::check_argc(const int argc)
 {
 	if (argc > 2)
 		std::cout << FT_MANY_ARGS << std::endl;

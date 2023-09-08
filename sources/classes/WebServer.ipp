@@ -59,13 +59,6 @@ ft::WebServer::~WebServer()
 	std::cout << FT_OK << "Web server closed." << std::endl;
 }
 
-
-
-
-
-
-
-
 void	ft::WebServer::epoll()
 {
 	try
@@ -216,15 +209,15 @@ void	ft::WebServer::start_servers()
 
 const char* ft::WebServer::EpollException::what() const throw()
 {
-	return (FT_FAIL "epoll error: ");
+	return (FT_ERROR "epoll error: ");
 }
 
 const char* ft::WebServer::EpollCtlException::what() const throw()
 {
-	return (FT_FAIL "epoll_ctl error: ");
+	return (FT_ERROR "epoll_ctl error: ");
 }
 
 const char* ft::WebServer::EpollWaitException::what() const throw()
 {
-	return (FT_FAIL "epoll_wait error: ");
+	return (FT_ERROR "epoll_wait error: ");
 }

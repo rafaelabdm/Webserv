@@ -14,7 +14,7 @@
 #include <help_option.hpp>
 #include <WebServer.hpp>
 
-int	main(const int argc, const char** argv, const char** envp)
+int main(const int argc, const char **argv, const char **envp)
 {
 	if (ft::help_option(argv))
 		return (0);
@@ -22,9 +22,18 @@ int	main(const int argc, const char** argv, const char** envp)
 	if (ft::check_argc(argc))
 		return (1);
 
-	ft::WebServer	ws(argv[1], envp);
+	try
+	{
+		ft::WebServer ws(argv[1], envp);
 
-	ws.start_servers();
+		ws.start_servers();
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+		std::cout
+			<< "Webserv can't operate in an unsafe environment." << std::endl;
+	}
 
 	return (0);
 }

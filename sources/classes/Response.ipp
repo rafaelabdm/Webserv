@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.ipp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/06 18:30:11 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/08 10:14:58 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,10 +282,10 @@ void	ft::Response::saveBodyContent()
 
 const char* ft::Response::ServerNotFoundException::what() const throw()
 {
-	return (FT_FAIL "server not found :/");
+	return (FT_ERROR "server not found :/");
 }
 
 const char* ft::Response::WrongProtocolException::what() const throw()
 {
-	return (FT_FAIL "Protocol not accepted");
+	return (FT_ERROR "Protocol not accepted");
 }

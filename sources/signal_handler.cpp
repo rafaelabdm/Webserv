@@ -12,24 +12,22 @@
 
 #include <signal_handler.hpp>
 
-static bool	ctrl_c_pressed = false;
+static bool ctrl_c_pressed = false;
 
 static void signal_handler(int signal)
 {
 	ctrl_c_pressed = true;
 
-	std::cout 
+	std::cout
 		<< '\r'
 		<< FT_WARNING
 		<< "Signal " << signal << " (Ctrl + C) received."
 		<< std::endl;
-
-		return;
 }
 
 bool ft::keep(void)
 {
-	static bool	first_run = false;
+	static bool first_run = false;
 
 	if (!first_run)
 	{

@@ -11,16 +11,16 @@
 /* ************************************************************************** */
 
 #ifndef SIGNAL_HANDLER_HPP
-# define SIGNAL_HANDLER_HPP
+#define SIGNAL_HANDLER_HPP
 
-# include <colors.hpp>
-# include <iostream>
-# include <messages.hpp>
+#include <colors.hpp>
+#include <iostream>
+#include <messages.hpp>
 
-# include <signal.h>
+#include <signal.h>
 /**
  * @brief Installs a signal handler for a specific signal.
- * 
+ *
  * @param sig The signal number for which you want to set up a handler.
  * @param func A pointer to the signal handling function that will be called
  *             when the signal is received.
@@ -29,20 +29,20 @@
  */
 void (*signal(int sig, void (*func)(int)))(int);
 
-namespace	ft
+namespace ft
 {
 	/**
 	 * @brief Checks if the Ctrl+C signal has been pressed.
-	 * 
+	 *
 	 * This function sets up a signal handler for the Ctrl+C signal (SIGINT) on
 	 * its first call, and checks if the signal has been received on subsequent
 	 * calls.
-	 * 
+	 *
 	 * @return true if the Ctrl+C signal has not been pressed, indicating the
 	 *         program should continue running or false if the Ctrl+C signal has
 	 *         been pressed, indicating the program should exit.
 	 */
-	bool	keep(void);
+	bool keep(void);
 }
 
 #endif // SIGNAL_HANDLER_HPP
