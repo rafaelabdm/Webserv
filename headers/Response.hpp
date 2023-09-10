@@ -3,78 +3,78 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/06 11:59:08 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/10 08:22:15 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
-# define RESPONSE_HPP
+#define RESPONSE_HPP
 
-# include "Request.hpp"
-# include "Socket.hpp"
-# include "signal_handler.hpp"
-# include <dirent.h>
-# include <cstdio>
-# include <vector>
-# include <map>
+#include "Request.hpp"
+#include "Socket.hpp"
+#include "signal_handler.hpp"
+#include <dirent.h>
+#include <cstdio>
+#include <vector>
+#include <map>
+#include <status_code.hpp>
 
-//temps defines
-# define ERROR_PAGE_PATH	"/home/rabustam/42sp/wb_main/examples/"
+// temps defines
+#define FT_ERROR_PAGE_PATH "./examples/"
+#define FT_DEFAULT_404_PAGE "default_404.html"
 
 namespace ft
 {
 	class Response
 	{
-		private:
-		ft::Request&			_request;
-		ft::t_server_config		_server;
-		ft::t_location_config	_location;
-		std::string				_protocol;
-		std::string 			_status_code;
-		std::string 			_content_type;
-		std::string 			_content_length;
-		std::string 			_connection_type;
-		std::string 			_date;
-		std::string 			_body;
-		
-		ft::t_server_config	setServer(std::vector<ft::Socket*>& servers);
-		void			checkProtocol();
-		bool			checkEndpoint();
-		bool			checkMethod();
-		bool			checkRedirect();
-		bool			checkIndexes(std::string file_name);
-		void			processRequest();
-		void			handleNotFound();
-		std::string		numberToString(int size);
-		std::string		getErrorPage();
-		std::string		getPage();
-		void			saveBodyContent();
-		void			deleteFile();
+	private:
+		ft::Request &_request;
+		ft::t_server_config _server;
+		ft::t_location_config _location;
+		std::string _protocol;
+		std::string _status_code;
+		std::string _content_type;
+		std::string _content_length;
+		std::string _connection_type;
+		std::string _date;
+		std::string _body;
 
-		
-		public:
-		Response(ft::Request& request, std::vector<ft::Socket*>& servers);
+		ft::t_server_config setServer(std::vector<ft::Socket *> &servers);
+		void checkProtocol();
+		bool checkEndpoint();
+		bool checkMethod();
+		bool checkRedirect();
+		bool checkIndexes(std::string file_name);
+		void processRequest();
+		void handleNotFound();
+		std::string numberToString(int size);
+		std::string getErrorPage();
+		std::string getPage();
+		void saveBodyContent();
+		void deleteFile();
+
+	public:
+		Response(ft::Request &request, std::vector<ft::Socket *> &servers);
 		~Response();
 
 		std::string getResponse();
 
-
-		class	ServerNotFoundException : std::exception
+		class ServerNotFoundException : public std::exception
 		{
-			public:
-			const char* what() const throw();
+		public:
+			const char *what() const throw();
 		};
-		class	WrongProtocolException : std::exception
+		class WrongProtocolException : public std::exception
 		{
-			public:
-			const char* what() const throw();
+		public:
+			const char *what() const throw();
 		};
 	};
 }
 
-# include "Response.ipp"
+#include "Response.ipp"
 
 #endif

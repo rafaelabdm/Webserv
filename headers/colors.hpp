@@ -22,4 +22,6 @@
 #define MAGENTA "\033[0;35m"
 #define CYAN "\033[0;36m"
 
+#define FT_HIGH_LIGHT_COLOR BLUE
+
 #endif /* colors_hpp */

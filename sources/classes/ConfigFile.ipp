@@ -23,6 +23,7 @@ ft::ConfigFile::ConfigFile(const std::string &config_file)
 	std::vector<std::string> tokens = ft::tokenizer(fileContent);
 
 	this->_servers = parseConfigTokens(tokens);
+	std::cout << std::endl;
 }
 
 ft::ConfigFile::~ConfigFile()

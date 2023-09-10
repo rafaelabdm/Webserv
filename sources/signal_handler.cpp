@@ -14,6 +14,13 @@
 
 static bool ctrl_c_pressed = false;
 
+/**
+ * @brief Handles a Ctrl + C signal interrupt.
+ *
+ * Change the ctrl_c_pressed var value to true.
+ *
+ * @param signal The signal number received (SIGINT (2) for Ctrl + C).
+ */
 static void signal_handler(int signal)
 {
 	ctrl_c_pressed = true;
@@ -38,6 +45,7 @@ bool ft::keep(void)
 		first_run = true;
 
 		std::cout << FT_OK << "Signals ready." << std::endl;
+		std::cout << std::endl;
 	}
 
 	return (!ctrl_c_pressed);
