@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/06 18:30:11 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/09 21:09:58 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,7 @@ bool	ft::Response::checkRedirect()
 	{
 		_status_code = "301"; //moved permanently
 		_content_length = "0";
+		_location.endpoint = _location.redirect;
 		return (true);
 	}
 	return (false);
