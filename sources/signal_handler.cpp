@@ -12,24 +12,29 @@
 
 #include <signal_handler.hpp>
 
-static bool	ctrl_c_pressed = false;
+static bool ctrl_c_pressed = false;
 
+/**
+ * @brief Handles a Ctrl + C signal interrupt.
+ *
+ * Change the ctrl_c_pressed var value to true.
+ *
+ * @param signal The signal number received (SIGINT (2) for Ctrl + C).
+ */
 static void signal_handler(int signal)
 {
 	ctrl_c_pressed = true;
 
-	std::cout 
+	std::cout
 		<< '\r'
 		<< FT_WARNING
 		<< "Signal " << signal << " (Ctrl + C) received."
 		<< std::endl;
-
-		return;
 }
 
 bool ft::keep(void)
 {
-	static bool	first_run = false;
+	static bool first_run = false;
 
 	if (!first_run)
 	{
@@ -40,6 +45,7 @@ bool ft::keep(void)
 		first_run = true;
 
 		std::cout << FT_OK << "Signals ready." << std::endl;
+		std::cout << std::endl;
 	}
 
 	return (!ctrl_c_pressed);

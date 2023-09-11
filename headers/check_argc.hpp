@@ -1,33 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   help_option.hpp                                    :+:      :+:    :+:   */
+/*   check_argc.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/11 21:33:39 by rapdos-s          #+#    #+#             */
-/*   Updated: 2023/08/11 21:33:39 by rapdos-s         ###   ########.fr       */
+/*   Created: 2023/09/07 14:25:18 by rapdos-s          #+#    #+#             */
+/*   Updated: 2023/09/07 14:25:18 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HELP_OPTION_HPP
-#define HELP_OPTION_HPP
+#ifndef CHECK_ARGC_HPP
+#define CHECK_ARGC_HPP
 
 #include <iostream>
+#include <messages.hpp>
+
+#define FT_HELP_HINT "Try './webserv --help' for more information."
+#define FT_MANY_ARGS FT_WARNING "Too many arguments.\n" FT_HELP_HINT
 
 namespace ft
 {
 	/**
-	 * @brief Check if the given option is a help option.
+	 * @brief Verify the number of arguments
 	 *
-	 * This function checks whether the provided option is equivalent to the
-	 * help option ("-h" or "--help").
-	 *
-	 * @param options The command-line option to check.
-	 * @return True if the option is a help option or false if not.
-	 *
+	 * @param argc Number of arguments
+	 * @return true if argc is bigger than 2
+	 * @return false if is equal or lower than 2
 	 */
-	bool help_option(const char **);
+	bool check_argc(const int argc);
 }
 
-#endif // HELP_OPTION_HPP
+#endif // CHECK_ARGC_HPP

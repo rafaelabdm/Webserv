@@ -12,7 +12,7 @@
 
 #include "Request.hpp"
 
-ft::Request::Request(std::string client_buffer) : _endpoint(""),  _method(""), _content_length("") ,_body("")
+ft::Request::Request(std::string client_buffer) : _endpoint(""), _method(""), _content_length(""), _body("")
 {
 	getRequestInfo(client_buffer);
 }
@@ -28,75 +28,73 @@ ft::Request::~Request()
 	// std::cout << BLUE << "Body: [" << _body << "]" << RESET_COLOR << std::endl;
 }
 
+// getters
 
-//getters
-
-std::string			ft::Request::getMethod()
+std::string ft::Request::getMethod()
 {
 	return (_method);
 }
 
-std::string	ft::Request::getPath()
+std::string ft::Request::getPath()
 {
 	return (_endpoint);
 }
 
-std::string	ft::Request::getProtocol()
+std::string ft::Request::getProtocol()
 {
 	return (_protocol);
 }
 
-std::string	ft::Request::getHost()
+std::string ft::Request::getHost()
 {
 	return (_host);
 }
 
-std::string	ft::Request::getEndpoint()
+std::string ft::Request::getEndpoint()
 {
 	return (_endpoint);
 }
 
-std::string	ft::Request::getContentType()
+std::string ft::Request::getContentType()
 {
 	return (_content_type);
 }
 
-std::string	ft::Request::getContentLength()
+std::string ft::Request::getContentLength()
 {
 	return (_content_length);
 }
 
-std::string	ft::Request::getBody()
+std::string ft::Request::getBody()
 {
 	return (_body);
 }
 
+// setters
 
-//setters
-
-void	ft::Request::setMethod(std::string method)
+void ft::Request::setMethod(std::string method)
 {
 	_method = method;
 }
 
-void	ft::Request::setPath(std::string path)
+void ft::Request::setPath(std::string path)
 {
 	_endpoint = path;
 }
 
 std::string ft::Request::getBoundry()
 {
-	size_t	start;
+	size_t start;
 
 	start = _content_type.find("boundary=", 0) + 9;
 	return (_content_type.substr(start, _content_type.length() - start));
 }
 
-void	ft::Request::setBody(std::string request)
+void ft::Request::setBody(std::string request)
 {
 	std::string boundry;
-	size_t		start;
-	size_t		end;
+	size_t start;
+	size_t end;
 
 	if (_content_type.find("boundary", 0) != std::string::npos)
 	{
@@ -105,59 +103,59 @@ void	ft::Request::setBody(std::string request)
 		start = request.find(boundry, start) + boundry.length() + 2;
 		end = request.rfind(boundry, request.length()) - 2;
 		_body = request.substr(start, end - start);
-		return ;
+		return;
 	}
 	start = request.rfind("\n", request.length()) + 1;
 	_body = request.substr(start, request.length() - start);
 }
 
-void	ft::Request::setHost(std::string request)
+void ft::Request::setHost(std::string request)
 {
-	size_t	start;
-	size_t	end;
+	size_t start;
+	size_t end;
 
 	start = request.find("Host: ", 0) + 6;
-	end = request.find("\r", start); //bizarramente tem um \r vindo no request?
+	end = request.find("\r", start); // rabustam: bizarramente tem um \r vindo no request? rapdos-s: Em servidores Windows, provavelmente :eyes:
 	_host = request.substr(start, end - start);
 }
 
-void	ft::Request::setContentType(std::string request)
+void ft::Request::setContentType(std::string request)
 {
-	size_t						start;
-	size_t						end;
+	size_t start;
+	size_t end;
 
 	start = request.find("Content-Type: ", 0);
 	if (start == std::string::npos)
-		return ;
+		return;
 	start += 14;
 	end = request.find("\r", start);
 	_content_type = request.substr(start, end - start);
 }
 
-void	ft::Request::setContentLength(std::string request)
+void ft::Request::setContentLength(std::string request)
 {
-	size_t						start;
-	size_t						end;
+	size_t start;
+	size_t end;
 
 	start = request.find("Content-Length: ", 0);
 	if (start == std::string::npos)
-		return ;
+		return;
 	start += 16;
 	end = request.find("\r", start);
 	_content_length = request.substr(start, end - start);
 }
 
-void	ft::Request::setProtocol(std::string protocol)
+void ft::Request::setProtocol(std::string protocol)
 {
 	_protocol = protocol;
 }
 
-void	ft::Request::getFirstLineInfo(std::string request)
+void ft::Request::getFirstLineInfo(std::string request)
 {
-	std::vector<std::string>	req;
-	bool						stop;
-	size_t						start;
-	size_t						end;
+	std::vector<std::string> req;
+	bool stop;
+	size_t start;
+	size_t end;
 
 	stop = false;
 	start = 0;
@@ -165,7 +163,7 @@ void	ft::Request::getFirstLineInfo(std::string request)
 	{
 		if (request[end] == ' ' || request[end] == '\n' || request[end] == '\r')
 		{
-			if (request[end] == '\n')
+			if (request[end] == '\n') // Acho que tem que comparar com \r aqui também, mas parece ser bem difícil isso acontecer
 				stop = true;
 			req.push_back(request.substr(start, end - start));
 			start = end + 1;
@@ -176,7 +174,7 @@ void	ft::Request::getFirstLineInfo(std::string request)
 	setProtocol(req[2]);
 }
 
-void	ft::Request::getRequestInfo(std::string buffer)
+void ft::Request::getRequestInfo(std::string buffer)
 {
 	getFirstLineInfo(buffer);
 	setHost(buffer);
