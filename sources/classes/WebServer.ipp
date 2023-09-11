@@ -128,6 +128,23 @@ int ft::WebServer::isServerSideEvent(int epoll_fd)
 	return (0);
 }
 
+
+int  getContentLength(std::string request)
+{
+	size_t	start;
+	size_t	end;
+	int		length;
+
+	start = request.find("Content-Length: ", 0);
+	if (start == std::string::npos)
+		return 0;
+	start += 16;
+	end = request.find("\r", start);
+	length = std::atoi(request.substr(start, end - start).data());
+	return (length);
+}
+
+
 void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 {
 	std::cout
@@ -135,19 +152,30 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 		<< "Recv event happened on fd "
 		<< FT_HIGH_LIGHT_COLOR << client_fd << RESET_COLOR
 		<< "." << std::endl;
+
 	char client_buffer[FT_DEFAULT_CLIENT_BUFFER_SIZE];
 	std::string total_request;
-	int bytes = 1;
+	int	total_bytes = -1;
+	int bytes = 0;
+	int	current_bytes_read = -2;
 
 	std::memset(client_buffer, 0, FT_DEFAULT_CLIENT_BUFFER_SIZE);
-	while (bytes > 0)
+	while (current_bytes_read < total_bytes && ft::keep())
 	{
 		bytes = ::recv(client_fd, client_buffer, sizeof(client_buffer), 0);
+		if (bytes == 0)
+			break ;
+		if (total_bytes == -1)
+		{
+			current_bytes_read = 0;
+			total_bytes = getContentLength(client_buffer);
+		}
 		if (bytes > 0)
 		{
 			std::cout << FT_EVENT << "Receiving " << bytes
 					  << ((bytes <= 1) ? " byte." : " bytes.")
 					  << std::endl;
+			current_bytes_read += bytes;
 			total_request.append(client_buffer, bytes);
 		}
 	}
