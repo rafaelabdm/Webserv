@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 12:10:52 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/09/11 13:05:34 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@
 #include <status_code.hpp>
 
 // temps defines
-#define FT_ERROR_PAGE_PATH "./private/default_error_pages/"
+#define FT_ERROR_PAGE_PATH	"./private/default_error_pages/"
+#define FT_SAVE_DIR_PATH 	"./public/upload/"
 #define FT_DEFAULT_404_PAGE "404.html"
 #define FT_DEFAULT_500_PAGE "500.html"
 

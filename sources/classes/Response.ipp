@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.ipp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 12:46:45 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/09/11 13:05:48 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,7 @@ void ft::Response::processRequest()
 	{
 		if (atoi(_request.getContentLength().data()) > atoi(_location.max_body_size.data()))
 		{
-			//	retorna 413 #request-entity-too-large
+			std::cout << atoi(_request.getContentLength().data()) << " " << atoi(_location.max_body_size.data()) << std::endl;
 			_status_code = "413";
 			_connection_type = "Keep-alive";
 			_body = getPage();
@@ -281,7 +281,7 @@ void ft::Response::saveBodyContent()
 	start = body.find("filename=", 0) + 10;
 	end = body.find("\"", start);
 
-	std::string file_name = "./public/upload/"; // dir to save files
+	std::string file_name = FT_SAVE_DIR_PATH;
 	file_name.append(body.substr(start, end - start));
 
 	start = body.find("Content-Type:", 0);
@@ -290,6 +290,12 @@ void ft::Response::saveBodyContent()
 
 	std::ofstream file;
 	file.open(file_name.data(), std::ios::binary);
+	if (!file.is_open())
+	{
+		std::cout << FT_WARNING << "Couldn't save file. Dir not found!" << std::endl;
+		_status_code = "404";
+		return ;
+	}
 	file << body.substr(start, body.length() - start);
 	file.close();
 }
