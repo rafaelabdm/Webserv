@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 13:05:48 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/11 14:56:54 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,6 @@ bool ft::Response::checkEndpoint()
 			return (true);
 		}
 	}
-	// _status_code = "404"; // not found
 	_status_code = FT_STATUS_CODE_404;
 	handleNotFound();
 	return (false);
@@ -170,18 +169,17 @@ std::string ft::Response::getPage()
 	if (dr == NULL)
 	{
 		std::cout << FT_WARNING << "Directory not found" << std::endl;
-		_status_code = "404";
+		_status_code = FT_STATUS_CODE_404;
 		return (getErrorPage());
 	}
 
-	// make a function to check all indexes :)
 	while (ft::keep() && !checkIndexes(en->d_name))
 	{
 		en = readdir(dr);
 		if (en == NULL)
 		{
 			std::cout << FT_WARNING << "File not found" << std::endl;
-			_status_code = "404";
+			_status_code = FT_STATUS_CODE_404;
 			return (getErrorPage());
 		}
 	}
@@ -208,7 +206,7 @@ bool ft::Response::checkMethod()
 		return (true);
 	if (_location.allowed_methods_delete == true && _request.getMethod() == "DELETE")
 		return (true);
-	_status_code = "405"; // method not allowed
+	_status_code = FT_STATUS_CODE_405;
 	_content_type = "text/plain";
 	_body = "method not allowed";
 	_content_length = numberToString(_body.size());
@@ -242,8 +240,7 @@ void ft::Response::processRequest()
 	{
 		if (atoi(_request.getContentLength().data()) > atoi(_location.max_body_size.data()))
 		{
-			std::cout << atoi(_request.getContentLength().data()) << " " << atoi(_location.max_body_size.data()) << std::endl;
-			_status_code = "413";
+			_status_code = FT_STATUS_CODE_413;
 			_connection_type = "Keep-alive";
 			_body = getPage();
 			_content_type = "text/html"; // depois ver como vamos checar isso pra devolver
@@ -263,12 +260,12 @@ void ft::Response::processRequest()
 void ft::Response::deleteFile()
 {
 	std::string body = _request.getBody();
-	std::string file_name = "./examples/"; // dir to save files
+	std::string file_name = FT_SAVE_DIR_PATH;
 	int status;
 
 	file_name.append(body);
 	status = std::remove(file_name.data());
-	!status ? _status_code = "204" : _status_code = "404";
+	!status ? _status_code = FT_STATUS_CODE_204 : _status_code = FT_STATUS_CODE_404;
 }
 
 void ft::Response::saveBodyContent()
@@ -293,7 +290,7 @@ void ft::Response::saveBodyContent()
 	if (!file.is_open())
 	{
 		std::cout << FT_WARNING << "Couldn't save file. Dir not found!" << std::endl;
-		_status_code = "404";
+		_status_code = FT_STATUS_CODE_404;
 		return ;
 	}
 	file << body.substr(start, body.length() - start);
