@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 15:26:29 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/11 19:15:41 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,14 @@ void ft::Response::checkProtocol()
 
 bool ft::Response::checkEndpoint()
 {
-	std::vector<t_location_config> locations = _server.locations;
-
+	std::vector<t_location_config>	locations = _server.locations;
+	size_t 							pos = _request.getEndpoint().find("/", 1);
+	
+	if (pos == std::string::npos)
+		pos = _request.getEndpoint().length();
 	for (long unsigned int i = 0; i < locations.size(); i++)
 	{
-		if (locations[i].endpoint == _request.getEndpoint())
+		if (_request.getEndpoint().compare(0, pos, locations[i].endpoint) == 0)
 		{
 			_location = locations[i];
 			return (true);
@@ -163,6 +166,7 @@ std::string ft::Response::getPage()
 	DIR *dr;
 	struct dirent *en;
 	std::string path_to_dir = "./";
+	std::string resource = "";
 
 	path_to_dir.append(_location.root);
 	dr = opendir(path_to_dir.data());
@@ -173,15 +177,20 @@ std::string ft::Response::getPage()
 		return (getErrorPage());
 	}
 
-	while (ft::keep() && !checkIndexes(en->d_name))
+	if (_request.getEndpoint() != _location.endpoint)
+		resource = _request.getEndpoint().substr(_location.endpoint.length() + 1, _request.getEndpoint().length() - _location.endpoint.length() - 1);
+	
+	while (ft::keep() && (en = readdir(dr)) != NULL)
 	{
-		en = readdir(dr);
-		if (en == NULL)
-		{
-			std::cout << FT_WARNING << "File not found" << std::endl;
-			_status_code = FT_STATUS_CODE_404;
-			return (getErrorPage());
-		}
+		if (resource != "" ? resource == en->d_name : checkIndexes(en->d_name))
+			break ;
+	}
+	
+	if (en == NULL)
+	{
+		std::cout << FT_WARNING << "File not found" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		return (getErrorPage());
 	}
 
 	path_to_dir.append("/");
