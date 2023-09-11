@@ -24,6 +24,9 @@ ft::ConfigFile::ConfigFile(const std::string &config_file)
 
 	this->_servers = parseConfigTokens(tokens);
 	std::cout << std::endl;
+
+	// Colocar valores padrões
+
 }
 
 ft::ConfigFile::~ConfigFile()

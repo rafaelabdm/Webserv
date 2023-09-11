@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.ipp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 08:46:44 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/11 12:46:45 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ void ft::Response::handleNotFound()
 std::string ft::Response::getErrorPage()
 {
 	std::string error_page = _server.error_pages[_status_code];
-	// std::string path = "/home/rabustam/42sp/webserver_backup/examples/";
 	std::string path = FT_ERROR_PAGE_PATH;
 	if (error_page == "")
 		path.append(FT_DEFAULT_404_PAGE);
@@ -171,7 +170,7 @@ std::string ft::Response::getPage()
 	if (dr == NULL)
 	{
 		std::cout << FT_WARNING << "Directory not found" << std::endl;
-		_status_code = "500"; // Não seria 404? :eyes:
+		_status_code = "404";
 		return (getErrorPage());
 	}
 
@@ -182,7 +181,7 @@ std::string ft::Response::getPage()
 		if (en == NULL)
 		{
 			std::cout << FT_WARNING << "File not found" << std::endl;
-			_status_code = "500";
+			_status_code = "404";
 			return (getErrorPage());
 		}
 	}
@@ -220,7 +219,7 @@ bool ft::Response::checkRedirect()
 {
 	if (_location.redirect != "")
 	{
-		_status_code = "301"; // moved permanently
+		_status_code = FT_STATUS_CODE_301;
 		_content_length = "0";
 		_location.endpoint = _location.redirect;
 		return (true);
@@ -282,7 +281,7 @@ void ft::Response::saveBodyContent()
 	start = body.find("filename=", 0) + 10;
 	end = body.find("\"", start);
 
-	std::string file_name = "./examples/"; // dir to save files
+	std::string file_name = "./public/upload/"; // dir to save files
 	file_name.append(body.substr(start, end - start));
 
 	start = body.find("Content-Type:", 0);

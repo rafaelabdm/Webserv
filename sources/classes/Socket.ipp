@@ -6,7 +6,7 @@
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:35:44 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/09 20:29:55 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/09/11 09:59:33 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,12 @@ void ft::Socket::loadAddressInfo()
 
 void ft::Socket::createSocket()
 {
-	_sock = socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
+	_sock = ::socket(_servinfo->ai_family, _servinfo->ai_socktype, _servinfo->ai_protocol);
 
 	std::cout << FT_SETUP << "Creating Socket." << std::endl;
 	if (_sock < 0)
 	{
-		freeaddrinfo(_servinfo);
+		::freeaddrinfo(_servinfo);
 		throw SocketException();
 	}
 	std::cout << FT_OK << "Socket created successfully!" << std::endl;
@@ -69,18 +69,18 @@ void ft::Socket::createSocket()
 	int yes = 1;
 
 	std::cout << FT_SETUP << "Setting up Socket." << std::endl;
-	if (setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
+	if (::setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
 	{
-		freeaddrinfo(_servinfo);
+		::freeaddrinfo(_servinfo);
 		throw SetSockOptException();
 	}
 	std::cout << FT_OK << "Socket configured successfully!" << std::endl;
 
 	std::cout << FT_SETUP << "Setting Socket to non blocking mode." << std::endl;
-	int status = fcntl(_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC); // non_blocking
+	int status = ::fcntl(_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 	if (status < 0)
 	{
-		freeaddrinfo(_servinfo);
+		::freeaddrinfo(_servinfo);
 		throw FcntlException();
 	}
 	std::cout << FT_OK << "Socket are now in non blocking mode!" << std::endl;
@@ -105,6 +105,7 @@ void ft::Socket::bind()
 
 	if (status < 0)
 	{
+		freeaddrinfo(_servinfo);
 		std::cout << FT_STATUS << "Bind status: " << strerror(errno) << std::endl;
 		throw BindException();
 	}
@@ -152,24 +153,6 @@ int ft::Socket::accept()
 	}
 	std::cout << FT_OK << "Accept successfull!" << std::endl;
 	return (new_socket);
-}
-
-void ft::Socket::connect()
-{
-	try
-	{
-		int status;
-
-		status = ::connect(_sock, _servinfo->ai_addr, _servinfo->ai_addrlen);
-		if (status < 0)
-			throw ConnectException();
-		std::cout << FT_OK << "Connect successfull!" << std::endl;
-	}
-	catch (ConnectException &e)
-	{
-		std::cerr << e.what() << strerror(errno) << std::endl;
-		freeaddrinfo(_servinfo);
-	}
 }
 
 std::string ft::Socket::getPort()

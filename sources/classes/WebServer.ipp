@@ -12,9 +12,10 @@
 
 #include "WebServer.hpp"
 
-ft::WebServer::WebServer(const char *configuration_file, const char **envp)
+ft::WebServer::WebServer(const char *configuration_file, const char **envp) : _envp(envp)
 {
-	(void)envp;
+	// Initializes Ctrl + C signal handler
+	ft::keep();
 
 	std::string str_configuration_file;
 	if (configuration_file == NULL)
@@ -34,9 +35,6 @@ ft::WebServer::WebServer(const char *configuration_file, const char **envp)
 	std::cout << std::endl;
 
 	_config_file = ConfigFile(str_configuration_file);
-
-	// Initializes Ctrl + C signal handler
-	ft::keep();
 
 	for (size_t i = 0; ft::keep() && i < _config_file.size(); i++)
 		_connections.push_back(new ft::Socket(_config_file.getServer(i)));
@@ -73,15 +71,11 @@ ft::WebServer::~WebServer()
 
 void ft::WebServer::epoll()
 {
-	try
+	_epoll = ::epoll_create(1);
+	if (_epoll < 0)
 	{
-		_epoll = epoll_create(1);
-		if (_epoll < 0)
-			throw EpollException();
-	}
-	catch (EpollException &e)
-	{
-		std::cerr << e.what() << strerror(errno) << std::endl;
+		std::cout << FT_STATUS << "Epoll status: " << strerror(errno) << std::endl;
+		throw EpollException();
 	}
 }
 
@@ -91,18 +85,14 @@ void ft::WebServer::epollAddServers()
 	std::vector<ft::Socket *>::iterator it;
 
 	events_setup.events = EPOLLIN | EPOLLOUT;
-	try
+	for (it = _connections.begin(); it != _connections.end(); it++)
 	{
-		for (it = _connections.begin(); it != _connections.end(); it++)
+		events_setup.data.fd = (*it)->getSock();
+		if (::epoll_ctl(_epoll, EPOLL_CTL_ADD, (*it)->getSock(), &events_setup) < 0)
 		{
-			events_setup.data.fd = (*it)->getSock();
-			if (epoll_ctl(_epoll, EPOLL_CTL_ADD, (*it)->getSock(), &events_setup) < 0)
-				throw EpollCtlException();
+			std::cout << FT_STATUS << "Epoll Ctl status: " << strerror(errno) << std::endl;
+			throw EpollCtlException();
 		}
-	}
-	catch (EpollCtlException &e)
-	{
-		std::cerr << e.what() << strerror(errno) << std::endl;
 	}
 }
 
@@ -110,18 +100,14 @@ int ft::WebServer::epoll_wait(struct epoll_event *events)
 {
 	int nfds;
 
-	try
+	nfds = ::epoll_wait(_epoll, events, FT_MAX_EVENT_SIZE, -1);
+	if (nfds == -1 && ft::keep())
 	{
-		nfds = ::epoll_wait(_epoll, events, 10, -1); // 10 = numero maximo de eventos, mudar depois
-		if (nfds == -1 && ft::keep())
-			throw EpollWaitException();
-		return (nfds);
+		std::cout << FT_STATUS << "Epoll Wait status: " << strerror(errno) << std::endl;
+		throw EpollWaitException();
 	}
-	catch (EpollWaitException &e)
-	{
-		std::cerr << e.what() << strerror(errno) << std::endl;
-		return (-1);
-	}
+
+	return (nfds);
 }
 
 int ft::WebServer::isServerSideEvent(int epoll_fd)
@@ -134,9 +120,9 @@ int ft::WebServer::isServerSideEvent(int epoll_fd)
 		<< FT_HIGH_LIGHT_COLOR << epoll_fd << RESET_COLOR
 		<< "." << std::endl;
 
-	for (it = _connections.begin(); it != _connections.end(); it++)
+	for (it = _connections.begin(); it != _connections.end() && ft::keep(); it++)
 	{
-			if (epoll_fd == (*it)->getSock())
+		if (epoll_fd == (*it)->getSock())
 			return ((*it)->accept());
 	}
 	return (0);
@@ -154,22 +140,21 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 	int bytes = 1;
 
 	std::memset(client_buffer, 0, FT_DEFAULT_CLIENT_BUFFER_SIZE);
-	while (bytes != -1 && bytes != 0)
+	while (bytes > 0)
 	{
 		bytes = ::recv(client_fd, client_buffer, sizeof(client_buffer), 0);
 		if (bytes > 0)
 		{
 			std::cout << FT_EVENT << "Receiving " << bytes
-				<< ((bytes <= 1)? " byte.": " bytes.")
-				<< std::endl;
+					  << ((bytes <= 1) ? " byte." : " bytes.")
+					  << std::endl;
 			total_request.append(client_buffer, bytes);
 		}
 	}
 	std::cout << FT_EVENT << total_request.length()
-		<< ((total_request.length() <= 1)? " byte": " bytes")
-		<< " received."
-		<< std::endl;
-	// std::cout << "REQUEST:\n" << total_request << std::endl;
+			  << ((total_request.length() <= 1) ? " byte" : " bytes")
+			  << " received."
+			  << std::endl;
 
 	//----------------------TEST-------------------------------
 	if (total_request.length() > 0)
@@ -209,7 +194,7 @@ void ft::WebServer::start_servers()
 
 	int number_of_events;
 	int new_conn;
-	struct epoll_event events[10]; // 10 = numero maximo de eventos, mudar depois
+	struct epoll_event events[FT_MAX_EVENT_SIZE];
 	struct epoll_event events_setup;
 
 	epoll();
@@ -218,15 +203,18 @@ void ft::WebServer::start_servers()
 	while (ft::keep())
 	{
 		number_of_events = epoll_wait(events);
-		for (int n = 0; n < number_of_events; n++)
+		for (int n = 0; n < number_of_events && ft::keep(); n++)
 		{
 			if ((new_conn = isServerSideEvent(events[n].data.fd)) != 0)
 			{
-				fcntl(new_conn, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+				::fcntl(new_conn, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 				events_setup.data.fd = new_conn;
 				events_setup.events = EPOLLIN;
-				if (epoll_ctl(_epoll, EPOLL_CTL_ADD, new_conn, &events_setup) == -1)
+				if (::epoll_ctl(_epoll, EPOLL_CTL_ADD, new_conn, &events_setup) == -1)
+				{
+					std::cout << FT_STATUS << "Epoll Ctl status: " << strerror(errno) << std::endl;
 					throw EpollCtlException();
+				}
 			}
 			else if (events[n].events & EPOLLIN)
 				recv(events[n].data.fd, events_setup);
@@ -238,15 +226,15 @@ void ft::WebServer::start_servers()
 
 const char *ft::WebServer::EpollException::what() const throw()
 {
-	return (FT_ERROR "epoll error: ");
+	return (FT_ERROR "Can't create epoll.");
 }
 
 const char *ft::WebServer::EpollCtlException::what() const throw()
 {
-	return (FT_ERROR "epoll_ctl error: ");
+	return (FT_ERROR "Can't manage file descriptor.");
 }
 
 const char *ft::WebServer::EpollWaitException::what() const throw()
 {
-	return (FT_ERROR "epoll_wait error: ");
+	return (FT_ERROR "Can't wait events.");
 }

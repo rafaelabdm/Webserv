@@ -6,7 +6,7 @@
 /*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/09 14:00:25 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/09/11 09:56:31 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ namespace ft
 		void bind();
 		void listen();
 		int accept();
-		void connect();
 
 		// getters
 		ft::t_server_config getServer();

@@ -34,8 +34,9 @@
 #include "messages.hpp"
 #include "signal_handler.hpp"
 
-#define FT_DEFAULT_CONFIG_FILE "./examples/webserv.conf"
-#define FT_DEFAULT_CLIENT_BUFFER_SIZE 300
+#define FT_DEFAULT_CONFIG_FILE "./configurations/webserv.conf"
+#define FT_DEFAULT_CLIENT_BUFFER_SIZE 1024
+#define FT_MAX_EVENT_SIZE 10
 
 namespace ft
 {
@@ -55,6 +56,7 @@ namespace ft
 		void send(int client_fd, struct epoll_event &events_setup);
 
 		std::string get_page();
+		const char **_envp;
 
 	public:
 		WebServer(const char *configuration_file, const char **envp);

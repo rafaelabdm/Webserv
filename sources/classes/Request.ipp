@@ -19,13 +19,13 @@ ft::Request::Request(std::string client_buffer) : _endpoint(""), _method(""), _c
 
 ft::Request::~Request()
 {
-	std::cout << RED << "Method: [" << _method << "]" << RESET_COLOR << std::endl;
-	std::cout << YELLOW << "Endpoint: [" << _endpoint << "]" << RESET_COLOR << std::endl;
-	std::cout << CYAN << "Protocol: [" << _protocol << "]" << RESET_COLOR << std::endl;
-	std::cout << GREEN << "Host: [" << _host << "]" << RESET_COLOR << std::endl;
-	std::cout << MAGENTA << "Content-Type: [" << _content_type << "]" << RESET_COLOR << std::endl;
-	std::cout << BLUE << "Content-Length: [" << _content_length << "]" << RESET_COLOR << std::endl;
-	// std::cout << BLUE << "Body: [" << _body << "]" << RESET_COLOR << std::endl;
+	std::cout << FT_INFO << "Method: [" << _method << "]" << std::endl;
+	std::cout << FT_INFO << "Endpoint: [" << _endpoint << "]" << std::endl;
+	std::cout << FT_INFO << "Protocol: [" << _protocol << "]" << std::endl;
+	std::cout << FT_INFO << "Host: [" << _host << "]" << std::endl;
+	std::cout << FT_INFO << "Content-Type: [" << _content_type << "]" << std::endl;
+	std::cout << FT_INFO << "Content-Length: [" << _content_length << "]" << std::endl;
+	// std::cout << FT_INFO << "Body: [" << _body << "]" << std::endl;
 }
 
 // getters
