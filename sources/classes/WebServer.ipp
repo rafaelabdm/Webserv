@@ -163,12 +163,12 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 	while (current_bytes_read < total_bytes && ft::keep())
 	{
 		bytes = ::recv(client_fd, client_buffer, sizeof(client_buffer), 0);
-		if (bytes == 0)
+		if (bytes == 0 || bytes == -1)
 			break ;
 		if (total_bytes == -1)
 		{
 			current_bytes_read = 0;
-			total_bytes = getContentLength(client_buffer);
+			total_bytes = getContentLength(client_buffer) + bytes;
 		}
 		if (bytes > 0)
 		{
