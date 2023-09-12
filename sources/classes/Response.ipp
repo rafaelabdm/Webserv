@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/12 11:34:23 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/12 12:38:14 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,14 +236,33 @@ bool ft::Response::checkRedirect()
 	return (false);
 }
 
+std::string ft::Response::getResourceContentType()
+{
+	size_t	dot;
+	std::string resource;
+	std::map<std::string, std::string> types;
+	types.insert(std::make_pair(".html", "text/html"));
+	types.insert(std::make_pair(".txt", "text/plain"));
+	types.insert(std::make_pair(".png", "image/png"));
+	types.insert(std::make_pair(".jpg", "image/jpg"));
+	types.insert(std::make_pair(".jpeg", "image/jpeg"));
+	types.insert(std::make_pair(".gif", "image/gif"));
+
+	dot = _request.getEndpoint().find_last_of(".");
+	//checar tipo de indexes da location
+	if (dot == std::string::npos)
+		return ("text/html");
+	
+	resource = _request.getEndpoint().substr(dot, _request.getEndpoint().length() - dot);
+	return (types[resource]);
+}
+
 void ft::Response::processRequest()
 {
 	if (_request.getMethod() == "GET")
 	{
 		_body = getPage();
-		_content_type = "text/html"; // depois ver como vamos checar isso pra devolver
-		if (_request.getEndpoint().find(".png") != std::string::npos)
-			_content_type = "image/png";
+		_content_type = getResourceContentType();
 		_content_length = numberToString(_body.size());
 		_connection_type = "Keep-alive";
 	}
@@ -254,14 +273,14 @@ void ft::Response::processRequest()
 			_status_code = FT_STATUS_CODE_413;
 			_connection_type = "Keep-alive";
 			_body = getPage();
-			_content_type = "text/html"; // depois ver como vamos checar isso pra devolver
+			_content_type = getResourceContentType();
 			_content_length = numberToString(_body.size());
 			return;
 		}
 		// se o content type != do aceito, retorna 415 #unsupported-media-type
 		saveBodyContent();
 		_body = getPage();
-		_content_type = "text/html"; // depois ver como vamos checar isso pra devolver
+		_content_type = getResourceContentType();
 		_content_length = numberToString(_body.size());
 	}
 	else if (_request.getMethod() == "DELETE")

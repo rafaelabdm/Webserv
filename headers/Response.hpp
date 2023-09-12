@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 17:21:22 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/12 11:38:04 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ namespace ft
 		std::string numberToString(int size);
 		std::string getErrorPage();
 		std::string getPage();
+		std::string	getResourceContentType();
 		void saveBodyContent();
 		void deleteFile();
 
