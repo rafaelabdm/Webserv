@@ -36,6 +36,12 @@ ft::WebServer::WebServer(const char *configuration_file, const char **envp) : _e
 
 	_config_file = ConfigFile(str_configuration_file);
 
+	checkSudo();
+	if (_is_sudo == true)
+		std::cout << FT_WARNING << "You can do, what SUDO!" << std::endl;
+	if (_config_file.needSudo() == true && _is_sudo == false)
+		throw needSudoException();
+
 	for (size_t i = 0; ft::keep() && i < _config_file.size(); i++)
 		_connections.push_back(new ft::Socket(_config_file.getServer(i)));
 
@@ -110,6 +116,19 @@ int ft::WebServer::epoll_wait(struct epoll_event *events)
 	return (nfds);
 }
 
+void ft::WebServer::checkSudo()
+{
+	struct stat processStat;
+
+	if (stat("/proc/self", &processStat) != 0)
+		throw cantGetUserInfoException();
+
+	if (processStat.st_uid == 0)
+		_is_sudo = true;
+	else
+		_is_sudo = false;
+}
+
 int ft::WebServer::isServerSideEvent(int epoll_fd)
 {
 	std::vector<ft::Socket *>::iterator it;
@@ -128,12 +147,11 @@ int ft::WebServer::isServerSideEvent(int epoll_fd)
 	return (0);
 }
 
-
-int  getContentLength(std::string request)
+int getContentLength(std::string request)
 {
-	size_t	start;
-	size_t	end;
-	int		length;
+	size_t start;
+	size_t end;
+	int length;
 
 	start = request.find("Content-Length: ", 0);
 	if (start == std::string::npos)
@@ -143,7 +161,6 @@ int  getContentLength(std::string request)
 	length = std::atoi(request.substr(start, end - start).data());
 	return (length);
 }
-
 
 void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 {
@@ -155,16 +172,16 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 
 	char client_buffer[FT_DEFAULT_CLIENT_BUFFER_SIZE];
 	std::string total_request;
-	int	total_bytes = -1;
+	int total_bytes = -1;
 	int bytes = 0;
-	int	current_bytes_read = -2;
+	int current_bytes_read = -2;
 
 	std::memset(client_buffer, 0, FT_DEFAULT_CLIENT_BUFFER_SIZE);
 	while (current_bytes_read < total_bytes && ft::keep())
 	{
 		bytes = ::recv(client_fd, client_buffer, sizeof(client_buffer), 0);
 		if (bytes == 0 || bytes == -1)
-			break ;
+			break;
 		if (total_bytes == -1)
 		{
 			current_bytes_read = 0;
@@ -265,4 +282,14 @@ const char *ft::WebServer::EpollCtlException::what() const throw()
 const char *ft::WebServer::EpollWaitException::what() const throw()
 {
 	return (FT_ERROR "Can't wait events.");
+}
+
+const char *ft::WebServer::cantGetUserInfoException::what() const throw()
+{
+	return (FT_ERROR "Can't get user information.");
+}
+
+const char *ft::WebServer::needSudoException::what() const throw()
+{
+	return (FT_ERROR "Sudo required.");
 }

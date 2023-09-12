@@ -17,6 +17,7 @@
 #include <dirent.h>
 // # include <poll.h>
 #include <sys/epoll.h>
+#include <sys/stat.h>
 
 // C++98
 #include <fstream>
@@ -46,16 +47,19 @@ namespace ft
 		ft::ConfigFile _config_file;
 		std::vector<ft::Socket *> _connections;
 		int _epoll;
+		bool _is_sudo;
 
 		void epoll();
 		void epollAddServers();
 		int epoll_wait(struct epoll_event *events);
 
+		void checkSudo();
+
 		int isServerSideEvent(int epoll_fd);
 		void recv(int client_fd, struct epoll_event &events_setup);
 		void send(int client_fd, struct epoll_event &events_setup);
 
-		std::string get_page();
+		// std::string get_page();
 		const char **_envp;
 
 	public:
@@ -76,6 +80,18 @@ namespace ft
 		};
 
 		class EpollWaitException : public std::exception
+		{
+		public:
+			const char *what() const throw();
+		};
+
+		class cantGetUserInfoException : public std::exception
+		{
+		public:
+			const char *what() const throw();
+		};
+
+		class needSudoException : public std::exception
 		{
 		public:
 			const char *what() const throw();

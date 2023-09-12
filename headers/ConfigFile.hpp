@@ -15,6 +15,7 @@
 
 #include <cctype>
 #include <colors.hpp>
+#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <fstream>
@@ -73,6 +74,7 @@ namespace ft
 		~ConfigFile(void);
 
 		size_t size(void) const;
+		bool needSudo(void) const;
 
 		std::vector<ft::t_server_config> getServers(void) const;
 		ft::t_server_config getServer(size_t server_id) const;
