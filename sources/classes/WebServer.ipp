@@ -150,9 +150,13 @@ int ft::WebServer::isServerSideEvent(int epoll_fd)
 std::string ft::WebServer::getBoundry(std::string request)
 {
 	size_t start;
+	size_t end;
 
 	start = request.find("boundary=", 0) + 9;
-	return (request.substr(start, request.length() - start));
+	if (start == std::string::npos)
+		return ("");
+	end = request.find("\r", start);
+	return (request.substr(start, end - start));
 }
 
 int  ft::WebServer::getRequestTotalLength(std::string request)
@@ -163,9 +167,10 @@ int  ft::WebServer::getRequestTotalLength(std::string request)
 	std::string boundry;
 
 	boundry = getBoundry(request);
+	if (boundry == "")
+		return (request.length());
 
-	length = request.rfind(boundry, request.length());
- 
+	length = request.rfind(boundry, request.length()) - 2;
 	start = request.find("Content-Length: ", 0);
 	if (start == std::string::npos)
 		return (request.length());
@@ -219,32 +224,32 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 
 	if (bytes == -1)
 		std::cout << FT_WARNING << "Falied to recive request from client [" << client_fd << "]" << std::endl;
-	//----------------------TEST-------------------------------
 	else if (total_request.length() > 0)
 	{
-		Request request(total_request);
-		Response response(request, _connections);
-		std::string msg = response.getResponse();
-		::send(client_fd, msg.data(), msg.length(), 0);
+		_request_list[client_fd] = total_request;
+		events_setup.data.fd = client_fd;
+		events_setup.events = EPOLLOUT;
+		epoll_ctl(_epoll, EPOLL_CTL_MOD, client_fd, &events_setup);
+		return ;
 	}
 	events_setup.data.fd = client_fd;
 	epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
 	close(client_fd);
-
-	//---------------------------------------------------------
-
-	// events_setup.events = EPOLLOUT;
-	// epoll_ctl(_epoll, EPOLL_CTL_MOD, client_fd, &events_setup);
 }
 
 void ft::WebServer::send(int client_fd, struct epoll_event &events_setup)
 {
-	std::cout << YELLOW << "hello from write" << RESET_COLOR << std::endl;
+	std::cout
+		<< FT_EVENT
+		<< "Send event happened on fd "
+		<< FT_HIGH_LIGHT_COLOR << client_fd << RESET_COLOR
+		<< "." << std::endl;
 
-	std::string msg = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-
+	Request request(_request_list[client_fd]);
+	Response response(request, _connections);
+	std::string msg = response.getResponse();
 	::send(client_fd, msg.data(), msg.length(), 0);
-
+	_request_list.erase(client_fd);
 	events_setup.data.fd = client_fd;
 	epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
 	close(client_fd);
@@ -281,8 +286,8 @@ void ft::WebServer::start_servers()
 			}
 			else if (events[n].events & EPOLLIN)
 				recv(events[n].data.fd, events_setup);
-			// else if (events[n].events & EPOLLOUT)
-			// 	send(events[n].data.fd, events_setup);
+			else if (events[n].events & EPOLLOUT)
+				send(events[n].data.fd, events_setup);
 		}
 	}
 }

@@ -45,6 +45,7 @@ namespace ft
 	private:
 		ft::ConfigFile _config_file;
 		std::vector<ft::Socket *> _connections;
+		std::map<int, std::string> _request_list;
 		int _epoll;
 		bool _is_sudo;
 

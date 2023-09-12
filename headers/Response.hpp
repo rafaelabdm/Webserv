@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/12 11:38:04 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/12 16:18:03 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ namespace ft
 		bool checkMethod();
 		bool checkRedirect();
 		bool checkAutoindex();
+		bool checkCGI();
 		bool checkIndexes(std::string file_name);
 		void processRequest();
 		void handleNotFound();

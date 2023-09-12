@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/12 12:38:14 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/12 16:18:43 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,7 +277,6 @@ void ft::Response::processRequest()
 			_content_length = numberToString(_body.size());
 			return;
 		}
-		// se o content type != do aceito, retorna 415 #unsupported-media-type
 		saveBodyContent();
 		_body = getPage();
 		_content_type = getResourceContentType();
@@ -372,7 +371,13 @@ bool	ft::Response::checkAutoindex()
 	_body.append("    </ul>\n</body>\n</html>");
 	_content_type = "text/html";
 	_content_length = numberToString(_body.size());
+	closedir(dr);
 	return (true);
+}
+
+bool	ft::Response::checkCGI()
+{
+	return (false);
 }
 
 const char *ft::Response::ServerNotFoundException::what() const throw()
