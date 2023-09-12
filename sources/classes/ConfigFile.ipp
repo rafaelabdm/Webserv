@@ -39,6 +39,20 @@ size_t ft::ConfigFile::size(void) const
 	return (_servers.size());
 }
 
+bool ft::ConfigFile::needSudo(void) const
+{
+	size_t size = ft::ConfigFile::size();
+
+	while (size)
+	{
+		size--;
+		short port = std::atoi(getPort(size).c_str());
+		if(port < 1024)
+			return (true);
+	}
+	return (false);
+}
+
 std::vector<ft::t_server_config> ft::ConfigFile::getServers(void) const
 {
 	return (this->_servers);
