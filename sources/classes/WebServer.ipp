@@ -128,19 +128,31 @@ int ft::WebServer::isServerSideEvent(int epoll_fd)
 	return (0);
 }
 
+std::string ft::WebServer::getBoundry(std::string request)
+{
+	size_t start;
 
-int  getContentLength(std::string request)
+	start = request.find("boundary=", 0) + 9;
+	return (request.substr(start, request.length() - start));
+}
+
+int  ft::WebServer::getRequestTotalLength(std::string request)
 {
 	size_t	start;
 	size_t	end;
 	int		length;
+	std::string boundry;
 
+	boundry = getBoundry(request);
+
+	length = request.rfind(boundry, request.length());
+ 
 	start = request.find("Content-Length: ", 0);
 	if (start == std::string::npos)
-		return 0;
+		return (request.length());
 	start += 16;
 	end = request.find("\r", start);
-	length = std::atoi(request.substr(start, end - start).data());
+	length += std::atoi(request.substr(start, end - start).data());
 	return (length);
 }
 
@@ -163,12 +175,14 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 	while (current_bytes_read < total_bytes && ft::keep())
 	{
 		bytes = ::recv(client_fd, client_buffer, sizeof(client_buffer), 0);
-		if (bytes == 0 || bytes == -1)
+		if (bytes == 0)
+			break ;
+		if (bytes == -1)
 			break ;
 		if (total_bytes == -1)
 		{
 			current_bytes_read = 0;
-			total_bytes = getContentLength(client_buffer) + bytes;
+			total_bytes = getRequestTotalLength(client_buffer);
 		}
 		if (bytes > 0)
 		{
@@ -182,10 +196,13 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 	std::cout << FT_EVENT << total_request.length()
 			  << ((total_request.length() <= 1) ? " byte" : " bytes")
 			  << " received."
+			  << "bytes exited with " << bytes << "."
 			  << std::endl;
 
+	if (bytes == -1)
+		std::cout << FT_WARNING << "Falied to recive request of client [" << client_fd << "]" << std::endl;
 	//----------------------TEST-------------------------------
-	if (total_request.length() > 0)
+	else if (total_request.length() > 0)
 	{
 		Request request(total_request);
 		Response response(request, _connections);

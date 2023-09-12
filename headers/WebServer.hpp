@@ -55,7 +55,9 @@ namespace ft
 		void recv(int client_fd, struct epoll_event &events_setup);
 		void send(int client_fd, struct epoll_event &events_setup);
 
-		std::string get_page();
+		int			getRequestTotalLength(std::string request);
+		std::string getBoundry(std::string request);
+		
 		const char **_envp;
 
 	public:
