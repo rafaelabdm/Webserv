@@ -471,9 +471,9 @@ static std::vector<ft::t_server_config> ft::parseConfigTokens(const std::vector<
 
 	for (size_t i = 0; i < tokens.size(); i++)
 	{
-		while (tokens[i] == "#")
+		while (i < tokens.size() && tokens[i] == "#")
 			i++;
-		if (tokens[i++] == "server")
+		if (i < tokens.size() && tokens[i++] == "server")
 		{
 			while (tokens[i] == "#")
 				i++;
@@ -598,6 +598,7 @@ static ft::t_location_config ft::parseLocations(const std::vector<std::string> &
 	location.allowed_methods_get = true;
 	location.allowed_methods_post = true;
 	location.allowed_methods_delete = true;
+	location.autoindex = false;
 
 	i++;
 

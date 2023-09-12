@@ -16,6 +16,12 @@
 #include <messages.hpp>
 #include <WebServer.hpp>
 
+static void close_fds(void)
+{
+	for (short fd = 0; fd < 1024; fd++)
+		close(fd);
+}
+
 int main(const int argc, const char **argv, const char **envp)
 {
 	if (ft::help_option(argv))
@@ -39,6 +45,8 @@ int main(const int argc, const char **argv, const char **envp)
 	}
 
 	ft::print_random_exit_message();
+
+	close_fds();
 
 	return (0);
 }

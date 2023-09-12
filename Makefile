@@ -25,7 +25,7 @@ CXX		 = c++
 DEL		 = rm -rf
 MKDIR	 = mkdir -p
 
-CXXFLAGS	 = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS	 = -Wall -Wextra -Werror -std=c++98 -g3
 DEPFLAGS	 = -MMD -MF
 
 all: $(NAME)
