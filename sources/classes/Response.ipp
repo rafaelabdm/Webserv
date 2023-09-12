@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 19:15:41 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/12 11:34:23 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ ft::Response::Response(ft::Request &request, std::vector<ft::Socket *> &servers)
 	if (!checkMethod())
 		return;
 	if (checkRedirect())
+		return;
+	if (checkAutoindex())
 		return;
 	processRequest();
 
@@ -304,6 +306,54 @@ void ft::Response::saveBodyContent()
 	}
 	file << body.substr(start, body.length() - start);
 	file.close();
+}
+
+bool	ft::Response::checkAutoindex()
+{
+	if (_location.autoindex != true ||\
+		(_location.endpoint != _request.getEndpoint() &&\
+		 _location.endpoint + "/" != _request.getEndpoint()))
+		return (false);
+	
+	DIR *dr;
+	struct dirent *en;
+	std::string path_to_dir = ".";
+	
+	path_to_dir.append(_location.root);
+	dr = opendir(path_to_dir.data());
+	if (dr == NULL)
+	{
+		std::cout << FT_WARNING << "Directory not found" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		handleNotFound();
+	}
+	
+	_body = "<!DOCTYPE html>\n\
+			<html lang=\"en\">\n\
+				<head>\n\
+    				<meta charset=\"UTF-8\">\n\
+    				<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
+   					<title>Autoindex</title>\n\
+				</head>\n\
+				<body>\n\
+					<h2>Lista de Links</h2>\n\
+    				<ul>\n";
+
+	while (ft::keep() && (en = readdir(dr)) != NULL)
+	{
+		_body.append("<li><a href=\"http://localhost:8081");
+		_body.append(_location.endpoint);
+		_body.append("/");
+		_body.append(en->d_name);
+		_body.append("\">");
+		_body.append(en->d_name);
+		_body.append("</a></li>\n");
+	}
+
+	_body.append("    </ul>\n</body>\n</html>");
+	_content_type = "text/html";
+	_content_length = numberToString(_body.size());
+	return (true);
 }
 
 const char *ft::Response::ServerNotFoundException::what() const throw()

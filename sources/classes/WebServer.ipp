@@ -214,11 +214,11 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 	std::cout << FT_EVENT << total_request.length()
 			  << ((total_request.length() <= 1) ? " byte" : " bytes")
 			  << " received."
-			  << "bytes exited with " << bytes << "."
+			  << " recv exited with " << bytes << " bytes."
 			  << std::endl;
 
 	if (bytes == -1)
-		std::cout << FT_WARNING << "Falied to recive request of client [" << client_fd << "]" << std::endl;
+		std::cout << FT_WARNING << "Falied to recive request from client [" << client_fd << "]" << std::endl;
 	//----------------------TEST-------------------------------
 	else if (total_request.length() > 0)
 	{
