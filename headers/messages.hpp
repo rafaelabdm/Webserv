@@ -25,6 +25,7 @@
 #define FT_ERROR "[" RED " ERROR " RESET_COLOR "] "
 #define FT_WARNING "[" YELLOW "WARNING" RESET_COLOR "] "
 #define FT_EVENT "[" CYAN " EVENT " RESET_COLOR "] "
+#define FT_CGI "[" CYAN "  CGI  " RESET_COLOR "] "
 #define FT_STATUS "[" RED "STATUS " RESET_COLOR "] "
 #define FT_INFO "[" MAGENTA " INFO  " RESET_COLOR "] "
 #define FT_SETUP "[" BLUE " SETUP " RESET_COLOR "] "

@@ -61,11 +61,9 @@ namespace ft
 
 		int			getRequestTotalLength(std::string request);
 		std::string getBoundry(std::string request);
-		
-		const char **_envp;
 
 	public:
-		WebServer(const char *configuration_file, const char **envp);
+		WebServer(const char *configuration_file);
 		~WebServer();
 		void start_servers();
 
