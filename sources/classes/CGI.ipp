@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 22:05:30 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/13 16:40:52 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/13 16:47:17 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,9 @@ void	ft::CGI::runScript()
 
     if (::pipe(_pipe) != 0)
 	{
-		perror("pipe");
-		throw std::exception();
+        std::cout << FT_WARNING << "Pipe falied." << std::endl;
+		_response_body = "500";
+		return ;
 	}
     pid = fork();
     if (pid == FT_CHILD_PROCESS) {
@@ -42,8 +43,9 @@ void	ft::CGI::runScript()
     } else if (pid > 0) {
         parent();
     } else {
-        perror("cgi fork");
-        throw std::exception();
+        std::cout << FT_WARNING << "Fork falied." << std::endl;
+        _response_body = "500";
+		return ;
     }
 }
 
@@ -114,17 +116,20 @@ void	ft::CGI::child()
 	if (dup2(_pipe[1], FT_WRITE_FD) == -1)
 	{
 		std::cout << FT_WARNING << "Dup2 falied." << std::endl;
-		throw std::exception();
+		_response_body = "500";
+		return ;
 	}
 	if (dup2(_pipe[0], FT_READ_FD) == -1)
 	{
 		std::cout << FT_WARNING << "Dup2 falied." << std::endl;
-		throw std::exception();
+		_response_body = "500";
+		return ;
 	}
 	if (execve(FT_PYTHON_PATH, (char * const *)argv, (char * const *)envp) == -1)
 	{
 		std::cout << FT_WARNING << "Execve falied." << std::endl;
-		throw std::exception();
+		_response_body = "500";
+		return ;
 	}
 }
 
