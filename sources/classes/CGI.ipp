@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 22:05:30 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/13 16:47:17 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/13 17:08:06 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,14 +140,16 @@ void ft::CGI::parent()
 	std::string		response;
 
 	close(_pipe[1]);
+	std::memset(buf, 0, 4096);
 	while (read(_pipe[0], buf, 4096) > 0)
 	{
 		response += buf;
-		memset(buf, 0, 4096);
+		std::memset(buf, 0, 4096);
 	}
 	close(_pipe[0]);
 	waitpid(-1, &status, 0);
 	_response_body = response;
+	std::cout << response << std::endl;
 }
 
 std::string ft::CGI::getResponseBody()
