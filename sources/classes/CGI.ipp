@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 22:05:30 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/13 17:08:06 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/13 17:11:37 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,6 @@ void ft::CGI::parent()
 	close(_pipe[0]);
 	waitpid(-1, &status, 0);
 	_response_body = response;
-	std::cout << response << std::endl;
 }
 
 std::string ft::CGI::getResponseBody()

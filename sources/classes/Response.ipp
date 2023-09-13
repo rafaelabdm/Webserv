@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/13 13:17:30 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/13 18:17:52 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,10 +174,24 @@ std::string ft::Response::getPage()
 {
 	DIR *dr;
 	struct dirent *en;
-	std::string path_to_dir = "./";
-	std::string resource = "";
+	std::string path_to_dir = ".";
+	std::string resource = _request.getEndpoint().substr(_location.endpoint.length());
+	std::string dir_path = "";
 
+	if (_request.getEndpoint() != _location.endpoint)
+	{
+		dir_path = _request.getEndpoint().substr(_location.endpoint.length(), _request.getEndpoint().find_last_of("/") - _location.endpoint.length());
+		resource = _request.getEndpoint().substr(_request.getEndpoint().find_last_of("/") + 1);
+	}
+
+	std::cout << "dir_path :[" << dir_path << "]" << std::endl;
+	std::cout << "resource :[" << resource << "]" << std::endl;
+	
 	path_to_dir.append(_location.root);
+	if (dir_path != "" && dir_path != "/")
+		path_to_dir.append(dir_path);
+
+	std::cout << path_to_dir << std::endl;
 	dr = opendir(path_to_dir.data());
 	if (dr == NULL)
 	{
@@ -186,8 +200,8 @@ std::string ft::Response::getPage()
 		return (getErrorPage());
 	}
 
-	if (_request.getEndpoint() != _location.endpoint)
-		resource = _request.getEndpoint().substr(_location.endpoint.length() + 1, _request.getEndpoint().length() - _location.endpoint.length() - 1);
+	// if (_request.getEndpoint() != _location.endpoint)
+	// 	resource = _request.getEndpoint().substr(_location.endpoint.length() + 1, _request.getEndpoint().length() - _location.endpoint.length() - 1);
 	
 	while (ft::keep() && (en = readdir(dr)) != NULL)
 	{
@@ -255,8 +269,9 @@ std::string ft::Response::getResourceContentType()
 	types.insert(std::make_pair(".jpeg", "image/jpeg"));
 	types.insert(std::make_pair(".gif", "image/gif"));
 
+	if (_status_code == FT_STATUS_CODE_404 || _status_code == FT_STATUS_CODE_500)
+		return ("text/html");
 	dot = _request.getEndpoint().find_last_of(".");
-	//checar tipo de indexes da location
 	if (dot == std::string::npos)
 		return ("text/html");
 	
@@ -337,14 +352,18 @@ bool	ft::Response::checkAutoindex()
 {
 	if (_location.autoindex != true ||\
 		(_location.endpoint != _request.getEndpoint() &&\
-		 _location.endpoint + "/" != _request.getEndpoint()))
+		 _location.endpoint + "/" != _request.getEndpoint() &&\
+		 _request.getEndpoint().find(".") != std::string::npos))
 		return (false);
 	
 	DIR *dr;
 	struct dirent *en;
 	std::string path_to_dir = ".";
+	std::string resource = _request.getEndpoint().substr(_location.endpoint.length());
 	
 	path_to_dir.append(_location.root);
+	if (!resource.empty() && resource != "/")
+		path_to_dir.append(resource);
 	dr = opendir(path_to_dir.data());
 	if (dr == NULL)
 	{
@@ -367,7 +386,7 @@ bool	ft::Response::checkAutoindex()
 	while (ft::keep() && (en = readdir(dr)) != NULL)
 	{
 		_body.append("<li><a href=\"http://localhost:8081");
-		_body.append(_location.endpoint);
+		_body.append(_location.endpoint + resource);
 		_body.append("/");
 		_body.append(en->d_name);
 		_body.append("\">");
