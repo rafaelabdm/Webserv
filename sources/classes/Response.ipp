@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/12 16:18:43 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/13 13:17:30 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ ft::Response::Response(ft::Request &request, std::vector<ft::Socket *> &servers)
 	if (checkRedirect())
 		return;
 	if (checkAutoindex())
+		return;
+	if (checkCGI())
 		return;
 	processRequest();
 
@@ -138,7 +140,12 @@ std::string ft::Response::getErrorPage()
 	std::string error_page = _server.error_pages[_status_code];
 	std::string path = FT_ERROR_PAGE_PATH;
 	if (error_page == "")
-		path.append(FT_DEFAULT_404_PAGE);
+	{
+		if (_status_code == FT_STATUS_CODE_404)
+			path.append(FT_DEFAULT_404_PAGE);
+		if (_status_code == FT_STATUS_CODE_500)
+			path.append(FT_DEFAULT_500_PAGE);
+	}
 	else
 		path.append(error_page);
 	std::ifstream file(path.c_str());
@@ -377,7 +384,24 @@ bool	ft::Response::checkAutoindex()
 
 bool	ft::Response::checkCGI()
 {
-	return (false);
+	if (_request.getEndpoint().find(".py") == std::string::npos)
+		return (false);
+
+	std::cout << "Hello from CGI" << std::endl;
+	ft::CGI cgi(_request, _location);
+	_body = cgi.getResponseBody();
+	if (_body == "500")
+	{
+		_status_code = FT_STATUS_CODE_500;
+		_body = getErrorPage();
+		_content_length = numberToString(_body.size());
+		return (true);
+	}
+	_content_length = numberToString(_body.size());
+	_content_type = "text/html";
+	_connection_type = "Keep-alive";
+	_status_code = FT_STATUS_CODE_200;
+	return (true);
 }
 
 const char *ft::Response::ServerNotFoundException::what() const throw()

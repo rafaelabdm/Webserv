@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/12 16:18:03 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/13 10:56:11 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include "Request.hpp"
 #include "Socket.hpp"
+#include "CGI.hpp"
 #include "signal_handler.hpp"
 #include <dirent.h>
 #include <cstdio>
@@ -33,16 +34,17 @@ namespace ft
 	class Response
 	{
 	private:
-		ft::Request &_request;
-		ft::t_server_config _server;
-		ft::t_location_config _location;
-		std::string _protocol;
-		std::string _status_code;
-		std::string _content_type;
-		std::string _content_length;
-		std::string _connection_type;
-		std::string _date;
-		std::string _body;
+		ft::Request &			_request;
+		ft::t_server_config		_server;
+		ft::t_location_config	_location;
+		std::string 			_protocol;
+		std::string 			_status_code;
+		std::string 			_content_type;
+		std::string 			_content_length;
+		std::string 			_connection_type;
+		std::string 			_date;
+		std::string 			_body;
+		const char**			_envp;
 
 		ft::t_server_config setServer(std::vector<ft::Socket *> &servers);
 		void checkProtocol();
