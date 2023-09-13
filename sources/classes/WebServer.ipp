@@ -12,7 +12,7 @@
 
 #include "WebServer.hpp"
 
-ft::WebServer::WebServer(const char *configuration_file, const char **envp) : _envp(envp)
+ft::WebServer::WebServer(const char *configuration_file)
 {
 	// Initializes Ctrl + C signal handler
 	ft::keep();

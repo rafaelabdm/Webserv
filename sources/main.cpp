@@ -15,15 +15,42 @@
 #include <iostream>
 #include <messages.hpp>
 #include <WebServer.hpp>
+#include <CGI.hpp>
+#include <close_fds.hpp>
 
-static void close_fds(void)
+int main(const int argc, const char **argv)
 {
-	for (short fd = 0; fd < 1024; fd++)
-		close(fd);
-}
+	// ===== CGI TEST START :eyes: =============================================
+	try
+	{
+		std::string script_path = "public/cgi/HelloWorld.py";
 
-int main(const int argc, const char **argv, const char **envp)
-{
+		ft::CGI cgi(script_path);
+		std::string result = cgi.executePythonScript();
+
+		std::cout
+			<< FT_HIGH_LIGHT_COLOR
+			<< result
+			<< RESET_COLOR
+			<< std::endl;
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+
+		ft::print_random_exit_error_message();
+
+		ft::close_fds();
+
+		return (1);
+	}
+
+	ft::close_fds();
+
+	return (0);
+
+	// ===== CGI TEST END :eyes: ===============================================
+
 	if (ft::help_option(argv))
 		return (0);
 
@@ -34,19 +61,23 @@ int main(const int argc, const char **argv, const char **envp)
 
 	try
 	{
-		ft::WebServer ws(argv[1], envp);
+		ft::WebServer ws(argv[1]);
 		ws.start_servers();
 	}
-	catch (std::exception &e)
+	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+
 		ft::print_random_exit_error_message();
+
+		ft::close_fds();
+
 		return (1);
 	}
 
 	ft::print_random_exit_message();
 
-	close_fds();
+	ft::close_fds();
 
 	return (0);
 }
