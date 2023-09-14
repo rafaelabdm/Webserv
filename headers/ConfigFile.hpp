@@ -24,13 +24,14 @@
 #include <messages.hpp>
 #include <vector>
 
-#define DEFAULT_PORT ""
+#define DEFAULT_SERVER_NAME "localhost"
+#define DEFAULT_PORT "8080"
 #define DEFAULT_ENDPOINT ""
 #define DEFAULT_ROOT ""
 #define DEFAULT_REDIRECT ""
 #define DEFAULT_INDEXES ""
-// #define DEFAULT_UPLOAD_ENABLED false
-// #define DEFAULT_UPLOAD_DIR ""
+#define DEFAULT_UPLOAD_ENABLED false
+#define DEFAULT_UPLOAD_DIR ""
 #define DEFAULT_CGI_ENABLED false
 #define DEFAULT_CGI_DIR ""
 #define DEFAULT_AUTOINDEX false

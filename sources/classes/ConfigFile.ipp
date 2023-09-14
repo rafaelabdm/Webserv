@@ -489,7 +489,7 @@ static std::vector<ft::t_server_config> ft::parseConfigTokens(const std::vector<
 				i++;
 			if (tokens[i] == "}")
 				throw ft::ConfigFile::EmptyServerException();
-
+			
 			servers.push_back(parseServer(tokens, i));
 		}
 		else if (i < tokens.size())
@@ -541,13 +541,19 @@ static ft::t_server_config ft::parseServer(const std::vector<std::string> &token
 			server.locations.push_back(parseLocations(tokens, i));
 		else if (i < tokens.size())
 			throw ft::ConfigFile::ServerLevelUnknownTokenException();
-
 		i++;
 	}
 
 	if (tokens[i] != "}")
 		throw ft::ConfigFile::CantFindServerCloseBracketException();
 
+	if (server.server_names.empty())
+	{
+		server.server_names.push_back("127.0.0.1");
+		server.server_names.push_back(DEFAULT_SERVER_NAME);
+	}
+	if (server.port.empty())
+		server.port = DEFAULT_PORT;
 	return (server);
 }
 
