@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 16:36:20 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 18:47:17 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,6 +393,9 @@ bool	ft::Response::checkAutoindex()
 	std::string path_to_dir = ".";
 	std::string resource = _request.getEndpoint().substr(_location.endpoint.length());
 	
+	if (resource == "/")
+		resource = "";
+
 	path_to_dir.append(_location.root);
 	if (!resource.empty() && resource != "/")
 		path_to_dir.append(resource);

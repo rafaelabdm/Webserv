@@ -260,7 +260,9 @@ void ft::WebServer::send(int client_fd, struct epoll_event &events_setup)
 		Request request(_request_list[client_fd]);
 		Response response(request, _connections);
 		std::string msg = response.getResponse();
-		::send(client_fd, msg.data(), msg.length(), 0);
+		int ret = ::send(client_fd, msg.data(), msg.length(), 0);
+		if (ret == -1)
+			throw std::exception();
 		_request_list.erase(client_fd);
 		events_setup.data.fd = client_fd;
 		epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
