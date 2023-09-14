@@ -255,14 +255,23 @@ void ft::WebServer::send(int client_fd, struct epoll_event &events_setup)
 		<< FT_HIGH_LIGHT_COLOR << client_fd << RESET_COLOR
 		<< "." << std::endl;
 
-	Request request(_request_list[client_fd]);
-	Response response(request, _connections);
-	std::string msg = response.getResponse();
-	::send(client_fd, msg.data(), msg.length(), 0);
-	_request_list.erase(client_fd);
-	events_setup.data.fd = client_fd;
-	epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
-	close(client_fd);
+	try 
+	{
+		Request request(_request_list[client_fd]);
+		Response response(request, _connections);
+		std::string msg = response.getResponse();
+		::send(client_fd, msg.data(), msg.length(), 0);
+		_request_list.erase(client_fd);
+		events_setup.data.fd = client_fd;
+		epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
+		close(client_fd);
+	}
+	catch (std::exception& e)
+	{
+		std::cout << FT_STATUS << e.what() << std::endl;
+		epoll_ctl(_epoll, EPOLL_CTL_DEL, client_fd, &events_setup);
+		close(client_fd);
+	}
 }
 
 void ft::WebServer::start_servers()

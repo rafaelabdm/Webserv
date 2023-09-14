@@ -36,7 +36,7 @@
 
 #define FT_DEFAULT_CONFIG_FILE "./configurations/webserv.conf"
 #define FT_DEFAULT_CLIENT_BUFFER_SIZE 1024
-#define FT_MAX_EVENT_SIZE 10
+#define FT_MAX_EVENT_SIZE 1024
 
 namespace ft
 {

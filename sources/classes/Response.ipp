@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 08:46:15 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 13:10:26 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,10 +128,9 @@ std::string ft::Response::numberToString(int size)
 
 void ft::Response::handleNotFound()
 {
-	_content_type = "text/html";
-	_date = "";
 	_connection_type = "Keep-alive";
 	_body = getErrorPage();
+	_content_type = getResourceContentType();
 	_content_length = numberToString(_body.size());
 }
 
@@ -147,7 +146,8 @@ std::string ft::Response::getErrorPage()
 			path.append(FT_DEFAULT_500_PAGE);
 	}
 	else
-		path.append(error_page);
+		path = "./" + error_page;
+
 	std::ifstream file(path.c_str());
 
 	std::string page;
@@ -196,9 +196,6 @@ std::string ft::Response::getPage()
 		return (getErrorPage());
 	}
 
-	// if (_request.getEndpoint() != _location.endpoint)
-	// 	resource = _request.getEndpoint().substr(_location.endpoint.length() + 1, _request.getEndpoint().length() - _location.endpoint.length() - 1);
-	
 	while (ft::keep() && (en = readdir(dr)) != NULL)
 	{
 		if (resource != "" ? resource == en->d_name : checkIndexes(en->d_name))
@@ -223,6 +220,7 @@ std::string ft::Response::getPage()
 		page.append(line);
 		page.append("\n");
 	}
+	_status_code = FT_STATUS_CODE_200;
 	return page;
 }
 
@@ -264,6 +262,7 @@ std::string ft::Response::getResourceContentType()
 	types.insert(std::make_pair(".jpg", "image/jpg"));
 	types.insert(std::make_pair(".jpeg", "image/jpeg"));
 	types.insert(std::make_pair(".gif", "image/gif"));
+	types.insert(std::make_pair(".ico", "image/vnd.microsoft.icon"));
 
 	if (_status_code == FT_STATUS_CODE_404 || _status_code == FT_STATUS_CODE_500)
 		return ("text/html");
@@ -423,7 +422,7 @@ bool	ft::Response::checkCGI()
 
 const char *ft::Response::ServerNotFoundException::what() const throw()
 {
-	return (FT_ERROR "Server not found :/");
+	return ("Server Name not found :/");
 }
 
 const char *ft::Response::WrongProtocolException::what() const throw()
