@@ -29,8 +29,10 @@
                 console.log(response.body)
                 if (response.status === 204) {
                     document.getElementById('result').textContent = "File deleted succefully";
-                } else {
+                } else if (response.status === 404) {
                     document.getElementById('result').textContent = "File not found - fail to delete it";
+                } else {
+                    document.getElementById('result').textContent = "An error occurred. Status Code: " + response.status;
                 }
             })
             .catch(error => {

@@ -115,6 +115,9 @@
 // request-uri-too-long
 #define FT_STATUS_CODE_414 "414"
 
+// unsupported-media-type
+#define FT_STATUS_CODE_415 "415"
+
 // requested-range-not-satisfiable
 #define FT_STATUS_CODE_416 "416"
 

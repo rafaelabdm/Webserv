@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 13:47:43 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 16:21:36 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,13 +294,48 @@ void ft::Response::processRequest()
 			_content_length = numberToString(_body.size());
 			return;
 		}
-		saveBodyContent();
+		if (_request.getContentType().find("multipart/form-data") == std::string::npos &&\
+			_request.getContentType() != "text/plain")
+		{
+			_status_code = FT_STATUS_CODE_415;
+			_connection_type = "Keep-alive";
+			_body = getPage();
+			_content_type = getResourceContentType();
+			_content_length = numberToString(_body.size());
+			return;
+		}
+		if (_request.getContentType().find("multipart/form-data") != std::string::npos)
+			saveBodyContent();
+		else
+			saveTextPost();
 		_body = getPage();
 		_content_type = getResourceContentType();
 		_content_length = numberToString(_body.size());
 	}
 	else if (_request.getMethod() == "DELETE")
 		deleteFile();
+}
+
+void ft::Response::saveTextPost()
+{
+	std::string file_name = FT_SAVE_DIR_PATH;
+
+	if (_location.upload_dir != "")
+		file_name = "." + _location.root + _location.upload_dir + "/";
+	
+	file_name.append(_request.getBody());
+	file_name.append(".txt");
+
+	std::ofstream file;
+	file.open(file_name.data(), std::ios::binary);
+	if (!file.is_open())
+	{
+		std::cout << FT_WARNING << "Couldn't save file. Dir not found!" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		return ;
+	}
+	file << _request.getBody();
+	file.close();
 }
 
 void ft::Response::deleteFile()
