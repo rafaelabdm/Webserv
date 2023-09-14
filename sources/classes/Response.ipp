@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 16:21:36 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 16:36:20 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,11 +287,11 @@ void ft::Response::processRequest()
 	{
 		if (atoi(_request.getContentLength().data()) > atoi(_location.max_body_size.data()))
 		{
-			_status_code = FT_STATUS_CODE_413;
 			_connection_type = "Keep-alive";
 			_body = getPage();
 			_content_type = getResourceContentType();
 			_content_length = numberToString(_body.size());
+			_status_code = FT_STATUS_CODE_413;
 			return;
 		}
 		if (_request.getContentType().find("multipart/form-data") == std::string::npos &&\
