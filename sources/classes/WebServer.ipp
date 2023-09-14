@@ -49,8 +49,18 @@ ft::WebServer::WebServer(const char *configuration_file)
 
 	for (it = _connections.begin(); it != _connections.end(); it++)
 	{
-		(*it)->bind();
-		(*it)->listen();
+		try
+		{
+			(*it)->bind();
+			(*it)->listen();
+		}
+		catch (ft::Socket::BindException& e)
+		{
+			std::vector<ft::Socket *>::iterator it;
+			for (it = _connections.begin(); it != _connections.end(); it++)
+				delete *it;
+			throw e;
+		}
 		std::cout << std::endl;
 	}
 }
