@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 13:10:26 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 13:47:43 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -403,12 +403,11 @@ bool	ft::Response::checkCGI()
 	if (_request.getEndpoint().find(".py") == std::string::npos)
 		return (false);
 
-	std::cout << "Hello from CGI" << std::endl;
 	ft::CGI cgi(_request, _location);
 	_body = cgi.getResponseBody();
-	if (_body == "500")
+	if (_body == "500" || _body == "404")
 	{
-		_status_code = FT_STATUS_CODE_500;
+		_status_code = _body;
 		_body = getErrorPage();
 		_content_length = numberToString(_body.size());
 		return (true);

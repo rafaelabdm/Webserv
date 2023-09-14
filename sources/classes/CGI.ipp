@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 22:05:30 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 13:31:48 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 13:48:18 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,7 @@ ft::CGI::CGI(ft::Request& request, ft::t_location_config& location)
 	: _request(request), _location(location)
 {
 	if (!checkExecutable())
-	{
-		_response_body = "500";
 		return ;
-	}
 	runScript();	
 }
 
@@ -70,8 +67,17 @@ bool ft::CGI::checkExecutable()
 {
 	std::string path = _location.root.substr(1) + "/" + getResource();
 	
-	if (access(path.c_str(), X_OK) != 0)
+	if (access(path.c_str(), F_OK) != 0)
+	{
+		_response_body = "404";
 		return (false);
+	}
+	if (access(path.c_str(), X_OK) != 0)
+	{
+		_response_body = "500";
+		return (false);
+	}
+	
 	return (true);
 }
 
@@ -139,7 +145,7 @@ void ft::CGI::parent(pid_t pid)
 	char	buf[4096];
 	std::string		response;
 
-	const int timeout_limit = 3;
+	const int timeout_limit = 7;
     std::clock_t start_time;
 
 	start_time = std::clock();
