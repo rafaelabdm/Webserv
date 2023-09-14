@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/13 18:17:52 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 08:46:15 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,14 +184,10 @@ std::string ft::Response::getPage()
 		resource = _request.getEndpoint().substr(_request.getEndpoint().find_last_of("/") + 1);
 	}
 
-	std::cout << "dir_path :[" << dir_path << "]" << std::endl;
-	std::cout << "resource :[" << resource << "]" << std::endl;
-	
 	path_to_dir.append(_location.root);
 	if (dir_path != "" && dir_path != "/")
 		path_to_dir.append(dir_path);
 
-	std::cout << path_to_dir << std::endl;
 	dr = opendir(path_to_dir.data());
 	if (dr == NULL)
 	{
@@ -330,6 +326,8 @@ void ft::Response::saveBodyContent()
 	end = body.find("\"", start);
 
 	std::string file_name = FT_SAVE_DIR_PATH;
+	if (_location.upload_dir != "")
+		file_name = "." + _location.root + _location.upload_dir + "/";
 	file_name.append(body.substr(start, end - start));
 
 	start = body.find("Content-Type:", 0);
