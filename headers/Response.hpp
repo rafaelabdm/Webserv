@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 16:21:42 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 17:13:17 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ namespace ft
 		std::string 			_connection_type;
 		std::string 			_date;
 		std::string 			_body;
-		const char**			_envp;
 
 		ft::t_server_config setServer(std::vector<ft::Socket *> &servers);
 		void checkProtocol();

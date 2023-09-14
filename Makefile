@@ -14,7 +14,6 @@ NAME = webserv
 
 SRC_DIR	 = ./sources
 BLD_DIR	 = ./build
-TMP_DIR	 = ./tmp
 HDR_DIR	 = ./headers $(SRC_DIR)/classes
 
 SRC	 = $(wildcard $(SRC_DIR)/*.cpp)
@@ -31,11 +30,11 @@ DEPFLAGS	 = -MMD -MF
 
 all: $(NAME)
 
-$(NAME): $(OBJ) | $(TMP_DIR)
+$(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(HDR) $(OBJ) -o $(NAME)
 
 clean:
-	$(DEL) $(DEP) $(OBJ) $(BLD_DIR) $(TMP_DIR)
+	$(DEL) $(DEP) $(OBJ) $(BLD_DIR)
 
 fclean: clean
 	$(DEL) $(NAME)
@@ -47,9 +46,6 @@ $(BLD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BLD_DIR)
 
 $(BLD_DIR):
 	$(MKDIR) $(BLD_DIR)
-
-$(TMP_DIR):
-	$(MKDIR) $(TMP_DIR)
 
 -include $(DEP)
 

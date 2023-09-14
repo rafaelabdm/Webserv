@@ -32,7 +32,6 @@ namespace ft {
 	class CGI
 	{
 		private:
-		const char**			_envp;
 		ft::Request&			_request;
 		ft::t_location_config&	_location;
 		int						_pipe[2];
