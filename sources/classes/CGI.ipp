@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 22:05:30 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 13:48:18 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 14:10:32 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,11 @@ bool ft::CGI::checkExecutable()
 	if (access(path.c_str(), F_OK) != 0)
 	{
 		_response_body = "404";
+		return (false);
+	}
+	if (access(path.c_str(), R_OK) != 0)
+	{
+		_response_body = "500";
 		return (false);
 	}
 	if (access(path.c_str(), X_OK) != 0)
@@ -174,8 +179,16 @@ void ft::CGI::parent(pid_t pid)
     }
 	close(_pipe[1]);
 	std::memset(buf, 0, 4096);
-	while (read(_pipe[0], buf, 4096) > 0)
+	int ret = 1;
+	while (ret)
 	{
+		ret = read(_pipe[0], buf, 4096);
+		if (ret == -1)
+		{
+			std::cout << FT_WARNING << "Read falied." << std::endl;
+			_response_body = "500";
+			return ;
+		}
 		response += buf;
 		std::memset(buf, 0, 4096);
 	}
