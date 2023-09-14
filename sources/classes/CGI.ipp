@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 22:05:30 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/13 17:11:37 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 13:31:48 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	ft::CGI::runScript()
     if (pid == FT_CHILD_PROCESS) {
         child();
     } else if (pid > 0) {
-        parent();
+        parent(pid);
     } else {
         std::cout << FT_WARNING << "Fork falied." << std::endl;
         _response_body = "500";
@@ -133,12 +133,39 @@ void	ft::CGI::child()
 	}
 }
 
-void ft::CGI::parent()
+void ft::CGI::parent(pid_t pid)
 {
 	int		status;
 	char	buf[4096];
 	std::string		response;
 
+	const int timeout_limit = 3;
+    std::clock_t start_time;
+
+	start_time = std::clock();
+    while (true)
+    {
+        std::clock_t current_time = std::clock();
+        double elapsed_time = static_cast<double>(current_time - start_time) / CLOCKS_PER_SEC;
+
+		pid_t ret = waitpid(pid, &status, WNOHANG);
+		if (ret == -1)
+		{
+			std::cout << FT_WARNING << "Waitpid falied." << std::endl;
+			_response_body = "500";
+			return ;
+		}
+		if (ret > 0)
+			break ;
+
+        if (elapsed_time >= timeout_limit)
+		{
+			std::cout << FT_WARNING << "CGI Timeout." << std::endl;
+			kill(pid, SIGTERM);
+			_response_body = "500";
+			return ;
+		}
+    }
 	close(_pipe[1]);
 	std::memset(buf, 0, 4096);
 	while (read(_pipe[0], buf, 4096) > 0)
@@ -147,7 +174,6 @@ void ft::CGI::parent()
 		std::memset(buf, 0, 4096);
 	}
 	close(_pipe[0]);
-	waitpid(-1, &status, 0);
 	_response_body = response;
 }
 

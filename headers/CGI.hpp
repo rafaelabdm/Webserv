@@ -44,7 +44,7 @@ namespace ft {
 		bool		 checkExecutable();
 		std::vector<std::string>	setEnv();
 		void	child();
-		void	parent();
+		void	parent(pid_t pid);
 		
 		public:
 		CGI(ft::Request& request, ft::t_location_config& location);

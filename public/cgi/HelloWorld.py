@@ -11,7 +11,8 @@
 # **************************************************************************** #
 
 def printHelloWorld() :
-	print("Hello World!", end="")
+	while True:
+		print("Hello World!", end="")
 
 if __name__ == "__main__":
 	printHelloWorld()
