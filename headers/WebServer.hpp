@@ -34,7 +34,7 @@
 #include "messages.hpp"
 #include "signal_handler.hpp"
 
-#define FT_DEFAULT_CONFIG_FILE "./configurations/webserv.conf"
+#define FT_DEFAULT_CONFIG_FILE "./configurations/my_server.conf"
 #define FT_DEFAULT_CLIENT_BUFFER_SIZE 1024
 #define FT_MAX_EVENT_SIZE 1024
 
