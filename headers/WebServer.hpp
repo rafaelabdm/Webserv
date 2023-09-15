@@ -13,30 +13,26 @@
 #ifndef WEBSERVER_HPP
 #define WEBSERVER_HPP
 
-// C
 #include <dirent.h>
 #include <sys/epoll.h>
 #include <sys/stat.h>
 
-// C++98
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-// Classes
 #include "ConfigFile.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Socket.hpp"
 
-// my headers
 #include "colors.hpp"
 #include "messages.hpp"
 #include "signal_handler.hpp"
 
 #define FT_DEFAULT_CONFIG_FILE "./configurations/my_server.conf"
 #define FT_DEFAULT_CLIENT_BUFFER_SIZE 1024
-#define FT_MAX_EVENT_SIZE 1024
+#define FT_MAX_EVENT_SIZE 100
 
 namespace ft
 {

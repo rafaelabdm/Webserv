@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rapdos-s <rapdos-s@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 09:29:32 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/11 09:56:31 by rapdos-s         ###   ########.fr       */
+/*   Updated: 2023/09/15 09:42:05 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,16 @@
 #define SOCKET_HPP
 
 #include <arpa/inet.h>
-#include <errno.h>		//errno
-#include <netdb.h>		//addrinfo struct
-#include <sys/socket.h> // socket()
-#include <sys/types.h>	// socket()
-#include <stdlib.h>		// close()
-#include <unistd.h>		// close()
-#include <fcntl.h>		// fcntl()
+#include <errno.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 
-#include <cstring>	//std::memset
-#include <iostream> //std::cout
+#include <cstring>
+#include <iostream>
 
 #include <colors.hpp>
 #include <iostream>
@@ -51,7 +51,6 @@ namespace ft
 		void listen();
 		int accept();
 
-		// getters
 		ft::t_server_config getServer();
 		int getSock();
 		std::string getPort();

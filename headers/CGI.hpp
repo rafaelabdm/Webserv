@@ -21,7 +21,6 @@
 # include <sys/wait.h>
 
 # define FT_CHILD_PROCESS 0
-
 # define FT_READ_FD 0
 # define FT_WRITE_FD 1
 

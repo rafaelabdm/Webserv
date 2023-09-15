@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 12:53:16 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/15 09:22:24 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/15 09:39:38 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 #include <map>
 #include <status_code.hpp>
 
-// temps defines
 #define FT_ERROR_PAGE_PATH	"./public/default_error_pages/"
 #define FT_SAVE_DIR_PATH 	"./public/upload/"
 #define FT_DEFAULT_404_PAGE "404.html"
