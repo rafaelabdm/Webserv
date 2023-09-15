@@ -27,17 +27,93 @@ o corpo da resposta (a página html de um site, por exemplo), entre outras mais.
 <a href=https://www.ietf.org/rfc/rfc2616.txt>Hypertext Transfer Protocol -- HTTP/1.1</a>.
 </p>
 
-<h2>🔨 Um pouco sobre os recursos</h2>
-
+<h2>📩 Métodos implementados</h2>
 <p>
+<b>GET:</b> ao bater em uma rota do nosso servidor, que são configuradas no arquivo .conf, o cliente usa o método GET para receber de volta o conteúdo da página ou arquivo
+que está acessando.<br>
+<b>POST:</b> ao usar o método POST em uma rota que aceita esse método, o cliente consegue mandar informações para o nosso servidor processar. Pode ser uma imagem/texto pra ser 
+armazenada no servidor, ou um texto para ser mandado para um programa que vai ser executado, entre outros usos diversos.<br>
+<b>DELETE:</b> ao usar o método DELETE em uma das rotas que aceita esse método, o cliente consegue informar qual o conteúdo quer retirar do servidor, informando o nome do 
+arquivo.<br>
 </p>
+
+<h2>🔨 O que pode ser configurado</h2>
+<p>
+<b>Server Name</b> nome do seu servidor, o que vem logo após o "http://SERVER_NAME", pode ser qualquer coisa, desde que conste no arquivo hosts da sua máquina local;<br>
+<b>Port:</b> porta que seu servidor vai escutar -> "http://SERVERNAME:PORT". Fique lembrado que portas abaixo de 1024 precisa de permissão sudo para rodar;<br>
+<b>Error Pages: </b> páginas de erro personalizadas para o servidor, caso não queira usar as páginas default;<br>
+<b>Root:</b> diretório correspondente à rota buscada pelo cliente. Onde será buscado o recurso requisitado;<br>
+<b>Indexes:</b> arquivo que vai responder caso a rota aponte para um diretório do servidor. Normalmente combinamos Root+Indexes para responder o cliente;<br>
+<b>Redirect:</b> rota que se o cliente acessar, irá redirecioná-lo para outro endereço;<br>
+<b>Autoindex:</b> ao habilitar a listagem de diretório o cliente consegue navegar pelas pastas daquela rota como se fossem páginas html.<br>
+<b>Allowed Methods:</b> métodos permitidos naquela rota. Por padrão são permitidos todos os implementados;<br>
+<b>Upload Dir:</b> onde serão salvos os arquivos que o cliente quiser armazenar no servidor. Importante lembrar que o diretório deve existir no camihho especificado 
+pelo Root para conseguir salvar o arquivo de fato. Caso não exista o servidor devolverá 404;<br>
+<b>Max Body Size:</b> o tamanha máximo do arquivo que pode ser armazenado no servidor. Por padrão é 1MB;<br>
+<b>CGI:</b> habilita sites diâmicos, em que o conteúdo da página quando o cliente acessar pode mudar de acordo com o programa que estiver rodando por trás dela.<br>
+<b></b>
+</p>
+
+<h2>⚙️ Como configurar seu servidor</h2>
+
+```webserver.conf
+# Exemplo de arquivo de configuração para servidor HTTP
+
+# Configurações para o primeiro servidor
+server {
+	port			8080			# Porta do servidor
+	server_names		localhost		# Nome do servidor (opcional)
+	error_page		404 404.html		# Página de erro personalizada (opcional)
+
+	# Configurações para rotas
+	location / {
+		root	/var/www/html			# Diretório raiz da rota
+		indexes	index.html index2.html		# Páginas de índice padrão da rota
+	}
+
+	location /about {
+		root	/var/www/html
+		indexes	about.html
+	}
+
+	# Configuração para rota que redireciona
+	location /redirect {
+		root				/var/www/html
+		redirect			/about		# Redireciona para a rota /about
+	}
+
+	# Configuração para rota que aceita uploads de arquivos
+	location /upload {
+		root			/var/www/html
+		indexes			upload.html
+		allowed_methods		GET POST		# informa quais métodos são permitidos nessa rota (opcional)
+		upload_dir		/var/www/uploads	# Diretório onde os arquivos enviados serão salvos (opcional)
+		max_body_size		300000			# Tamanho permitido do arquivo em bytes (opcional)
+	}
+
+	# Configuração para rota que executa um CGI
+	location /delete {
+		root			/var/www/html/delete
+		indexes			delete.html
+		allowed_methods		GET DELETE		
+	}
+
+	# Configuração para rota que executa um CGI
+	location /cgi {
+		root		/var/www/cgi
+		indexes		game.py				# arquivo do programa a ser executado
+	}
+
+	location /autoindex {
+		root			/var/www/html/autoindex
+		autoindex		true			# habilita listagem de diretórios
+	}
+}
+```
 
 <h2>💻 Como usar</h2>
 <p>
+Na pasta raiz do projeto rode o Makefile: <TT>make</TT> <br>
+Depois de compilado, suba o servidor com as configurações padrão: <TT>./webserv</TT> <br>
+Ou com o arquivo de configuração de sua escolha: <TT>./webserv [caminho_para_seu_arquivo.conf]</TT>
 </p>
-
-```
-configFile
-```
-
-
