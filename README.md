@@ -3,14 +3,18 @@
 </h1>
 
 <p align="center"><br>
-Esse projeto é sobre escrever seu próprio servidor HTTP. Uma versão _bem_ mais simplificada de um NGINX ou Apache. Nele, você consegue
-configurar seu(s) servidor(es) com porta, server_name, rotas e muito mais.<br>
+Esse projeto é sobre escrever seu próprio servidor HTTP. Uma versão <i>bem</i> mais simplificada de um NGINX ou Apache.<br>
+Nele é possível configurar seu(s) servidor(es) com porta, server_name, rotas e muito mais.<br>
 </p>
 
 <p align="center">
 	<img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/rafaelabdm/Webserv?color=lightblue" />
 	<img alt="GitHub top language" src="https://img.shields.io/github/languages/top/rafaelabdm/Webserv?color=blue" />
 	<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/rafaelabdm/Webserv?color=green" />
+</p>
+
+<p align="center">
+<SUB>Por Rafaela Bustamante e Raphael dos Santos Esteves, cadetes na 42 São Paulo.</SUB>
 </p>
 
 ---
@@ -20,8 +24,8 @@ configurar seu(s) servidor(es) com porta, server_name, rotas e muito mais.<br>
 > _This is when you finally understand why a URL starts with HTTP_
 <p>
 Para fazer um servidor web, primeiro precisamos aprender sobre <b>sockets</b> (ou soquetes). Depois sobre I/O Multiplexing com select(), poll() ou epoll(). 
-E, por fim, seguir o protocolo HTTP para tranaferência de informação entre nosso servidor e o cliente. Ele nada mais é do que uma padronização para o envio 
-de informações pela web. Os requisitos mínimos para seu funcionamento, é informar o protocolo (HTTP/1.1, é o que vamos usar), o status da resposta (200 
+E, por fim, seguir o protocolo HTTP para transferência de informação entre nosso servidor e o cliente. Esse protocolo nada mais é do que uma padronização para 
+o envio de informações pela web. Os requisitos mínimos para seu funcionamento, é informar o protocolo (HTTP/1.1, é o que vamos usar) e o status da resposta (200 
 OK, 404 Not Found, etc...). Outras informações que podemos enviar são: o tipo de conteúdo da resposta (se é texto ou imagem), a data, o tamanho da resposta, 
 o corpo da resposta (a página html de um site, por exemplo), entre outras mais. Podemos checar todos os requsitos lendo o próprio 
 <a href=https://www.ietf.org/rfc/rfc2616.txt>Hypertext Transfer Protocol -- HTTP/1.1</a>.
@@ -33,30 +37,29 @@ o corpo da resposta (a página html de um site, por exemplo), entre outras mais.
 que está acessando.<br>
 <b>POST:</b> ao usar o método POST em uma rota que aceita esse método, o cliente consegue mandar informações para o nosso servidor processar. Pode ser uma imagem/texto pra ser 
 armazenada no servidor, ou um texto para ser mandado para um programa que vai ser executado, entre outros usos diversos.<br>
-<b>DELETE:</b> ao usar o método DELETE em uma das rotas que aceita esse método, o cliente consegue informar qual o conteúdo quer retirar do servidor, informando o nome do 
+<b>DELETE:</b> ao usar o método DELETE em uma das rotas que aceita esse método, o cliente consegue informar qual conteúdo quer retirar do servidor, informando o nome do 
 arquivo.<br>
 </p>
 
 <h2>🔨 O que pode ser configurado</h2>
-<p>
-<b>Server Name</b> nome do seu servidor, o que vem logo após o "http://SERVER_NAME", pode ser qualquer coisa, desde que conste no arquivo hosts da sua máquina local;<br>
-<b>Port:</b> porta que seu servidor vai escutar -> "http://SERVERNAME:PORT". Fique lembrado que portas abaixo de 1024 precisa de permissão sudo para rodar;<br>
-<b>Error Pages: </b> páginas de erro personalizadas para o servidor, caso não queira usar as páginas default;<br>
-<b>Root:</b> diretório correspondente à rota buscada pelo cliente. Onde será buscado o recurso requisitado;<br>
-<b>Indexes:</b> arquivo que vai responder caso a rota aponte para um diretório do servidor. Normalmente combinamos Root+Indexes para responder o cliente;<br>
-<b>Redirect:</b> rota que se o cliente acessar, irá redirecioná-lo para outro endereço;<br>
-<b>Autoindex:</b> ao habilitar a listagem de diretório o cliente consegue navegar pelas pastas daquela rota como se fossem páginas html.<br>
-<b>Allowed Methods:</b> métodos permitidos naquela rota. Por padrão são permitidos todos os implementados;<br>
-<b>Upload Dir:</b> onde serão salvos os arquivos que o cliente quiser armazenar no servidor. Importante lembrar que o diretório deve existir no camihho especificado 
-pelo Root para conseguir salvar o arquivo de fato. Caso não exista o servidor devolverá 404;<br>
-<b>Max Body Size:</b> o tamanha máximo do arquivo que pode ser armazenado no servidor. Por padrão é 1MB;<br>
-<b>CGI:</b> habilita sites diâmicos, em que o conteúdo da página quando o cliente acessar pode mudar de acordo com o programa que estiver rodando por trás dela.<br>
-<b></b>
-</p>
+<ul>
+<li><b>SERVER NAME</b>: nome do seu servidor, o que vem logo após o "http://SERVER_NAME", pode ser qualquer coisa, desde que conste no arquivo hosts da sua máquina local;</li>
+<li><b>PORT</b>: porta que seu servidor vai escutar -> "http://SERVERNAME:PORT". Fique lembrado que portas abaixo de 1024 precisa de permissão sudo para rodar;</li>
+<li><b>ERROR PAGES</b>: páginas de erro personalizadas para o servidor, caso não queira usar as páginas default;</li>
+<li><b>ROOT</b>: diretório correspondente à rota buscada pelo cliente. Onde será buscado o recurso requisitado;<br></li>
+<li><b>INDEXES</b>: arquivo que vai responder caso a rota aponte para um diretório do servidor. Normalmente combinamos Root+Indexes para responder o cliente;</li>
+<li><b>REDIRECT</b>: rota que se o cliente acessar, irá redirecioná-lo para outro endereço;</li>
+<li><b>AUTOINDEX</b>: ao habilitar a listagem de diretório o cliente consegue navegar pelas pastas daquela rota como se fossem páginas html;</li>
+<li><b>ALLOWED METHODS</b>: métodos permitidos naquela rota. Por padrão são permitidos todos os implementados;</li>
+<li><b>UPLOAD DIR</b>: onde serão salvos os arquivos que o cliente quiser armazenar no servidor. Importante lembrar que o diretório deve existir no camihho especificado 
+pelo Root para conseguir salvar o arquivo de fato. Caso não exista o servidor devolverá 404;</li>
+<li><b>MAX BODY SIZE</b>: o tamanha máximo do arquivo que pode ser armazenado no servidor. Por padrão é 1MB;</li>
+<li><b>CGI</b>: habilita sites diâmicos, em que o conteúdo da página quando o cliente acessar pode mudar de acordo com o programa que estiver rodando por trás dela.</li>
+</ul>
 
 <h2>⚙️ Como configurar seu servidor</h2>
 
-```webserver.conf
+```
 # Exemplo de arquivo de configuração para servidor HTTP
 
 # Configurações para o primeiro servidor
