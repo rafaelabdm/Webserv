@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+
+        #upload-form {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+
+        label:hover {
+            background-color: #2980b9;
+        }
+
+        input[type="file"] {
+            display: inline-block;
+        }
+
+        button[type="submit"] {
+            background-color: #27ae60;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #219a52;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload a File</h1>
+    
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="file-input" name="image" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <p id="message"></p>
+
+    <script>
+        const uploadForm = document.getElementById("upload-form");
+        const fileInput = document.getElementById("file-input");
+        const messageElement = document.getElementById("message");
+
+        uploadForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            messageElement.textContent = "";
+
+            const formData = new FormData();
+            formData.append("image", fileInput.files[0]);
+
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    messageElement.textContent = "Upload successful!";
+                } else if (response.status === 413) {
+                    messageElement.textContent = "File too large. Please upload a smaller file.";
+                }
+                else {
+                    messageElement.textContent = "Upload failed. Please try again later.";
+                }
+            } catch (error) {
+                console.error(error);
+                messageElement.textContent = "An error occurred during the upload. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -11,50 +11,53 @@
 /* ************************************************************************** */
 
 #ifndef REQUEST_HPP
-# define REQUEST_HPP
+#define REQUEST_HPP
 
-# include <string>
-# include <vector>
-# include <iostream>
-# include <algorithm>
-# include "colors.hpp"
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include "colors.hpp"
 
 namespace ft
 {
 	class Request
 	{
-		private:
-		std::string	_endpoint;
-		std::string	_method;
-		std::string	_protocol;
-		std::string	_host;
+	private:
+		std::string _endpoint;
+		std::string _method;
+		std::string _protocol;
+		std::string _host;
 		std::string _content_type;
-		std::string	_body;
+		std::string _content_length;
+		std::string _body;
 
-		void	getRequestInfo(std::string buffer);
-		void	getFirstLineInfo(std::string request);
-		std::string	getBoundry();
-		
-		void	setHost(std::string request);
-		void	setMethod(std::string method);
-		void	setPath(std::string path);
-		void	setBody(std::string request);
-		void	setContentType(std::string content);
-		void	setProtocol(std::string protocol);
+		void getRequestInfo(std::string buffer);
+		void getFirstLineInfo(std::string request);
+		std::string getBoundry();
 
-		public:
+		void setHost(std::string request);
+		void setMethod(std::string method);
+		void setPath(std::string path);
+		void setBody(std::string request);
+		void setContentType(std::string content);
+		void setContentLength(std::string content);
+		void setProtocol(std::string protocol);
+
+	public:
 		Request(std::string client_buffer);
 		~Request();
-		std::string	getMethod();
-		std::string	getPath();
-		std::string	getProtocol();
-		std::string	getHost();
-		std::string	getEndpoint();
-		std::string	getContentType();
-		std::string	getBody();
+		std::string getMethod();
+		std::string getPath();
+		std::string getProtocol();
+		std::string getHost();
+		std::string getEndpoint();
+		std::string getContentType();
+		std::string getContentLength();
+		std::string getBody();
 	};
 }
 
-# include "Request.ipp"
+#include "Request.ipp"
 
 #endif /* Request_hpp */

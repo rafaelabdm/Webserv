@@ -6,33 +6,46 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/05 10:40:01 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/14 18:47:17 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Response.hpp"
 
-ft::Response::Response(ft::Request& request, std::vector<ft::Socket*>& servers): _request(request), _server(setServer(servers))
+ft::Response::Response(ft::Request &request, std::vector<ft::Socket *> &servers) : _request(request), _server(setServer(servers))
 {
-	std::cout << "Request for server " << _request.getHost() << " is being processed." << std::endl;
+	std::cout
+		<< FT_EVENT
+		<< "Request for server "
+		<< FT_HIGH_LIGHT_COLOR << _request.getHost() << RESET_COLOR
+		<< " is being processed."
+		<< std::endl;
 
 	checkProtocol();
 	if (!checkEndpoint())
-		return ;
+		return;
 	if (!checkMethod())
-		return ;
+		return;
 	if (checkRedirect())
-		return ;
+		return;
+	if (checkAutoindex())
+		return;
+	if (checkCGI())
+		return;
 	processRequest();
-	std::cout << "Request for server " << _request.getHost() << " was processed." << std::endl;
+
+	std::cout
+		<< FT_OK
+		<< "Request for server "
+		<< FT_HIGH_LIGHT_COLOR << _request.getHost() << RESET_COLOR
+		<< " was processed."
+		<< std::endl;
 }
 
 ft::Response::~Response()
 {
 }
 
-
-//	retorno da classe Response para o WebServer
 std::string ft::Response::getResponse()
 {
 	std::string response = "";
@@ -55,13 +68,13 @@ std::string ft::Response::getResponse()
 	response.append(_connection_type);
 	response.append("\n\n");
 	response.append(_body);
-	
+
 	return (response);
 }
 
-ft::t_server_config ft::Response::setServer(std::vector<ft::Socket*>& servers)
+ft::t_server_config ft::Response::setServer(std::vector<ft::Socket *> &servers)
 {
-	std::vector<ft::Socket*>::iterator it;
+	std::vector<ft::Socket *>::iterator it;
 	std::vector<std::string> hosts;
 
 	for (it = servers.begin(); it != servers.end(); it++)
@@ -76,60 +89,70 @@ ft::t_server_config ft::Response::setServer(std::vector<ft::Socket*>& servers)
 	throw ft::Response::ServerNotFoundException();
 }
 
-void	ft::Response::checkProtocol()
+void ft::Response::checkProtocol()
 {
 	if (_request.getProtocol() != "HTTP/1.1")
 		throw ft::Response::WrongProtocolException();
-	return ;
+	return;
 }
 
-bool	ft::Response::checkEndpoint()
+bool ft::Response::checkEndpoint()
 {
-	std::vector<t_location_config> locations = _server.locations;
-
+	std::vector<t_location_config>	locations = _server.locations;
+	size_t 							pos = _request.getEndpoint().find("/", 1);
+	
+	if (pos == std::string::npos)
+		pos = _request.getEndpoint().length();
 	for (long unsigned int i = 0; i < locations.size(); i++)
 	{
-		if (locations[i].endpoint == _request.getEndpoint())
+		if (_request.getEndpoint().compare(0, pos, locations[i].endpoint) == 0)
 		{
 			_location = locations[i];
 			return (true);
 		}
 	}
-	_status_code = "404"; //not found
+	_status_code = FT_STATUS_CODE_404;
 	handleNotFound();
 	return (false);
 }
 
 std::string ft::Response::numberToString(int size)
 {
-    std::stringstream length;
-    std::string str;
+	std::stringstream length;
+	std::string str;
 
-    length << size;
+	length << size;
 	str = length.str();
-    return str;
+	return str;
 }
 
-
-void	ft::Response::handleNotFound()
+void ft::Response::handleNotFound()
 {
-	_content_type = "text/html";
-	_date = "";
 	_connection_type = "Keep-alive";
 	_body = getErrorPage();
+	_content_type = getResourceContentType();
 	_content_length = numberToString(_body.size());
 }
 
-std::string	ft::Response::getErrorPage()
+std::string ft::Response::getErrorPage()
 {
 	std::string error_page = _server.error_pages[_status_code];
-	std::string path = ERROR_PAGE_PATH;
-	path.append(error_page);
+	std::string path = FT_ERROR_PAGE_PATH;
+	if (error_page == "")
+	{
+		if (_status_code == FT_STATUS_CODE_404)
+			path.append(FT_DEFAULT_404_PAGE);
+		if (_status_code == FT_STATUS_CODE_500)
+			path.append(FT_DEFAULT_500_PAGE);
+	}
+	else
+		path = "./" + error_page;
+
 	std::ifstream file(path.c_str());
 
 	std::string page;
 	std::string line;
-	while(std::getline(file, line))
+	while (std::getline(file, line))
 	{
 		page.append(line);
 		page.append("\n");
@@ -137,28 +160,53 @@ std::string	ft::Response::getErrorPage()
 	return page;
 }
 
-std::string	ft::Response::getPage()
+bool ft::Response::checkIndexes(std::string file_name)
 {
-	DIR*			dr;
-	struct dirent*	en;
-	std::string		path_to_dir = "./";
-	
-	path_to_dir.append(_location.root);
-	dr = opendir(path_to_dir.data());
-	if( dr == NULL )
+	for (long unsigned int i = 0; i < _location.indexes.size(); i++)
 	{
-		// throw ft::Response::RootNotFpundException();
-		std::cout << "ERROR: DIR NOT FOUND" << std::endl;
+		if (file_name == _location.indexes[i])
+			return (true);
 	}
-	std::cout << _location.indexes[0] << std::endl;
-		
-	for(int i = 0; ft::keep() && en->d_name != _location.indexes[0]; i++) {
-		en = readdir(dr);
-		if (en == NULL)
-		{
-			// throw ft::Response::PageNotFpundException();
-			std::cout << "ERROR: FILE NOT FOUND" << std::endl;
-		}
+	return (false);
+}
+
+std::string ft::Response::getPage()
+{
+	DIR *dr;
+	struct dirent *en;
+	std::string path_to_dir = ".";
+	std::string resource = _request.getEndpoint().substr(_location.endpoint.length());
+	std::string dir_path = "";
+
+	if (_request.getEndpoint() != _location.endpoint)
+	{
+		dir_path = _request.getEndpoint().substr(_location.endpoint.length(), _request.getEndpoint().find_last_of("/") - _location.endpoint.length());
+		resource = _request.getEndpoint().substr(_request.getEndpoint().find_last_of("/") + 1);
+	}
+
+	path_to_dir.append(_location.root);
+	if (dir_path != "" && dir_path != "/")
+		path_to_dir.append(dir_path);
+
+	dr = opendir(path_to_dir.data());
+	if (dr == NULL)
+	{
+		std::cout << FT_WARNING << "Directory not found" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		return (getErrorPage());
+	}
+
+	while (ft::keep() && (en = readdir(dr)) != NULL)
+	{
+		if (resource != "" ? resource == en->d_name : checkIndexes(en->d_name))
+			break ;
+	}
+	
+	if (en == NULL)
+	{
+		std::cout << FT_WARNING << "File not found" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		return (getErrorPage());
 	}
 
 	path_to_dir.append("/");
@@ -167,15 +215,16 @@ std::string	ft::Response::getPage()
 
 	std::string page = "";
 	std::string line;
-	while(std::getline(file, line))
+	while (std::getline(file, line))
 	{
 		page.append(line);
 		page.append("\n");
 	}
+	_status_code = FT_STATUS_CODE_200;
 	return page;
 }
 
-bool	ft::Response::checkMethod()
+bool ft::Response::checkMethod()
 {
 	if (_location.allowed_methods_get == true && _request.getMethod() == "GET")
 		return (true);
@@ -183,80 +232,237 @@ bool	ft::Response::checkMethod()
 		return (true);
 	if (_location.allowed_methods_delete == true && _request.getMethod() == "DELETE")
 		return (true);
-	_status_code = "405"; //method not allowed
+	_status_code = FT_STATUS_CODE_405;
 	_content_type = "text/plain";
 	_body = "method not allowed";
 	_content_length = numberToString(_body.size());
 	return (false);
 }
 
-bool	ft::Response::checkRedirect()
+bool ft::Response::checkRedirect()
 {
 	if (_location.redirect != "")
 	{
-		_status_code = "301"; //moved permanently
+		_status_code = FT_STATUS_CODE_301;
 		_content_length = "0";
+		_location.endpoint = _location.redirect;
 		return (true);
 	}
 	return (false);
 }
 
-void	ft::Response::processRequest()
+std::string ft::Response::getResourceContentType()
+{
+	size_t	dot;
+	std::string resource;
+	std::map<std::string, std::string> types;
+	types.insert(std::make_pair(".html", "text/html"));
+	types.insert(std::make_pair(".txt", "text/plain"));
+	types.insert(std::make_pair(".png", "image/png"));
+	types.insert(std::make_pair(".jpg", "image/jpg"));
+	types.insert(std::make_pair(".jpeg", "image/jpeg"));
+	types.insert(std::make_pair(".gif", "image/gif"));
+	types.insert(std::make_pair(".ico", "image/vnd.microsoft.icon"));
+
+	if (_status_code == FT_STATUS_CODE_404 || _status_code == FT_STATUS_CODE_500)
+		return ("text/html");
+	dot = _request.getEndpoint().find_last_of(".");
+	if (dot == std::string::npos)
+		return ("text/html");
+	
+	resource = _request.getEndpoint().substr(dot, _request.getEndpoint().length() - dot);
+	return (types[resource]);
+}
+
+void ft::Response::processRequest()
 {
 	if (_request.getMethod() == "GET")
 	{
 		_body = getPage();
-		_content_type = "text/html"; //depois ver como vamos checar isso pra devolver
+		_content_type = getResourceContentType();
 		_content_length = numberToString(_body.size());
+		_connection_type = "Keep-alive";
 	}
 	else if (_request.getMethod() == "POST")
 	{
-		//if (_request.getBody() > _locaction.max_size)
-			//	retorna 413 #request-entity-too-large
-		//se o content type != do aceito, retorna 415 #unsupported-media-type
-		saveBodyContent();
-		_status_code = 201;
-		_body = "Created";
-		_connection_type = "Keep-alive";
-		_content_type = "text/plain";
-		_content_length = "7";
+		if (atoi(_request.getContentLength().data()) > atoi(_location.max_body_size.data()))
+		{
+			_connection_type = "Keep-alive";
+			_body = getPage();
+			_content_type = getResourceContentType();
+			_content_length = numberToString(_body.size());
+			_status_code = FT_STATUS_CODE_413;
+			return;
+		}
+		if (_request.getContentType().find("multipart/form-data") == std::string::npos &&\
+			_request.getContentType() != "text/plain")
+		{
+			_status_code = FT_STATUS_CODE_415;
+			_connection_type = "Keep-alive";
+			_body = getPage();
+			_content_type = getResourceContentType();
+			_content_length = numberToString(_body.size());
+			return;
+		}
+		if (_request.getContentType().find("multipart/form-data") != std::string::npos)
+			saveBodyContent();
+		else
+			saveTextPost();
+		_body = getPage();
+		_content_type = getResourceContentType();
+		_content_length = numberToString(_body.size());
 	}
 	else if (_request.getMethod() == "DELETE")
-	{
-		
-	}
-	
+		deleteFile();
 }
 
-void	ft::Response::saveBodyContent()
+void ft::Response::saveTextPost()
+{
+	std::string file_name = FT_SAVE_DIR_PATH;
+
+	if (_location.upload_dir != "")
+		file_name = "." + _location.root + _location.upload_dir + "/";
+	
+	file_name.append(_request.getBody());
+	file_name.append(".txt");
+
+	std::ofstream file;
+	file.open(file_name.data(), std::ios::binary);
+	if (!file.is_open())
+	{
+		std::cout << FT_WARNING << "Couldn't save file. Dir not found!" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		return ;
+	}
+	file << _request.getBody();
+	file.close();
+}
+
+void ft::Response::deleteFile()
 {
 	std::string body = _request.getBody();
-	
-	size_t	start;
-	size_t	end;
+	std::string file_name = FT_SAVE_DIR_PATH;
+	int status;
+
+	file_name.append(body);
+	status = std::remove(file_name.data());
+	!status ? _status_code = FT_STATUS_CODE_204 : _status_code = FT_STATUS_CODE_404;
+}
+
+void ft::Response::saveBodyContent()
+{
+	std::string body = _request.getBody();
+
+	size_t start;
+	size_t end;
 
 	start = body.find("filename=", 0) + 10;
 	end = body.find("\"", start);
-	
-	std::string	file_name = "./examples/"; //dir to save files
+
+	std::string file_name = FT_SAVE_DIR_PATH;
+	if (_location.upload_dir != "")
+		file_name = "." + _location.root + _location.upload_dir + "/";
 	file_name.append(body.substr(start, end - start));
 
 	start = body.find("Content-Type:", 0);
 	end = body.find("\n", start) + 3;
 	start = end;
 
-	std::ofstream	file;
+	std::ofstream file;
 	file.open(file_name.data(), std::ios::binary);
+	if (!file.is_open())
+	{
+		std::cout << FT_WARNING << "Couldn't save file. Dir not found!" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		return ;
+	}
 	file << body.substr(start, body.length() - start);
 	file.close();
 }
 
-const char* ft::Response::ServerNotFoundException::what() const throw()
+bool	ft::Response::checkAutoindex()
 {
-	return (FT_FAIL "server not found :/");
+	if (_location.autoindex != true ||\
+		(_location.endpoint != _request.getEndpoint() &&\
+		 _location.endpoint + "/" != _request.getEndpoint() &&\
+		 _request.getEndpoint().find(".") != std::string::npos))
+		return (false);
+	
+	DIR *dr;
+	struct dirent *en;
+	std::string path_to_dir = ".";
+	std::string resource = _request.getEndpoint().substr(_location.endpoint.length());
+	
+	if (resource == "/")
+		resource = "";
+
+	path_to_dir.append(_location.root);
+	if (!resource.empty() && resource != "/")
+		path_to_dir.append(resource);
+	dr = opendir(path_to_dir.data());
+	if (dr == NULL)
+	{
+		std::cout << FT_WARNING << "Directory not found" << std::endl;
+		_status_code = FT_STATUS_CODE_404;
+		handleNotFound();
+	}
+	
+	_body = "<!DOCTYPE html>\n\
+			<html lang=\"en\">\n\
+				<head>\n\
+    				<meta charset=\"UTF-8\">\n\
+    				<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\
+   					<title>Autoindex</title>\n\
+				</head>\n\
+				<body>\n\
+					<h2>Lista de Links</h2>\n\
+    				<ul>\n";
+
+	while (ft::keep() && (en = readdir(dr)) != NULL)
+	{
+		_body.append("<li><a href=\"http://localhost:8081");
+		_body.append(_location.endpoint + resource);
+		_body.append("/");
+		_body.append(en->d_name);
+		_body.append("\">");
+		_body.append(en->d_name);
+		_body.append("</a></li>\n");
+	}
+
+	_body.append("    </ul>\n</body>\n</html>");
+	_content_type = "text/html";
+	_content_length = numberToString(_body.size());
+	closedir(dr);
+	return (true);
 }
 
-const char* ft::Response::WrongProtocolException::what() const throw()
+bool	ft::Response::checkCGI()
 {
-	return (FT_FAIL "Protocol not accepted");
+	if (_request.getEndpoint().find(".py") == std::string::npos)
+		return (false);
+
+	ft::CGI cgi(_request, _location);
+	_body = cgi.getResponseBody();
+	if (_body == "500" || _body == "404")
+	{
+		_status_code = _body;
+		_body = getErrorPage();
+		_content_length = numberToString(_body.size());
+		return (true);
+	}
+	_content_length = numberToString(_body.size());
+	_content_type = "text/html";
+	_connection_type = "Keep-alive";
+	_status_code = FT_STATUS_CODE_200;
+	return (true);
+}
+
+const char *ft::Response::ServerNotFoundException::what() const throw()
+{
+	return ("Server Name not found :/");
+}
+
+const char *ft::Response::WrongProtocolException::what() const throw()
+{
+	return (FT_ERROR "Protocol not accepted");
 }

@@ -11,78 +11,94 @@
 /* ************************************************************************** */
 
 #ifndef WEBSERVER_HPP
-# define WEBSERVER_HPP
+#define WEBSERVER_HPP
 
-//C
-# include <dirent.h>
-// # include <poll.h>
-# include <sys/epoll.h>
+// C
+#include <dirent.h>
+#include <sys/epoll.h>
+#include <sys/stat.h>
 
-//C++98
-# include <fstream>
-# include <iostream>
-# include <vector>
+// C++98
+#include <fstream>
+#include <iostream>
+#include <vector>
 
-//Classes
-# include "ConfigFile.hpp"
-# include "Request.hpp"
-# include "Response.hpp"
-# include "Socket.hpp"
+// Classes
+#include "ConfigFile.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Socket.hpp"
 
-//my headers
-# include "colors.hpp"
-# include "messages.hpp"
-# include "signal_handler.hpp"
+// my headers
+#include "colors.hpp"
+#include "messages.hpp"
+#include "signal_handler.hpp"
 
-# define FT_DEFAULT_CONFIG_FILE			"./examples/webserv.conf"
-# define FT_DEFAULT_CLIENT_BUFFER_SIZE	300
+#define FT_DEFAULT_CONFIG_FILE "./configurations/my_server.conf"
+#define FT_DEFAULT_CLIENT_BUFFER_SIZE 1024
+#define FT_MAX_EVENT_SIZE 1024
 
 namespace ft
 {
 	class WebServer
 	{
-		private:
-		ft::ConfigFile				_config_file;
-		std::vector<ft::Socket*>	_connections;
-		int							_epoll;
+	private:
+		ft::ConfigFile _config_file;
+		std::vector<ft::Socket *> _connections;
+		std::map<int, std::string> _request_list;
+		int _epoll;
+		bool _is_sudo;
 
+		void epoll();
+		void epollAddServers();
+		int epoll_wait(struct epoll_event *events);
 
-		void	epoll();
-		void	epollAddServers();
-		int		epoll_wait(struct epoll_event* events);
+		void checkSudo();
 
-		int		isServerSideEvent(int epoll_fd);
-		void	recv(int client_fd, struct epoll_event& events_setup);
-		void	send(int client_fd, struct epoll_event& events_setup);
+		int isServerSideEvent(int epoll_fd);
+		void recv(int client_fd, struct epoll_event &events_setup);
+		void send(int client_fd, struct epoll_event &events_setup);
 
+		int			getRequestTotalLength(std::string request);
+		std::string getBoundry(std::string request);
 
-		std::string		get_page();
-
-		public:
-		WebServer(const std::string& config_file);
+	public:
+		WebServer(const char *configuration_file);
 		~WebServer();
-		void	start_servers();
+		void start_servers();
 
-		class	EpollException : std::exception
+		class EpollException : public std::exception
 		{
-			public:
-			const char* what() const throw();
+		public:
+			const char *what() const throw();
 		};
 
-		class	EpollCtlException : std::exception
+		class EpollCtlException : public std::exception
 		{
-			public:
-			const char* what() const throw();
+		public:
+			const char *what() const throw();
 		};
 
-		class	EpollWaitException : std::exception
+		class EpollWaitException : public std::exception
 		{
-			public:
-			const char* what() const throw();
+		public:
+			const char *what() const throw();
+		};
+
+		class cantGetUserInfoException : public std::exception
+		{
+		public:
+			const char *what() const throw();
+		};
+
+		class needSudoException : public std::exception
+		{
+		public:
+			const char *what() const throw();
 		};
 	};
 }
 
-# include "WebServer.ipp"
+#include "WebServer.ipp"
 
 #endif /* WebServer_hpp */

@@ -12,7 +12,7 @@
 
 #include <help_option.hpp>
 
-static void	print_help_message(void)
+static void print_help_message(void)
 {
 	std::cout << "Usage: ./webserv [<Configuration File>.conf] \n";
 	std::cout << "   or: ./webserv \n\n";
@@ -25,14 +25,14 @@ static void	print_help_message(void)
 	std::cout << std::endl;
 }
 
-bool	ft::help_option(const char** options)
+bool ft::help_option(const char **options)
 {
 	if (!options)
 		return (false);
 
 	for (int i = 0; options[i]; i++)
 	{
-		const std::string	str_option = options[i];
+		const std::string str_option = options[i];
 
 		if (str_option == "-h" || str_option == "--help")
 		{

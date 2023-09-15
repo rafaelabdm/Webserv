@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="http://localhost:8080">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DO NOT OPEN</title>
+    <style>
+        body {
+            background-color: #ff5733;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            padding: 50px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        p {
+            font-size: 2rem;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        #secret-message {
+            display: none;
+            font-size: 2rem;
+            color: #fff;
+            margin-top: 30px;
+        }
+
+        button {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>DO NOT OPEN</h1>
+    <p>Top Secret Content:</p>
+    <div id="secret-message">
+        <img src="about/Fiuka.jpeg">
+    </div>
+    <button id="reveal-button">Reveal Secret</button>
+
+    <script>
+        document.getElementById('reveal-button').addEventListener('click', function() {
+            document.getElementById('secret-message').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

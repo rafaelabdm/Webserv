@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>404 - Recurso não encontrado</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+			background-color: #CCCCCCFF;
+			color: #333333FF;
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+
+		h1 {
+			font-size: 15rem;
+			margin: 0;
+		}
+
+		h2 {
+			font-size: 5rem;
+			margin: 0.5em 0;
+		}
+
+		h3 {
+			font-size: 2rem;
+			color: #777777FF;
+			margin: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>404</h1>
+	<h2>Resource not found</h2>
+	<h3>Recurso não encontrado</h3>
+	<h3 id="randomMessage"></h3>
+
+	<script>
+		const messages = [
+			"Desculpe, este recurso não foi encontrado.",
+			"Sabia que deveria ter virado à esquerda em Albuquerque.",
+			"Parece que você se perdeu!",
+			"Não é minha culpa!",
+			"Ops, algo deu errado.",
+			"Este recurso não está disponível.",
+			"..."
+		];
+
+		const randomIndex = Math.floor(Math.random() * messages.length);
+		const randomMessage = messages[randomIndex];
+
+		document.getElementById("randomMessage").textContent = randomMessage;
+	</script>
+</body>
+
+</html>
