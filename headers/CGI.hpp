@@ -15,6 +15,7 @@
 
 # include "Request.hpp"
 # include "ConfigFile.hpp"
+# include "status_code.hpp"
 # include <string>
 # include <unistd.h>
 # include <sys/types.h>

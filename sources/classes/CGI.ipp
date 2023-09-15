@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/12 22:05:30 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 14:10:32 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/15 09:50:32 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft::CGI::runScript()
     if (::pipe(_pipe) != 0)
 	{
         std::cout << FT_WARNING << "Pipe falied." << std::endl;
-		_response_body = "500";
+		_response_body = FT_STATUS_CODE_500;
 		return ;
 	}
     pid = fork();
@@ -41,7 +41,7 @@ void	ft::CGI::runScript()
         parent(pid);
     } else {
         std::cout << FT_WARNING << "Fork falied." << std::endl;
-        _response_body = "500";
+        _response_body = FT_STATUS_CODE_500;
 		return ;
     }
 }
@@ -69,17 +69,17 @@ bool ft::CGI::checkExecutable()
 	
 	if (access(path.c_str(), F_OK) != 0)
 	{
-		_response_body = "404";
+		_response_body = FT_STATUS_CODE_404;
 		return (false);
 	}
 	if (access(path.c_str(), R_OK) != 0)
 	{
-		_response_body = "500";
+		_response_body = FT_STATUS_CODE_500;
 		return (false);
 	}
 	if (access(path.c_str(), X_OK) != 0)
 	{
-		_response_body = "500";
+		_response_body = FT_STATUS_CODE_500;
 		return (false);
 	}
 	
@@ -127,19 +127,19 @@ void	ft::CGI::child()
 	if (dup2(_pipe[1], FT_WRITE_FD) == -1)
 	{
 		std::cout << FT_WARNING << "Dup2 falied." << std::endl;
-		_response_body = "500";
+		_response_body = FT_STATUS_CODE_500;
 		return ;
 	}
 	if (dup2(_pipe[0], FT_READ_FD) == -1)
 	{
 		std::cout << FT_WARNING << "Dup2 falied." << std::endl;
-		_response_body = "500";
+		_response_body = FT_STATUS_CODE_500;
 		return ;
 	}
 	if (execve(FT_PYTHON_PATH, (char * const *)argv, (char * const *)envp) == -1)
 	{
 		std::cout << FT_WARNING << "Execve falied." << std::endl;
-		_response_body = "500";
+		_response_body = FT_STATUS_CODE_500;
 		return ;
 	}
 }
@@ -163,7 +163,7 @@ void ft::CGI::parent(pid_t pid)
 		if (ret == -1)
 		{
 			std::cout << FT_WARNING << "Waitpid falied." << std::endl;
-			_response_body = "500";
+			_response_body = FT_STATUS_CODE_500;
 			return ;
 		}
 		if (ret > 0)
@@ -173,7 +173,7 @@ void ft::CGI::parent(pid_t pid)
 		{
 			std::cout << FT_WARNING << "CGI Timeout." << std::endl;
 			kill(pid, SIGTERM);
-			_response_body = "500";
+			_response_body = FT_STATUS_CODE_500;
 			return ;
 		}
     }
@@ -186,7 +186,7 @@ void ft::CGI::parent(pid_t pid)
 		if (ret == -1)
 		{
 			std::cout << FT_WARNING << "Read falied." << std::endl;
-			_response_body = "500";
+			_response_body = FT_STATUS_CODE_500;
 			return ;
 		}
 		response += buf;
