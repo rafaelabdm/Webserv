@@ -6,7 +6,7 @@
 /*   By: rabustam <rabustam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 09:15:39 by rabustam          #+#    #+#             */
-/*   Updated: 2023/09/14 18:47:17 by rabustam         ###   ########.fr       */
+/*   Updated: 2023/09/15 09:46:30 by rabustam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ std::string ft::Response::getResponse()
 
 	response.append("HTTP/1.1 ");
 	response.append(_status_code);
-	// response.append(" ");
-	// response.append(_status_msgs[_status_code]);
 	response.append("\nLocation: ");
 	response.append(_location.endpoint);
 	response.append("\nContent-Type: ");

@@ -28,8 +28,6 @@ ft::Request::~Request()
 	// std::cout << FT_INFO << "Body: [" << _body << "]" << std::endl;
 }
 
-// getters
-
 std::string ft::Request::getMethod()
 {
 	return (_method);
@@ -69,8 +67,6 @@ std::string ft::Request::getBody()
 {
 	return (_body);
 }
-
-// setters
 
 void ft::Request::setMethod(std::string method)
 {
@@ -115,7 +111,7 @@ void ft::Request::setHost(std::string request)
 	size_t end;
 
 	start = request.find("Host: ", 0) + 6;
-	end = request.find("\r", start); // rabustam: bizarramente tem um \r vindo no request? rapdos-s: Em servidores Windows, provavelmente :eyes:
+	end = request.find("\r", start);
 	_host = request.substr(start, end - start);
 }
 
@@ -163,7 +159,7 @@ void ft::Request::getFirstLineInfo(std::string request)
 	{
 		if (request[end] == ' ' || request[end] == '\n' || request[end] == '\r')
 		{
-			if (request[end] == '\n') // Acho que tem que comparar com \r aqui também, mas parece ser bem difícil isso acontecer
+			if (request[end] == '\n')
 				stop = true;
 			req.push_back(request.substr(start, end - start));
 			start = end + 1;
