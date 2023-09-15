@@ -8,7 +8,7 @@ Nele é possível configurar seu(s) servidor(es) com porta, server_name, rotas e
 </p>
 
 <p align="center">
-	<img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/rafaelabdm/Webserv?color=lightblue" />
+	<img alt="Code language count" src="https://img.shields.io/github/languages/count/rafaelabdm/Webserv?color=yellow" />
 	<img alt="GitHub top language" src="https://img.shields.io/github/languages/top/rafaelabdm/Webserv?color=blue" />
 	<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/rafaelabdm/Webserv?color=green" />
 </p>
