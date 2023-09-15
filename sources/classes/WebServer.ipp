@@ -233,7 +233,7 @@ void ft::WebServer::recv(int client_fd, struct epoll_event &events_setup)
 			  << std::endl;
 
 	if (bytes == -1)
-		std::cout << FT_WARNING << "Failed to recieve full request from client [" << client_fd << "]" << std::endl;
+		std::cout << FT_WARNING << "Failed to receive full request from client [" << client_fd << "]" << std::endl;
 	else if (total_request.length() > 0)
 	{
 		_request_list[client_fd] = total_request;
