@@ -9,17 +9,13 @@
 /*   Updated: 2023/08/11 18:24:26 by rapdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include <check_argc.hpp>
 #include <help_option.hpp>
 #include <iostream>
 #include <messages.hpp>
 #include <WebServer.hpp>
-
-static void close_fds(void)
-{
-	for (short fd = 0; fd < 1024; fd++)
-		close(fd);
-}
+#include <close_fds.hpp>
 
 int main(const int argc, const char **argv)
 {
@@ -42,7 +38,7 @@ int main(const int argc, const char **argv)
 
 	ft::print_random_exit_message();
 
-	close_fds();
+	ft::close_fds();
 
 	return (0);
 }
