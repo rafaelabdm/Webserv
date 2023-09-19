@@ -34,9 +34,9 @@ o corpo da resposta (a página html de um site, por exemplo), entre outras mais.
 <h2>📩 Métodos implementados</h2>
 <p>
 <b>GET:</b> ao bater em uma rota do nosso servidor, que são configuradas no arquivo .conf, o cliente usa o método GET para receber de volta o conteúdo da página ou arquivo
-que está acessando.<br>
+que está acessando.<br><br>
 <b>POST:</b> ao usar o método POST em uma rota que aceita esse método, o cliente consegue mandar informações para o nosso servidor processar. Pode ser uma imagem/texto pra ser 
-armazenada no servidor, ou um texto para ser mandado para um programa que vai ser executado, entre outros usos diversos.<br>
+armazenada no servidor, ou um texto para ser mandado para um programa que vai ser executado, entre outros usos diversos.<br><br>
 <b>DELETE:</b> ao usar o método DELETE em uma das rotas que aceita esse método, o cliente consegue informar qual conteúdo quer retirar do servidor, informando o nome do 
 arquivo.<br>
 </p>
