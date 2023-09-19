@@ -118,5 +118,21 @@ server {
 <p>
 Na pasta raiz do projeto rode o Makefile: <TT>make</TT> <br>
 Depois de compilado, suba o servidor com as configurações padrão: <TT>./webserv</TT> <br>
-Ou com o arquivo de configuração de sua escolha: <TT>./webserv [caminho_para_seu_arquivo.conf]</TT>
+Ou com o arquivo de configuração de sua escolha: <TT>./webserv [caminho_para_seu_arquivo.conf]</TT> <br>
+Em caso de mais dúvidas, use o comando <TT>./webserv --help</TT>
 </p>
+
+```
+Usage: ./webserv [<Configuration File>.conf] 
+   or: ./webserv
+
+A HTTP server in C++ 98
+
+    -h, --help    display this help page and exit.
+
+By default, \"./examples/webserv.conf\" will load if no 
+configuration file is provided.
+
+More about this project can be found on
+https://github.com/rafaelabdm/Webserv/
+```
